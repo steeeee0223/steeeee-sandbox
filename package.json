@@ -1,0 +1,42 @@
+{
+  "name": "portal",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.10.6",
+    "@emotion/styled": "^11.10.6",
+    "@mui/icons-material": "^5.11.16",
+    "@mui/lab": "^5.0.0-alpha.127",
+    "@mui/material": "^5.12.0",
+    "@reduxjs/toolkit": "^1.9.5",
+    "@uiw/codemirror-extensions-langs": "^4.19.16",
+    "@uiw/codemirror-theme-atomone": "^4.19.16",
+    "@uiw/codemirror-theme-vscode": "^4.19.16",
+    "@uiw/codemirror-themes": "^4.19.16",
+    "@uiw/react-codemirror": "^4.19.16",
+    "firebase": "^9.20.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-redux": "^8.0.5",
+    "react-router-dom": "^6.10.0",
+    "redux": "^4.2.1",
+    "redux-devtools-extension": "^2.13.9",
+    "redux-thunk": "^2.4.2"
+  },
+  "devDependencies": {
+    "@types/codemirror": "^5.60.7",
+    "@types/firebase": "^3.2.1",
+    "@types/react": "^18.0.35",
+    "@types/react-dom": "^18.0.11",
+    "@types/redux-thunk": "^2.1.0",
+    "@vitejs/plugin-react": "^3.1.0",
+    "typescript": "^5.0.4",
+    "vite": "^4.2.1"
+  }
+}
