@@ -10,7 +10,8 @@ const initialState: FileState = {
         item: { id: "root", name: "root", isFolder: true },
         path: { id: [], name: [] },
     },
-    currentEditors: [],
+    currentEditor: null,
+    editors: [],
     userFolders: [],
     userFiles: [],
     adminFolders: [],
@@ -44,10 +45,15 @@ const fileReducer = (
         case FileActionTypes.OPEN_EDITOR:
             return {
                 ...state,
-                currentEditors: [...state.currentEditors, payload],
+                currentEditor: payload,
+                editors: [...state.editors, payload],
             };
         case FileActionTypes.CLOSE_EDITOR:
-            return { ...state, currentEditors: payload };
+            const editors = state.editors.filter(
+                (itemId) => itemId !== payload
+            );
+            const currentEditor = editors.at(0) ?? null;
+            return { ...state, editors, currentEditor };
         default:
             return state;
     }

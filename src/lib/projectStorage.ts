@@ -8,17 +8,10 @@ import { FileState } from "@/stores/files";
 
 export class ProjectStorage {
     public currentItem!: SelectedItem;
-    public currentEditors: string[] = [];
     public userFolders: Folder[] = [];
     public userFiles: File[] = [];
 
-    constructor({
-        currentEditors,
-        currentItem,
-        userFiles,
-        userFolders,
-    }: FileState) {
-        this.currentEditors = currentEditors;
+    constructor({ currentItem, userFiles, userFolders }: FileState) {
         this.currentItem = currentItem;
         this.userFiles = userFiles;
         this.userFolders = userFolders;
@@ -66,13 +59,5 @@ export class ProjectStorage {
             name: [...path.name, "root"].reverse(),
         };
         return { path, item };
-    }
-
-    public addEditor(itemId: string) {
-        this.currentEditors.push(itemId);
-    }
-
-    public removeEditor(itemId: string) {
-        this.currentEditors = this.currentEditors.filter((id) => id !== itemId);
     }
 }

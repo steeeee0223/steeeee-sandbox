@@ -11,8 +11,9 @@ import {
     useAppSelector,
 } from "@/hooks";
 import { openEditor, selectItem } from "@/stores/files";
-import { Accordion, AccordionDetails, AccordionSummary } from "./Accordion";
 import { ProjectStorage } from "@/lib/projectStorage";
+import { Accordion, AccordionDetails, AccordionSummary } from "./Accordion";
+import ContextMenu from "./ContextMenu";
 
 type BaseItem = {
     parent: string;
@@ -68,14 +69,10 @@ export default function FolderSystem({ parent }: { parent: string }) {
             const item = project.getSelectedItem(selectedId);
             dispatch(selectItem(item));
             handleToggle(item.path.id);
-            if (!isFolder && !project.currentEditors.includes(itemId)) {
+            if (!isFolder && !fileState.editors.includes(itemId)) {
                 dispatch(openEditor(itemId));
             }
         };
-
-    const handleButtonClick: React.MouseEventHandler = (e) => {
-        if (e.type === "contextmenu") console.log(`clicked button`);
-    };
 
     return (
         <div>
@@ -87,31 +84,29 @@ export default function FolderSystem({ parent }: { parent: string }) {
                         expanded={toggle[itemId]}
                         onChange={handleChange(itemId, isFolder)}
                     >
-                        <AccordionSummary
-                            aria-controls={`content-${itemId}`}
-                            id={`header-${itemId}`}
-                        >
-                            <Typography
-                                sx={{
-                                    width: "33%",
-                                    flexShrink: 0,
-                                    fontSize: 12,
-                                }}
+                        <ContextMenu>
+                            <AccordionSummary
+                                aria-controls={`content-${itemId}`}
+                                id={`header-${itemId}`}
                             >
-                                <IconButton
-                                    size="small"
-                                    sx={{ mr: 1 }}
-                                    onClick={handleButtonClick}
+                                <Typography
+                                    sx={{
+                                        width: "33%",
+                                        flexShrink: 0,
+                                        fontSize: 12,
+                                    }}
                                 >
-                                    {isFolder ? (
-                                        <FolderIcon fontSize="small" />
-                                    ) : (
-                                        <InsertDriveFileIcon fontSize="small" />
-                                    )}
-                                </IconButton>
-                                {title}
-                            </Typography>
-                        </AccordionSummary>
+                                    <IconButton size="small" sx={{ mr: 1 }}>
+                                        {isFolder ? (
+                                            <FolderIcon fontSize="small" />
+                                        ) : (
+                                            <InsertDriveFileIcon fontSize="small" />
+                                        )}
+                                    </IconButton>
+                                    {title}
+                                </Typography>
+                            </AccordionSummary>
+                        </ContextMenu>
                         <AccordionDetails sx={{ margin: 0 }}>
                             {isFolder && <FolderSystem parent={itemId} />}
                         </AccordionDetails>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Box, Button, Divider, Grid, Typography } from "@mui/material";
 import ViewInArIcon from "@mui/icons-material/ViewInAr";
@@ -18,9 +18,8 @@ export default function Project() {
         dispatch(setProject(projectId ?? null));
     }, [projectId]);
 
-    const [code, setCode] = useState<string>(sampleCode);
     const frames: TabInfo[] = [
-        { id: "0", label: "Browser", component: <Frame code={code} /> },
+        { id: "0", label: "Browser", component: <Frame code={sampleCode} /> },
         {
             id: "1",
             label: "Terminal",

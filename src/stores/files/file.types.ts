@@ -5,7 +5,8 @@ export interface FileState {
     creationType: string | null;
     actionType: string | null;
     currentItem: SelectedItem;
-    currentEditors: string[];
+    currentEditor: string | null;
+    editors: string[];
     userFolders: Folder[];
     userFiles: File[];
     adminFolders: Folder[];

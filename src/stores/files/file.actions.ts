@@ -61,7 +61,7 @@ const __openEditor = (
     payload,
 });
 const __closeEditor = (
-    payload: string[]
+    payload: string
 ): PayloadAction<typeof payload, FileActionTypes> => ({
     type: FileActionTypes.CLOSE_EDITOR,
     payload,
@@ -168,11 +168,10 @@ export const selectItem =
         dispatch(__selectItem(selectedId));
     };
 
-export const openEditor = (payload: string) => (dispatch: AppDispatch) => {
-    // TODO if already in currentEditors, don't dispatch
-    dispatch(__openEditor(payload));
+export const openEditor = (itemId: string) => (dispatch: AppDispatch) => {
+    dispatch(__openEditor(itemId));
 };
 
-export const closeEditor = (payload: string[]) => (dispatch: AppDispatch) => {
-    dispatch(__closeEditor(payload));
+export const closeEditor = (itemId: string) => (dispatch: AppDispatch) => {
+    dispatch(__closeEditor(itemId));
 };
