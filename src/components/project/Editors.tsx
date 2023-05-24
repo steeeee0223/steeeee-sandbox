@@ -63,7 +63,6 @@ export default function Editors() {
         e.stopPropagation();
         dispatch(closeEditor(itemId));
         const newId = fileState.editors.find((id) => id !== itemId) ?? null;
-        console.log(itemId, newId, fileState.currentEditor);
         dispatch(setEditor(newId));
     };
 

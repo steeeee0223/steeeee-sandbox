@@ -41,7 +41,7 @@ export default function CreateFolder() {
         if (folderName) {
             if (!isFolderPresent(folderName)) {
                 dispatch(setCreation(null));
-
+                console.log(item);
                 const data = {
                     createdAt: new Date(),
                     updatedAt: new Date(),

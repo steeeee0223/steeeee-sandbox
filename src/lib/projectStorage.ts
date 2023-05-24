@@ -52,15 +52,15 @@ export class ProjectStorage {
 
     public getSelectedItem(itemId: string): SelectedItem {
         const [name, id] = this.getFullPath(itemId);
-        let item = { isFolder: true, name: "", id: "" };
+        let isFolder = true;
         if (itemId !== "root") {
-            const { isFolder } = this.getItem(itemId);
-            item = {
-                isFolder,
-                name: name.pop() ?? (undefined as never),
-                id: id.pop() ?? (undefined as never),
-            };
+            isFolder = this.getItem(itemId).isFolder;
         }
+        const item = {
+            isFolder,
+            name: name.pop() ?? (undefined as never),
+            id: id.pop() ?? (undefined as never),
+        };
         return { item, path: { name, id } };
     }
 }
