@@ -10,7 +10,7 @@ import {
     useAppDispatch,
     useAppSelector,
 } from "@/hooks";
-import { openEditor, selectItem } from "@/stores/files";
+import { openEditor, selectItem, setEditor } from "@/stores/files";
 import { ProjectStorage } from "@/lib/projectStorage";
 import { Accordion, AccordionDetails, AccordionSummary } from "./Accordion";
 import ContextMenu from "./ContextMenu";
@@ -69,8 +69,12 @@ export default function FolderSystem({ parent }: { parent: string }) {
             const item = project.getSelectedItem(selectedId);
             dispatch(selectItem(item));
             handleToggle(item.path.id);
-            if (!isFolder && !fileState.editors.includes(itemId)) {
-                dispatch(openEditor(itemId));
+            if (!isFolder) {
+                dispatch(setEditor(itemId));
+
+                if (!fileState.editors.includes(itemId)) {
+                    dispatch(openEditor(itemId));
+                }
             }
         };
 

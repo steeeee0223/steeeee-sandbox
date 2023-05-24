@@ -22,6 +22,7 @@ export enum FileActionTypes {
     CREATE_FILE = "CREATE_FILE",
     GET_FILES = "GET_FILES",
     SELECT_ITEM = "SELECT_ITEM", // select item: folder | file
+    SET_EDITOR = "SET_EDITOR",
     OPEN_EDITOR = "OPEN_EDITOR",
     CLOSE_EDITOR = "CLOSE_EDITOR",
 }

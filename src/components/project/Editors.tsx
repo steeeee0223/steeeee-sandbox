@@ -1,7 +1,6 @@
-import { MouseEvent, useState } from "react";
+import { MouseEvent } from "react";
 import { shallowEqual } from "react-redux";
-import { IconButton, Box, Tab } from "@mui/material";
-import { TabContext, TabList, TabPanel } from "@mui/lab";
+import { IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
 import {
@@ -10,9 +9,10 @@ import {
     AppDispatch,
     RootState,
 } from "@/hooks";
-import { CodeEditor } from "@/components/common";
-import { closeEditor } from "@/stores/files";
+import { CodeEditor, TabInfo, Tabs } from "@/components/common";
+import { closeEditor, setEditor } from "@/stores/files";
 import { ProjectStorage } from "@/lib/projectStorage";
+import Breadcrumbs from "./Breadcrumbs";
 import { File } from "./FolderSystem";
 
 export default function Editors() {
@@ -26,92 +26,55 @@ export default function Editors() {
     );
     const dispatch: AppDispatch = useAppDispatch();
     const project = new ProjectStorage(fileState);
-
-    const [value, setValue] = useState<string | null>(null);
-    const handleChange = (
-        event: React.SyntheticEvent,
-        newValue: string | null
-    ) => {
-        console.log(`new val ${newValue}`);
-        setValue(newValue);
-    };
-
-    const handleCloseEditor = (itemId: string) => (e: MouseEvent) => {
-        dispatch(closeEditor(itemId));
-    };
-
-    const tabs = fileState.editors.map((itemId) => {
+    const children: TabInfo[] = fileState.editors.map((itemId) => {
         const file = project.getFile(itemId) ?? (undefined as never);
+        const [path, _] = project.getFullPath(itemId);
         const { title, extension, content } = file as File;
         return {
-            itemId,
-            title,
-            extension,
-            content,
+            id: itemId,
+            label: title,
+            icon: (
+                <IconButton
+                    component="span"
+                    sx={{
+                        padding: 0,
+                        fontSize: "small",
+                    }}
+                    onClick={(e) => handleCloseEditor(e, itemId)}
+                >
+                    <CloseIcon fontSize="inherit" />
+                </IconButton>
+            ),
+            component: (
+                <>
+                    <Breadcrumbs path={path} />
+                    <CodeEditor
+                        name={title}
+                        language={extension}
+                        value={content}
+                        readOnly={false}
+                    />
+                </>
+            ),
         };
     });
 
+    const handleCloseEditor = (e: MouseEvent, itemId: string) => {
+        e.stopPropagation();
+        dispatch(closeEditor(itemId));
+        const newId = fileState.editors.find((id) => id !== itemId) ?? null;
+        console.log(itemId, newId, fileState.currentEditor);
+        dispatch(setEditor(newId));
+    };
+
     return (
         <>
-            {tabs.length > 0 && (
-                <Box sx={{ maxWidth: "100%", typography: "body1" }}>
-                    <TabContext
-                        value={
-                            (fileState.currentEditor || value) ??
-                            (null as never)
-                        }
-                    >
-                        <Box
-                            sx={{
-                                borderBottom: 1,
-                                borderColor: "divider",
-                            }}
-                        >
-                            <TabList
-                                onChange={handleChange}
-                                variant="scrollable"
-                                scrollButtons="auto"
-                                allowScrollButtonsMobile
-                                aria-label="tabs"
-                                sx={{ fontSize: "small" }}
-                            >
-                                {tabs.map(({ title, itemId }) => (
-                                    <Tab
-                                        component="span"
-                                        label={title}
-                                        value={itemId}
-                                        key={itemId}
-                                        iconPosition="end"
-                                        disableRipple
-                                        icon={
-                                            <IconButton
-                                                sx={{
-                                                    padding: 0,
-                                                    fontSize: "small",
-                                                }}
-                                                onClick={handleCloseEditor(
-                                                    itemId
-                                                )}
-                                            >
-                                                <CloseIcon fontSize="inherit" />
-                                            </IconButton>
-                                        }
-                                    />
-                                ))}
-                            </TabList>
-                        </Box>
-                        {tabs.map(({ title, extension, content, itemId }) => (
-                            <TabPanel value={itemId} key={itemId}>
-                                <CodeEditor
-                                    name={title}
-                                    language={extension}
-                                    value={content}
-                                    readOnly={false}
-                                />
-                            </TabPanel>
-                        ))}
-                    </TabContext>
-                </Box>
+            {fileState.currentEditor && (
+                <Tabs
+                    children={children}
+                    defaultValue={fileState.currentEditor}
+                    onChange={(val) => dispatch(setEditor(val))}
+                />
             )}
         </>
     );

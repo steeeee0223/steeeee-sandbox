@@ -31,33 +31,36 @@ export class ProjectStorage {
             .sort((item1, item2) => item1.title.localeCompare(item2.title));
     }
 
-    public getParent(itemId: string): FolderSystemItem {
+    public getItem(itemId: string): FolderSystemItem {
         const item = this.userItems.find((item) => itemId === item.itemId);
         return item ?? (undefined as never);
     }
 
-    public getSelectedItem(itemId: string): SelectedItem {
-        let { path, item }: SelectedItem = {
-            item: { id: "", name: "", isFolder: {} as boolean },
-            path: { id: [], name: [] },
-        };
-        let isFirst = true;
-
+    public getFullPath(itemId: string) {
+        let name: string[] = [];
+        let id: string[] = [];
         while (itemId !== "root") {
-            const { isFolder, parent, title } = this.getParent(itemId);
-            if (isFirst) {
-                item = { id: itemId, name: title, isFolder };
-                isFirst = false;
-            } else {
-                path.id.push(itemId);
-                path.name.push(title);
-            }
+            const { parent, title } = this.getItem(itemId);
+            id.push(itemId);
+            name.push(title);
             itemId = parent;
         }
-        path = {
-            id: [...path.id, itemId].reverse(),
-            name: [...path.name, "root"].reverse(),
-        };
-        return { path, item };
+        id = [...id, itemId].reverse();
+        name = [...name, "root"].reverse();
+        return [name, id] as const;
+    }
+
+    public getSelectedItem(itemId: string): SelectedItem {
+        const [name, id] = this.getFullPath(itemId);
+        let item = { isFolder: true, name: "", id: "" };
+        if (itemId !== "root") {
+            const { isFolder } = this.getItem(itemId);
+            item = {
+                isFolder,
+                name: name.pop() ?? (undefined as never),
+                id: id.pop() ?? (undefined as never),
+            };
+        }
+        return { item, path: { name, id } };
     }
 }

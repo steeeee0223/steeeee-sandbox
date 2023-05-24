@@ -42,18 +42,15 @@ const fileReducer = (
             return { ...state, userFiles: payload };
         case FileActionTypes.SELECT_ITEM:
             return { ...state, currentItem: payload };
+        case FileActionTypes.SET_EDITOR:
+            return { ...state, currentEditor: payload };
         case FileActionTypes.OPEN_EDITOR:
-            return {
-                ...state,
-                currentEditor: payload,
-                editors: [...state.editors, payload],
-            };
+            return { ...state, editors: [...state.editors, payload] };
         case FileActionTypes.CLOSE_EDITOR:
             const editors = state.editors.filter(
                 (itemId) => itemId !== payload
             );
-            const currentEditor = editors.at(0) ?? null;
-            return { ...state, editors, currentEditor };
+            return { ...state, editors };
         default:
             return state;
     }

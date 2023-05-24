@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Tab as MuiTab } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 
@@ -12,18 +12,27 @@ export type TabInfo = {
 export interface TabsProps {
     children: TabInfo[];
     defaultValue: string;
+    onChange?: (newValue: string) => void;
 }
 
-export default function Tabs({ children, defaultValue }: TabsProps) {
-    const [value, setValue] = useState(defaultValue);
+export default function Tabs({ children, defaultValue, onChange }: TabsProps) {
+    const [tabs, setTabs] = useState<TabInfo[]>(children);
+    const [activeTab, setActiveTab] = useState(defaultValue);
     const handleChange = (event: React.SyntheticEvent, newValue: string) => {
-        console.log(`new val ${newValue}`);
-        setValue(newValue);
+        setActiveTab(newValue);
+        if (onChange) {
+            onChange(newValue);
+        }
     };
+
+    useEffect(() => {
+        setTabs(children);
+        setActiveTab(defaultValue);
+    }, [defaultValue, children]);
 
     return (
         <Box sx={{ maxWidth: "100%", typography: "body1" }}>
-            <TabContext value={value}>
+            <TabContext value={activeTab}>
                 <Box
                     sx={{
                         borderBottom: 1,
@@ -38,7 +47,7 @@ export default function Tabs({ children, defaultValue }: TabsProps) {
                         aria-label="tabs"
                         sx={{ fontSize: "small" }}
                     >
-                        {children.map(({ label, icon, id }) => (
+                        {tabs.map(({ label, icon, id }) => (
                             <MuiTab
                                 label={label}
                                 value={id}
@@ -53,7 +62,7 @@ export default function Tabs({ children, defaultValue }: TabsProps) {
                         ))}
                     </TabList>
                 </Box>
-                {children.map(({ component, id }) => (
+                {tabs.map(({ component, id }) => (
                     <TabPanel value={id} key={id}>
                         {component}
                     </TabPanel>

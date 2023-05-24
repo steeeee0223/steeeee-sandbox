@@ -54,8 +54,14 @@ const __selectItem = (
     type: FileActionTypes.SELECT_ITEM,
     payload,
 });
+const __setEditor = (
+    payload: string | null
+): PayloadAction<typeof payload, FileActionTypes> => ({
+    type: FileActionTypes.SET_EDITOR,
+    payload,
+});
 const __openEditor = (
-    payload?: string
+    payload: string
 ): PayloadAction<typeof payload, FileActionTypes> => ({
     type: FileActionTypes.OPEN_EDITOR,
     payload,
@@ -167,6 +173,10 @@ export const selectItem =
     (selectedId: SelectedItem) => (dispatch: AppDispatch) => {
         dispatch(__selectItem(selectedId));
     };
+
+export const setEditor = (itemId: string | null) => (dispatch: AppDispatch) => {
+    dispatch(__setEditor(itemId));
+};
 
 export const openEditor = (itemId: string) => (dispatch: AppDispatch) => {
     dispatch(__openEditor(itemId));

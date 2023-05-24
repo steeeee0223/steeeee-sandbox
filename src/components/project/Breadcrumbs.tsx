@@ -30,16 +30,11 @@ const StyledBreadcrumb = styled(Chip)(({ theme }) => {
     };
 }) as typeof Chip;
 
-export default function Breadcrumbs() {
-    const { currentItem } = useAppSelector(
-        (state: RootState) => ({
-            // user: state.auth.user,
-            currentItem: state.files.currentItem,
-        }),
-        shallowEqual
-    );
-    const { path, item } = currentItem;
+interface BreadcrumbsProps {
+    path: string[];
+}
 
+export default function Breadcrumbs({ path }: BreadcrumbsProps) {
     return (
         <div role="presentation" onClick={handleClick}>
             <MuiBreadcrumbs
@@ -47,7 +42,7 @@ export default function Breadcrumbs() {
                 aria-label="breadcrumb"
                 sx={{ marginBottom: 2, fontSize: "small" }}
             >
-                {path.name.map((name, index) => (
+                {path.map((name, index) => (
                     <StyledBreadcrumb
                         key={index}
                         component="a"
@@ -55,13 +50,6 @@ export default function Breadcrumbs() {
                         href="#"
                     />
                 ))}
-                {item.name && (
-                    <StyledBreadcrumb
-                        component="a"
-                        label={item.name}
-                        href="#"
-                    />
-                )}
             </MuiBreadcrumbs>
         </div>
     );
