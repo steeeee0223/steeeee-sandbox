@@ -1,6 +1,8 @@
-import { PayloadAction } from "@reduxjs/toolkit";
-
-import { FileActionTypes, FileState } from "@/stores/files/file.types";
+import {
+    FileActionPayload,
+    FileActionTypes,
+    FileState,
+} from "@/stores/files/file.types";
 
 const initialState: FileState = {
     isLoading: true,
@@ -20,7 +22,7 @@ const initialState: FileState = {
 
 const fileReducer = (
     state: FileState = initialState,
-    { type, payload }: PayloadAction<any, FileActionTypes>
+    { type, payload }: FileActionPayload
 ): FileState => {
     switch (type) {
         case FileActionTypes.SET_LOADING:

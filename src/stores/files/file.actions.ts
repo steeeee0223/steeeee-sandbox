@@ -1,86 +1,58 @@
-import { PayloadAction } from "@reduxjs/toolkit";
-
 import { db } from "@/config/firebase";
-import { FileActionTypes } from "@/stores/files/file.types";
+import { FileActionPayload, FileActionTypes } from "@/stores/files/file.types";
 import { File, Folder, SelectedItem } from "@/components/project";
 import { accordion as sampleFolders, children as sampleFiles } from "@/data";
 import { AppDispatch } from "@/hooks";
 
-const __setLoading = (
-    payload: boolean
-): PayloadAction<typeof payload, FileActionTypes> => ({
+const __setLoading = (payload: boolean): FileActionPayload => ({
     type: FileActionTypes.SET_LOADING,
     payload,
 });
-const __setCreation = (
-    payload: string | null
-): PayloadAction<typeof payload, FileActionTypes> => ({
+const __setCreation = (payload: string | null): FileActionPayload => ({
     type: FileActionTypes.SET_CREATION,
     payload,
 });
-const __setFileAction = (
-    payload: string | null
-): PayloadAction<typeof payload, FileActionTypes> => ({
+const __setFileAction = (payload: string | null): FileActionPayload => ({
     type: FileActionTypes.SET_ACTION,
     payload,
 });
-const __createFolder = (
-    payload: Folder
-): PayloadAction<typeof payload, FileActionTypes> => ({
+const __createFolder = (payload: Folder): FileActionPayload => ({
     type: FileActionTypes.CREATE_FOLDER,
     payload,
 });
-const __getFolders = (
-    payload: Folder[]
-): PayloadAction<typeof payload, FileActionTypes> => ({
+const __getFolders = (payload: Folder[]): FileActionPayload => ({
     type: FileActionTypes.GET_FOLDERS,
     payload,
 });
-const __deleteFolders = (
-    payload: string[]
-): PayloadAction<typeof payload, FileActionTypes> => ({
+const __deleteFolders = (payload: string[]): FileActionPayload => ({
     type: FileActionTypes.DELETE_FOLDERS,
     payload,
 });
-const __createFile = (
-    payload: File
-): PayloadAction<typeof payload, FileActionTypes> => ({
+const __createFile = (payload: File): FileActionPayload => ({
     type: FileActionTypes.CREATE_FILE,
     payload,
 });
-const __getFiles = (
-    payload: File[]
-): PayloadAction<typeof payload, FileActionTypes> => ({
+const __getFiles = (payload: File[]): FileActionPayload => ({
     type: FileActionTypes.GET_FILES,
     payload,
 });
-const __deleteFiles = (
-    payload: string[]
-): PayloadAction<typeof payload, FileActionTypes> => ({
+const __deleteFiles = (payload: string[]): FileActionPayload => ({
     type: FileActionTypes.DELETE_FILES,
     payload,
 });
-const __selectItem = (
-    payload: SelectedItem
-): PayloadAction<typeof payload, FileActionTypes> => ({
+const __selectItem = (payload: SelectedItem): FileActionPayload => ({
     type: FileActionTypes.SELECT_ITEM,
     payload,
 });
-const __setEditor = (
-    payload: string | null
-): PayloadAction<typeof payload, FileActionTypes> => ({
+const __setEditor = (payload: string | null): FileActionPayload => ({
     type: FileActionTypes.SET_EDITOR,
     payload,
 });
-const __openEditor = (
-    payload: string
-): PayloadAction<typeof payload, FileActionTypes> => ({
+const __openEditor = (payload: string): FileActionPayload => ({
     type: FileActionTypes.OPEN_EDITOR,
     payload,
 });
-const __closeEditors = (
-    payload: string[]
-): PayloadAction<typeof payload, FileActionTypes> => ({
+const __closeEditors = (payload: string[]): FileActionPayload => ({
     type: FileActionTypes.CLOSE_EDITORS,
     payload,
 });

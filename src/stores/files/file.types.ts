@@ -1,3 +1,4 @@
+import { PayloadAction } from "@reduxjs/toolkit";
 import { File, Folder, SelectedItem } from "@/components/project";
 
 export interface FileState {
@@ -28,3 +29,48 @@ export enum FileActionTypes {
     OPEN_EDITOR = "OPEN_EDITOR",
     CLOSE_EDITORS = "CLOSE_EDITORS",
 }
+
+export type FileActionPayload =
+    | {
+          type: FileActionTypes.SET_LOADING;
+          payload: boolean;
+      }
+    | {
+          type:
+              | FileActionTypes.SET_CREATION
+              | FileActionTypes.SET_ACTION
+              | FileActionTypes.SET_EDITOR;
+          payload: string | null;
+      }
+    | {
+          type: FileActionTypes.CREATE_FOLDER;
+          payload: Folder;
+      }
+    | {
+          type: FileActionTypes.GET_FOLDERS;
+          payload: Folder[];
+      }
+    | {
+          type: FileActionTypes.CREATE_FILE;
+          payload: File;
+      }
+    | {
+          type: FileActionTypes.GET_FILES;
+          payload: File[];
+      }
+    | {
+          type:
+              | FileActionTypes.DELETE_FOLDERS
+              | FileActionTypes.DELETE_FILES
+              | FileActionTypes.CLOSE_EDITORS;
+          payload: string[];
+      }
+    | {
+          type: FileActionTypes.OPEN_EDITOR;
+          payload: string;
+      }
+    | {
+          type: FileActionTypes.SELECT_ITEM;
+          payload: SelectedItem;
+      };
+export interface IFileAction extends PayloadAction<any, FileActionTypes> {}
