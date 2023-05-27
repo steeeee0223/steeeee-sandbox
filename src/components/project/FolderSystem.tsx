@@ -10,7 +10,7 @@ import {
     useAppDispatch,
     useAppSelector,
 } from "@/hooks";
-import { openEditor, selectItem, setEditor } from "@/stores/files";
+import { openEditor, selectItem } from "@/stores/files";
 import { ProjectStorage } from "@/lib/projectStorage";
 import { Accordion, AccordionDetails, AccordionSummary } from "./Accordion";
 import ContextMenu from "./ContextMenu";
@@ -69,13 +69,7 @@ export default function FolderSystem({ parent }: { parent: string }) {
             const item = project.getSelectedItem(selectedId);
             dispatch(selectItem(item));
             handleToggle(item.path.id);
-            if (!isFolder) {
-                dispatch(setEditor(itemId));
-
-                if (!fileState.editors.includes(itemId)) {
-                    dispatch(openEditor(itemId));
-                }
-            }
+            if (!isFolder) dispatch(openEditor(itemId));
         };
 
     return (
@@ -87,8 +81,11 @@ export default function FolderSystem({ parent }: { parent: string }) {
                         key={itemId}
                         expanded={toggle[itemId]}
                         onChange={handleChange(itemId, isFolder)}
+                        {...(fileState.currentItem.item.id === itemId && {
+                            sx: { backgroundColor: "#e0e0e0" },
+                        })}
                     >
-                        <ContextMenu>
+                        <ContextMenu itemId={itemId}>
                             <AccordionSummary
                                 aria-controls={`content-${itemId}`}
                                 id={`header-${itemId}`}

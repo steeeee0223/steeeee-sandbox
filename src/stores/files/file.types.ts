@@ -19,10 +19,12 @@ export enum FileActionTypes {
     SET_CREATION = "SET_CREATION", // sets creation types: folder | file | upload
     CREATE_FOLDER = "CREATE_FOLDER",
     GET_FOLDERS = "GET_FOLDERS",
+    DELETE_FOLDERS = "DELETE_FOLDERS",
     CREATE_FILE = "CREATE_FILE",
     GET_FILES = "GET_FILES",
+    DELETE_FILES = "DELETE_FILES",
     SELECT_ITEM = "SELECT_ITEM", // select item: folder | file
     SET_EDITOR = "SET_EDITOR",
     OPEN_EDITOR = "OPEN_EDITOR",
-    CLOSE_EDITOR = "CLOSE_EDITOR",
+    CLOSE_EDITORS = "CLOSE_EDITORS",
 }

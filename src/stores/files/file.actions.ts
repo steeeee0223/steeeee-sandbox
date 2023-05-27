@@ -3,7 +3,7 @@ import { PayloadAction } from "@reduxjs/toolkit";
 import { db } from "@/config/firebase";
 import { FileActionTypes } from "@/stores/files/file.types";
 import { File, Folder, SelectedItem } from "@/components/project";
-import { accordion, children } from "@/data";
+import { accordion as sampleFolders, children as sampleFiles } from "@/data";
 import { AppDispatch } from "@/hooks";
 
 const __setLoading = (
@@ -36,6 +36,12 @@ const __getFolders = (
     type: FileActionTypes.GET_FOLDERS,
     payload,
 });
+const __deleteFolders = (
+    payload: string[]
+): PayloadAction<typeof payload, FileActionTypes> => ({
+    type: FileActionTypes.DELETE_FOLDERS,
+    payload,
+});
 const __createFile = (
     payload: File
 ): PayloadAction<typeof payload, FileActionTypes> => ({
@@ -46,6 +52,12 @@ const __getFiles = (
     payload: File[]
 ): PayloadAction<typeof payload, FileActionTypes> => ({
     type: FileActionTypes.GET_FILES,
+    payload,
+});
+const __deleteFiles = (
+    payload: string[]
+): PayloadAction<typeof payload, FileActionTypes> => ({
+    type: FileActionTypes.DELETE_FILES,
     payload,
 });
 const __selectItem = (
@@ -66,10 +78,10 @@ const __openEditor = (
     type: FileActionTypes.OPEN_EDITOR,
     payload,
 });
-const __closeEditor = (
-    payload: string
+const __closeEditors = (
+    payload: string[]
 ): PayloadAction<typeof payload, FileActionTypes> => ({
-    type: FileActionTypes.CLOSE_EDITOR,
+    type: FileActionTypes.CLOSE_EDITORS,
     payload,
 });
 
@@ -117,10 +129,26 @@ export const getFolders = (userId: string) => async (dispatch: AppDispatch) => {
     });
 
     /** with default folders */
-    accordion.push(...items);
+    sampleFolders.push(...items);
 
-    dispatch(__getFolders(accordion));
+    dispatch(__getFolders(sampleFolders));
 };
+
+export const deleteFolders =
+    (folderIds: string[]) => (dispatch: AppDispatch) => {
+        folderIds.forEach(async (folderId) => {
+            try {
+                await db
+                    .collection("folders")
+                    // .where("userId", "==", userId)
+                    .doc(folderId)
+                    .delete();
+            } catch (error) {
+                console.log(error);
+            }
+        });
+        dispatch(__deleteFolders(folderIds));
+    };
 
 export const createFile = (data: any) => async (dispatch: AppDispatch) => {
     const res = await db.collection("files").add(data);
@@ -137,6 +165,7 @@ export const createFile = (data: any) => async (dispatch: AppDispatch) => {
             content,
         })
     );
+    dispatch(__openEditor(doc.id));
 };
 
 export const getFiles = (userId: string) => async (dispatch: AppDispatch) => {
@@ -157,9 +186,25 @@ export const getFiles = (userId: string) => async (dispatch: AppDispatch) => {
     });
 
     /** with default files */
-    children.push(...items);
+    sampleFiles.push(...items);
 
-    dispatch(__getFiles(children));
+    dispatch(__getFiles(sampleFiles));
+};
+
+export const deleteFiles = (fileIds: string[]) => (dispatch: AppDispatch) => {
+    fileIds.forEach(async (fileId) => {
+        try {
+            await db
+                .collection("files")
+                // .where("userId", "==", userId)
+                .doc(fileId)
+                .delete();
+        } catch (error) {
+            console.log(error);
+        }
+    });
+    dispatch(__closeEditors(fileIds));
+    dispatch(__deleteFiles(fileIds));
 };
 
 export const getItems = (userId: string) => async (dispatch: AppDispatch) => {
@@ -182,6 +227,6 @@ export const openEditor = (itemId: string) => (dispatch: AppDispatch) => {
     dispatch(__openEditor(itemId));
 };
 
-export const closeEditor = (itemId: string) => (dispatch: AppDispatch) => {
-    dispatch(__closeEditor(itemId));
+export const closeEditors = (itemIds: string[]) => (dispatch: AppDispatch) => {
+    dispatch(__closeEditors(itemIds));
 };

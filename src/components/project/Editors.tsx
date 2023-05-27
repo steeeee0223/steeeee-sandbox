@@ -10,7 +10,7 @@ import {
     RootState,
 } from "@/hooks";
 import { CodeEditor, TabInfo, Tabs } from "@/components/common";
-import { closeEditor, setEditor } from "@/stores/files";
+import { closeEditors, setEditor } from "@/stores/files";
 import { ProjectStorage } from "@/lib/projectStorage";
 import Breadcrumbs from "./Breadcrumbs";
 import { File } from "./FolderSystem";
@@ -61,9 +61,7 @@ export default function Editors() {
 
     const handleCloseEditor = (e: MouseEvent, itemId: string) => {
         e.stopPropagation();
-        dispatch(closeEditor(itemId));
-        const newId = fileState.editors.find((id) => id !== itemId) ?? null;
-        dispatch(setEditor(newId));
+        dispatch(closeEditors([itemId]));
     };
 
     return (

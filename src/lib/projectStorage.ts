@@ -25,10 +25,17 @@ export class ProjectStorage {
         return this.userFiles.find((file) => file.itemId === itemId);
     }
 
-    public getChildren(itemId: string): FolderSystemItem[] {
-        return this.userItems
-            .filter((item) => item.parent === itemId)
-            .sort((item1, item2) => item1.title.localeCompare(item2.title));
+    public getChildren(
+        itemId: string,
+        sort: boolean = true
+    ): FolderSystemItem[] {
+        const items = this.userItems.filter((item) => item.parent === itemId);
+        if (sort) {
+            items.sort((item1, item2) =>
+                item1.title.localeCompare(item2.title)
+            );
+        }
+        return items;
     }
 
     public getItem(itemId: string): FolderSystemItem {
@@ -36,7 +43,7 @@ export class ProjectStorage {
         return item ?? (undefined as never);
     }
 
-    public getFullPath(itemId: string) {
+    public getFullPath(itemId: string): readonly [string[], string[]] {
         let name: string[] = [];
         let id: string[] = [];
         while (itemId !== "root") {
@@ -62,5 +69,42 @@ export class ProjectStorage {
             id: id.pop() ?? (undefined as never),
         };
         return { item, path: { name, id } };
+    }
+
+    /**
+     *
+     * @param itemId
+     * @returns all items under this directory/file `itemId`, including `itemId` itself
+     */
+    public getRecursiveItemIds(itemId: string): {
+        folders: string[];
+        files: string[];
+    } {
+        if (itemId === "root")
+            return {
+                folders: this.userFolders.map(({ itemId }) => itemId),
+                files: this.userFiles.map(({ itemId }) => itemId),
+            };
+
+        const folders: string[] = [];
+        const files: string[] = [];
+        const { isFolder } = this.getItem(itemId);
+        if (isFolder) {
+            folders.push(itemId);
+            const getItems = (itemId: string) => {
+                this.getChildren(itemId, false).forEach((child) => {
+                    if (child.isFolder) {
+                        folders.push(child.itemId);
+                        getItems(child.itemId);
+                    } else {
+                        files.push(child.itemId);
+                    }
+                });
+            };
+            getItems(itemId);
+        } else {
+            files.push(itemId);
+        }
+        return { folders, files };
     }
 }
