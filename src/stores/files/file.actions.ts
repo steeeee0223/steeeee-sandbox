@@ -1,51 +1,11 @@
-import { db } from "@/config/firebase";
 import { FileActionPayload, FileActionTypes } from "@/stores/files/file.types";
-import { File, Folder, SelectedItem } from "@/components/project";
+import { SelectedItem } from "@/components/project";
 import { accordion as sampleFolders, children as sampleFiles } from "@/data";
 import { AppDispatch } from "@/hooks";
+import { FilesStorage, FoldersStorage } from "@/lib/storage";
 
 const __setLoading = (payload: boolean): FileActionPayload => ({
     type: FileActionTypes.SET_LOADING,
-    payload,
-});
-const __setCreation = (payload: string | null): FileActionPayload => ({
-    type: FileActionTypes.SET_CREATION,
-    payload,
-});
-const __setFileAction = (payload: string | null): FileActionPayload => ({
-    type: FileActionTypes.SET_ACTION,
-    payload,
-});
-const __createFolder = (payload: Folder): FileActionPayload => ({
-    type: FileActionTypes.CREATE_FOLDER,
-    payload,
-});
-const __getFolders = (payload: Folder[]): FileActionPayload => ({
-    type: FileActionTypes.GET_FOLDERS,
-    payload,
-});
-const __deleteFolders = (payload: string[]): FileActionPayload => ({
-    type: FileActionTypes.DELETE_FOLDERS,
-    payload,
-});
-const __createFile = (payload: File): FileActionPayload => ({
-    type: FileActionTypes.CREATE_FILE,
-    payload,
-});
-const __getFiles = (payload: File[]): FileActionPayload => ({
-    type: FileActionTypes.GET_FILES,
-    payload,
-});
-const __deleteFiles = (payload: string[]): FileActionPayload => ({
-    type: FileActionTypes.DELETE_FILES,
-    payload,
-});
-const __selectItem = (payload: SelectedItem): FileActionPayload => ({
-    type: FileActionTypes.SELECT_ITEM,
-    payload,
-});
-const __setEditor = (payload: string | null): FileActionPayload => ({
-    type: FileActionTypes.SET_EDITOR,
     payload,
 });
 const __openEditor = (payload: string): FileActionPayload => ({
@@ -57,126 +17,57 @@ const __closeEditors = (payload: string[]): FileActionPayload => ({
     payload,
 });
 
-/**
- * Action Creators
- */
-
 export const setCreation =
     (creationType: string | null) => (dispatch: AppDispatch) => {
-        dispatch(__setCreation(creationType));
+        dispatch({ type: FileActionTypes.SET_CREATION, payload: creationType });
     };
 
 export const setFileAction =
     (actionType: string | null) => (dispatch: AppDispatch) => {
-        dispatch(__setFileAction(actionType));
+        dispatch({ type: FileActionTypes.SET_ACTION, payload: actionType });
     };
 
 export const createFolder = (data: any) => async (dispatch: AppDispatch) => {
-    const res = await db.collection("folders").add(data);
-    const doc = await res.get();
-    const { name, parent } = doc.data() ?? (undefined as never);
-    dispatch(
-        __createFolder({
-            itemId: doc.id,
-            title: name,
-            isFolder: true,
-            parent,
-        })
-    );
+    const storage = FoldersStorage.getStorage();
+    const folder = await storage.create(data);
+    dispatch({ type: FileActionTypes.CREATE_FOLDER, payload: folder });
 };
 
 export const getFolders = (userId: string) => async (dispatch: AppDispatch) => {
-    const res = await db
-        .collection("folders")
-        // .where("userId", "==", userId)
-        .get();
-    const items: Folder[] = await res.docs.map((doc) => {
-        const { parent, name } = doc.data();
-        return {
-            parent,
-            itemId: doc.id,
-            title: name,
-            isFolder: true,
-        };
-    });
-
+    const storage = FoldersStorage.getStorage();
+    const items = await storage.get(userId);
     /** with default folders */
     sampleFolders.push(...items);
-
-    dispatch(__getFolders(sampleFolders));
+    dispatch({ type: FileActionTypes.GET_FOLDERS, payload: sampleFolders });
 };
 
 export const deleteFolders =
     (folderIds: string[]) => (dispatch: AppDispatch) => {
-        folderIds.forEach(async (folderId) => {
-            try {
-                await db
-                    .collection("folders")
-                    // .where("userId", "==", userId)
-                    .doc(folderId)
-                    .delete();
-            } catch (error) {
-                console.log(error);
-            }
-        });
-        dispatch(__deleteFolders(folderIds));
+        const storage = FoldersStorage.getStorage();
+        storage.delete(folderIds);
+        dispatch({ type: FileActionTypes.DELETE_FOLDERS, payload: folderIds });
     };
 
 export const createFile = (data: any) => async (dispatch: AppDispatch) => {
-    const res = await db.collection("files").add(data);
-    const doc = await res.get();
-    const { name, parent, extension, content } =
-        doc.data() ?? (undefined as never);
-    dispatch(
-        __createFile({
-            itemId: doc.id,
-            title: name,
-            isFolder: false,
-            parent,
-            extension,
-            content,
-        })
-    );
-    dispatch(__openEditor(doc.id));
+    const storage = FilesStorage.getStorage();
+    const file = await storage.create(data);
+    dispatch({ type: FileActionTypes.CREATE_FILE, payload: file });
+    dispatch(__openEditor(file.itemId));
 };
 
 export const getFiles = (userId: string) => async (dispatch: AppDispatch) => {
-    const res = await db
-        .collection("files")
-        // .where("userId", "==", userId)
-        .get();
-    const items: File[] = await res.docs.map((doc) => {
-        const { parent, name, extension, content } = doc.data();
-        return {
-            itemId: doc.id,
-            isFolder: false,
-            title: name,
-            parent,
-            extension,
-            content,
-        };
-    });
-
+    const storage = FilesStorage.getStorage();
+    const items = await storage.get(userId);
     /** with default files */
     sampleFiles.push(...items);
-
-    dispatch(__getFiles(sampleFiles));
+    dispatch({ type: FileActionTypes.GET_FILES, payload: sampleFiles });
 };
 
 export const deleteFiles = (fileIds: string[]) => (dispatch: AppDispatch) => {
-    fileIds.forEach(async (fileId) => {
-        try {
-            await db
-                .collection("files")
-                // .where("userId", "==", userId)
-                .doc(fileId)
-                .delete();
-        } catch (error) {
-            console.log(error);
-        }
-    });
+    const storage = FilesStorage.getStorage();
+    storage.delete(fileIds);
     dispatch(__closeEditors(fileIds));
-    dispatch(__deleteFiles(fileIds));
+    dispatch({ type: FileActionTypes.DELETE_FILES, payload: fileIds });
 };
 
 export const getItems = (userId: string) => async (dispatch: AppDispatch) => {
@@ -188,11 +79,11 @@ export const getItems = (userId: string) => async (dispatch: AppDispatch) => {
 
 export const selectItem =
     (selectedId: SelectedItem) => (dispatch: AppDispatch) => {
-        dispatch(__selectItem(selectedId));
+        dispatch({ type: FileActionTypes.SELECT_ITEM, payload: selectedId });
     };
 
 export const setEditor = (itemId: string | null) => (dispatch: AppDispatch) => {
-    dispatch(__setEditor(itemId));
+    dispatch({ type: FileActionTypes.SET_EDITOR, payload: itemId });
 };
 
 export const openEditor = (itemId: string) => (dispatch: AppDispatch) => {
