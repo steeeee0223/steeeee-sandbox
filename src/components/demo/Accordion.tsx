@@ -17,57 +17,26 @@ import {
     useAppDispatch,
     useAppSelector,
 } from "@/hooks";
-import { selectItem } from "@/stores/files";
-import { FolderSystemItem, SelectedItem } from "../project/FolderSystem";
+import {
+    selectItem,
+    getChildren,
+    getSelectedItem,
+    toList,
+} from "@/stores/directory";
 import CodeBlock from "./Codeblock";
 
 export default function ControlledAccordion({ parent }: { parent: string }) {
     const [toggle, setToggle] = React.useState<Record<string, boolean>>({});
 
-    const { userItems } = useAppSelector(
+    const { directory } = useAppSelector(
         (state: RootState) => ({
             // user: state.auth.user,
-            userItems: (state.files.userFiles as FolderSystemItem[]).concat(
-                state.files.userFolders
-            ),
+            directory: toList(state.directory),
         }),
         shallowEqual
     );
     const dispatch: AppDispatch = useAppDispatch();
-
-    const children: FolderSystemItem[] = userItems
-        .filter((item) => item.parent === parent)
-        .sort((item1, item2) => item1.title.localeCompare(item2.title));
-
-    const getItemInfo = (currId: string) => {
-        let { path, item }: SelectedItem = {
-            item: { id: "", name: "", isFolder: {} as boolean },
-            path: { id: [], name: [] },
-        };
-        let isFirst = true;
-
-        const findParent = (currId: string): FolderSystemItem => {
-            const item = userItems.find(({ itemId }) => itemId === currId);
-            return item ?? (undefined as never);
-        };
-
-        while (currId !== "root") {
-            const { isFolder, parent, title } = findParent(currId);
-            if (isFirst) {
-                item = { id: currId, name: title, isFolder };
-                isFirst = false;
-            } else {
-                path.id.push(currId);
-                path.name.push(title);
-            }
-            currId = parent;
-        }
-        path = {
-            id: [...path.id, currId].reverse(),
-            name: [...path.name, "root"].reverse(),
-        };
-        return { path, item };
-    };
+    const children = getChildren(directory, parent);
 
     const handleToggle = (pathIds: string[]) => {
         const map: Record<string, boolean> = {};
@@ -78,10 +47,10 @@ export default function ControlledAccordion({ parent }: { parent: string }) {
     const handleChange =
         (itemId: string) =>
         (event: React.SyntheticEvent, isExpanded: boolean) => {
-            const selected = isExpanded ? itemId : parent;
-            const current = getItemInfo(selected);
-            dispatch(selectItem(current));
-            handleToggle(current.path.id);
+            const selectedId = isExpanded ? itemId : parent;
+            const item = getSelectedItem(directory, selectedId);
+            dispatch(selectItem(item));
+            handleToggle(item.path.id);
         };
 
     return (

@@ -3,34 +3,39 @@ import { shallowEqual } from "react-redux";
 import { Divider, IconButton, InputBase, Paper } from "@mui/material";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 
-import { createFile, setCreation } from "@/stores/files";
 import {
     useAppDispatch,
     useAppSelector,
     AppDispatch,
     RootState,
 } from "@/hooks";
-import { FolderSystemItem } from "./FolderSystem";
+import { setCreation } from "@/stores/cursor";
+import {
+    DirectoryItem,
+    createFileAsync,
+    getAllFiles,
+} from "@/stores/directory";
 
 export default function CreateFile() {
     const [name, setName] = useState("");
 
-    const { userFiles, currentItem } = useAppSelector(
+    const { currentItem, directoryState } = useAppSelector(
         (state: RootState) => ({
             // user: state.auth.user,
-            userFiles: state.files.userFiles,
-            currentItem: state.files.currentItem,
+            currentItem: state.directory.currentItem,
+            directoryState: state.directory,
         }),
         shallowEqual
     );
     const { item: currItem, path: currPath } = currentItem;
     const dispatch: AppDispatch = useAppDispatch();
 
+    const userFiles = getAllFiles(directoryState);
     const isFilePresent = (name: string): boolean => {
         const filePresent = userFiles
             .filter(({ parent }) => parent === currItem.id)
             .find(
-                ({ title, parent }: FolderSystemItem) =>
+                ({ title, parent }: DirectoryItem) =>
                     title === name && parent === currItem.id
             );
         return !!filePresent;
@@ -66,7 +71,7 @@ export default function CreateFile() {
                     // userId: user.uid,
                     // createdBy: user.name
                 };
-                dispatch(createFile(data));
+                dispatch(createFileAsync(data));
             } else {
                 setName("");
                 alert(`File ${name} already present!`);

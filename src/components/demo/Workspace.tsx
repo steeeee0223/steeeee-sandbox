@@ -9,7 +9,7 @@ import {
     AppDispatch,
     RootState,
 } from "@/hooks";
-import { getItems } from "@/stores/files";
+import { getDirectoryAsync } from "@/stores/directory";
 import { Loading } from "@/components/common";
 import Breadcrumbs from "./Breadcrumbs";
 
@@ -18,7 +18,7 @@ const Workspace = () => {
         (state: RootState) => ({
             // user: state.auth.user,
             // isLoggedIn: state.auth.isAuthenticated,
-            isLoading: state.files.isLoading,
+            isLoading: state.directory.isLoading,
         }),
         shallowEqual
     );
@@ -27,7 +27,7 @@ const Workspace = () => {
 
     useEffect(() => {
         if (isLoading) {
-            dispatch(getItems(userId));
+            dispatch(getDirectoryAsync(userId));
         }
     }, [isLoading, dispatch, userId]);
 

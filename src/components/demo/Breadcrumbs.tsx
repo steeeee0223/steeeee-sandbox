@@ -34,7 +34,7 @@ export default function Breadcrumbs() {
     const { currentItem } = useAppSelector(
         (state: RootState) => ({
             // user: state.auth.user,
-            currentItem: state.files.currentItem,
+            currentItem: state.directory.currentItem,
         }),
         shallowEqual
     );

@@ -20,7 +20,7 @@ import {
     AppDispatch,
     RootState,
 } from "@/hooks";
-import { setCreation, setFileAction } from "@/stores/files";
+import { setCreation, setFileAction } from "@/stores/cursor";
 import { drawerWidth } from "@/theme";
 import CreateFolder from "./CreateFolder";
 import CreateFile from "./CreateFile";
@@ -48,11 +48,11 @@ const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
 }));
 
 export default function Toolbar() {
-    const { actionType, creationType, currentItem } = useAppSelector(
+    const { fileActionType, creationType, currentItem } = useAppSelector(
         (state: RootState) => ({
-            actionType: state.files.actionType,
-            creationType: state.files.creationType,
-            currentItem: state.files.currentItem,
+            fileActionType: state.cursor.fileActionType,
+            creationType: state.cursor.creationType,
+            currentItem: state.directory.currentItem,
         }),
         shallowEqual
     );
@@ -99,7 +99,7 @@ export default function Toolbar() {
             >
                 <StyledToggleButtonGroup
                     size="small"
-                    value={actionType}
+                    value={fileActionType}
                     exclusive
                     onChange={handleFileAction}
                     aria-label="saving"

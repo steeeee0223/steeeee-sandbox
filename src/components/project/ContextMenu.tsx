@@ -8,15 +8,15 @@ import {
     Divider,
 } from "@mui/material";
 import { ContentCopy, ContentCut, ContentPaste } from "@mui/icons-material";
-import { ProjectStorage } from "@/lib/projectStorage";
+import { shallowEqual } from "react-redux";
+
 import {
     AppDispatch,
     RootState,
     useAppDispatch,
     useAppSelector,
 } from "@/hooks";
-import { shallowEqual } from "react-redux";
-import { deleteFiles, deleteFolders } from "@/stores/files";
+import { deleteDirectoryAsync, directorySelector } from "@/stores/directory";
 
 interface ContextMenuProps {
     itemId: string;
@@ -24,10 +24,10 @@ interface ContextMenuProps {
 }
 
 export default function ContextMenu({ itemId, children }: ContextMenuProps) {
-    const { fileState } = useAppSelector(
+    const { directoryState } = useAppSelector(
         (state: RootState) => ({
             // user: state.auth.user,
-            fileState: state.files,
+            directoryState: state.directory,
         }),
         shallowEqual
     );
@@ -40,9 +40,8 @@ export default function ContextMenu({ itemId, children }: ContextMenuProps) {
 
     const handleContextMenu = (event: React.MouseEvent, itemId: string) => {
         event.preventDefault();
-        const project = new ProjectStorage(fileState);
-        const { title } = project.getItem(itemId);
-        console.log(`Clicking item: ${title}`);
+        const item = directorySelector.selectById(directoryState, itemId);
+        console.log(`Clicking item: ${item?.title}`);
         setContextMenu(
             contextMenu === null
                 ? {
@@ -60,13 +59,9 @@ export default function ContextMenu({ itemId, children }: ContextMenuProps) {
         setContextMenu(null);
     };
 
-    const handleDelete = (itemId: string) => {
+    const handleDelete = async (itemId: string) => {
         setContextMenu(null);
-        const project = new ProjectStorage(fileState);
-        const { files, folders } = project.getRecursiveItemIds(itemId);
-        console.log({ files, folders });
-        dispatch(deleteFiles(files));
-        dispatch(deleteFolders(folders));
+        await dispatch(deleteDirectoryAsync(itemId));
     };
 
     return (

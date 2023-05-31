@@ -1,11 +1,15 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { combineReducers } from "redux";
 
-import { fileReducer } from "@/stores/files";
-import { projectReducer } from "@/stores/project";
+import { cursorReducer } from "./cursor";
+import { directoryReducer } from "./directory";
+import { editorReducer } from "./editor";
+import { projectReducer } from "./project";
 
 export const rootReducer = combineReducers({
-    files: fileReducer,
+    cursor: cursorReducer,
+    directory: directoryReducer,
+    editor: editorReducer,
     project: projectReducer,
 });
 

@@ -9,29 +9,30 @@ import {
     AppDispatch,
     RootState,
 } from "@/hooks";
+import { File, getFile, getFullPath, toList } from "@/stores/directory";
+import { closeEditors, setEditor } from "@/stores/editor";
 import { CodeEditor, TabInfo, Tabs } from "@/components/common";
-import { closeEditors, setEditor } from "@/stores/files";
-import { ProjectStorage } from "@/lib/projectStorage";
 import Breadcrumbs from "./Breadcrumbs";
-import { File } from "./FolderSystem";
 
 export default function Editors() {
-    const { fileState } = useAppSelector(
+    const { directory, editorIds, currentEditor } = useAppSelector(
         (state: RootState) => ({
             // user: state.auth.user,
             // isLoggedIn: state.auth.isAuthenticated,
-            fileState: state.files,
+            directory: toList(state.directory),
+            editorIds: state.editor.ids,
+            currentEditor: state.editor.currentEditor,
         }),
         shallowEqual
     );
     const dispatch: AppDispatch = useAppDispatch();
-    const project = new ProjectStorage(fileState);
-    const children: TabInfo[] = fileState.editors.map((itemId) => {
-        const file = project.getFile(itemId) ?? (undefined as never);
-        const [path, _] = project.getFullPath(itemId);
+    const children: TabInfo[] = editorIds.map((id) => {
+        const editorId = id as string;
+        const file = getFile(directory, editorId) ?? (undefined as never);
+        const [path, _] = getFullPath(directory, editorId);
         const { title, extension, content } = file as File;
         return {
-            id: itemId,
+            id: editorId,
             label: title,
             icon: (
                 <IconButton
@@ -40,7 +41,7 @@ export default function Editors() {
                         padding: 0,
                         fontSize: "small",
                     }}
-                    onClick={(e) => handleCloseEditor(e, itemId)}
+                    onClick={(e) => handleCloseEditor(e, editorId)}
                 >
                     <CloseIcon fontSize="inherit" />
                 </IconButton>
@@ -59,17 +60,17 @@ export default function Editors() {
         };
     });
 
-    const handleCloseEditor = (e: MouseEvent, itemId: string) => {
+    const handleCloseEditor = (e: MouseEvent, editorId: string) => {
         e.stopPropagation();
-        dispatch(closeEditors([itemId]));
+        dispatch(closeEditors([editorId]));
     };
 
     return (
         <>
-            {fileState.currentEditor && (
+            {currentEditor && (
                 <Tabs
                     children={children}
-                    defaultValue={fileState.currentEditor}
+                    defaultValue={currentEditor}
                     onChange={(val) => dispatch(setEditor(val))}
                 />
             )}

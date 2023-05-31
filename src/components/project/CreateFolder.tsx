@@ -3,34 +3,39 @@ import { shallowEqual } from "react-redux";
 import { Divider, IconButton, InputBase, Paper } from "@mui/material";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 
-import { createFolder, setCreation } from "@/stores/files";
 import {
     useAppDispatch,
     useAppSelector,
     AppDispatch,
     RootState,
 } from "@/hooks";
-import { FolderSystemItem } from "./FolderSystem";
+import { setCreation } from "@/stores/cursor";
+import {
+    DirectoryItem,
+    createFolderAsync,
+    getAllFolders,
+} from "@/stores/directory";
 
 export default function CreateFolder() {
     const [folderName, setFolderName] = useState("");
 
-    const { userFolders, currentItem } = useAppSelector(
+    const { directoryState, currentItem } = useAppSelector(
         (state: RootState) => ({
             // user: state.auth.user,
-            userFolders: state.files.userFolders,
-            currentItem: state.files.currentItem,
+            directoryState: state.directory,
+            currentItem: state.directory.currentItem,
         }),
         shallowEqual
     );
     const { item, path } = currentItem;
     const dispatch: AppDispatch = useAppDispatch();
 
+    const userFolders = getAllFolders(directoryState);
     const isFolderPresent = (name: string): boolean => {
         const folderPresent = userFolders
             .filter(({ parent }) => parent === item.id)
             .find(
-                ({ title, parent }: FolderSystemItem) =>
+                ({ title, parent }: DirectoryItem) =>
                     title === name && parent === item.id
             );
         return !!folderPresent;
@@ -52,7 +57,7 @@ export default function CreateFolder() {
                     // userId: user.uid,
                     // createdBy: user.name
                 };
-                dispatch(createFolder(data));
+                dispatch(createFolderAsync(data));
             } else {
                 setFolderName("");
                 alert(`Folder ${folderName} already present!`);

@@ -8,7 +8,7 @@ import {
     AppDispatch,
     RootState,
 } from "@/hooks";
-import { getItems } from "@/stores/files";
+import { getDirectoryAsync } from "@/stores/directory";
 import { Loading } from "@/components/common";
 import Editors from "./Editors";
 
@@ -17,8 +17,8 @@ export default function Workspace() {
         (state: RootState) => ({
             // user: state.auth.user,
             // isLoggedIn: state.auth.isAuthenticated,
-            isLoading: state.files.isLoading,
-            currentItem: state.files.currentItem,
+            isLoading: state.directory.isLoading,
+            currentItem: state.directory.currentItem,
         }),
         shallowEqual
     );
@@ -37,9 +37,7 @@ export default function Workspace() {
     };
 
     useEffect(() => {
-        if (isLoading) {
-            dispatch(getItems(userId));
-        }
+        if (isLoading) dispatch(getDirectoryAsync(userId));
     }, [isLoading, dispatch, userId]);
 
     return (

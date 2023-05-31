@@ -10,51 +10,29 @@ import {
     useAppDispatch,
     useAppSelector,
 } from "@/hooks";
-import { openEditor, selectItem } from "@/stores/files";
-import { ProjectStorage } from "@/lib/projectStorage";
+import {
+    selectItem,
+    getChildren,
+    getSelectedItem,
+    toList,
+} from "@/stores/directory";
+import { openEditor } from "@/stores/editor";
 import { Accordion, AccordionDetails, AccordionSummary } from "./Accordion";
 import ContextMenu from "./ContextMenu";
-
-type BaseItem = {
-    parent: string;
-    itemId: string;
-    isFolder: boolean;
-    title: string;
-    subtitle?: string;
-    desc?: string;
-};
-
-export type Folder = BaseItem & {
-    isFolder: true;
-    children?: FolderSystemItem[];
-};
-
-export type File = BaseItem & {
-    isFolder: false;
-    extension: string;
-    content: string;
-};
-
-export type FolderSystemItem = Folder | File;
-
-export type SelectedItem = {
-    item: { id: string; name: string; isFolder: boolean };
-    path: { id: string[]; name: string[] };
-};
 
 export default function FolderSystem({ parent }: { parent: string }) {
     const [toggle, setToggle] = React.useState<Record<string, boolean>>({});
 
-    const { fileState } = useAppSelector(
+    const { currentItem, directory } = useAppSelector(
         (state: RootState) => ({
             // user: state.auth.user,
-            fileState: state.files,
+            directory: toList(state.directory),
+            currentItem: state.directory.currentItem,
         }),
         shallowEqual
     );
     const dispatch: AppDispatch = useAppDispatch();
-    const project = new ProjectStorage(fileState);
-    const children: FolderSystemItem[] = project.getChildren(parent);
+    const children = getChildren(directory, parent);
 
     const handleToggle = (pathIds: string[]) => {
         const map: Record<string, boolean> = {};
@@ -66,7 +44,7 @@ export default function FolderSystem({ parent }: { parent: string }) {
         (itemId: string, isFolder: boolean) =>
         (event: React.SyntheticEvent, isExpanded: boolean) => {
             const selectedId = isExpanded ? itemId : parent;
-            const item = project.getSelectedItem(selectedId);
+            const item = getSelectedItem(directory, selectedId);
             dispatch(selectItem(item));
             handleToggle(item.path.id);
             if (!isFolder) dispatch(openEditor(itemId));
@@ -81,7 +59,7 @@ export default function FolderSystem({ parent }: { parent: string }) {
                         key={itemId}
                         expanded={toggle[itemId]}
                         onChange={handleChange(itemId, isFolder)}
-                        {...(fileState.currentItem.item.id === itemId && {
+                        {...(currentItem.item.id === itemId && {
                             sx: { backgroundColor: "#e0e0e0" },
                         })}
                     >

@@ -1,5 +1,5 @@
-import { File, Folder } from "@/components/project";
 import { db } from "@/config/firebase";
+import { File, Folder } from "@/stores/directory";
 
 abstract class IStorage<T> {
     public collection!: string;
@@ -32,8 +32,8 @@ abstract class IStorage<T> {
         }
     }
 
-    public delete(ids: string[]) {
-        ids.forEach(async (id) => {
+    public async delete(ids: string[]) {
+        for (const id of ids) {
             try {
                 await db
                     .collection(this.collection)
@@ -43,7 +43,7 @@ abstract class IStorage<T> {
             } catch (error) {
                 console.log(error);
             }
-        });
+        }
     }
 }
 
