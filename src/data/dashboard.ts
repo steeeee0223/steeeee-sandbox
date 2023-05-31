@@ -9,7 +9,7 @@ function createData(
         name,
         tags,
         createdBy,
-        lastModifiedAt: new Date(),
+        lastModifiedAt: new Date().toTimeString(),
         actions: ["edit", "demo"],
     };
 }

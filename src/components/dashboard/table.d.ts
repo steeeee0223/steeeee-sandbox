@@ -2,7 +2,7 @@ interface TableData {
     name: string;
     tags: string[];
     createdBy: string;
-    lastModifiedAt: Date;
+    lastModifiedAt: string;
     actions: string[];
 }
 
