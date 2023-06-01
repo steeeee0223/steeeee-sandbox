@@ -1,5 +1,5 @@
-import { db } from "@/config/firebase";
-import { File, Folder } from "@/stores/directory";
+import { db, storage } from "@/config/firebase";
+import { File, Folder, UploadFile } from "@/stores/directory";
 
 abstract class IStorage<T> {
     public collection!: string;
@@ -28,7 +28,21 @@ abstract class IStorage<T> {
             const doc = await res.get();
             return this.unpack(doc);
         } catch (error) {
-            throw new Error("");
+            throw new Error(
+                `[${this.collection}] Error occurred while adding the doc into database`
+            );
+        }
+    }
+
+    public async update(itemId: string, data: any): Promise<T> {
+        try {
+            await db.collection(this.collection).doc(itemId).update(data);
+            const doc = await db.collection(this.collection).doc(itemId).get();
+            return this.unpack(doc);
+        } catch (error) {
+            throw new Error(
+                `[${this.collection}] Error occurred while updating the doc`
+            );
         }
     }
 
@@ -69,6 +83,41 @@ export class FilesStorage extends IStorage<File> {
             extension,
             content,
         } as File;
+    }
+
+    public async upload(data: any, uploadFile: UploadFile): Promise<File> {
+        const file = await this.create(data);
+        const ref = storage.ref(
+            `${this.collection}/${data.projectId}/${file.itemId}`
+        );
+
+        ref.put(uploadFile).on(
+            "state_changed",
+            (snapshot) => {
+                const progress = Math.round(
+                    (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+                );
+                console.log("uploading " + progress + "%");
+            },
+            (error) => {
+                console.log(error);
+            },
+            async () => {
+                const url = await ref.getDownloadURL();
+                await this.update(file.itemId, { url });
+            }
+        );
+        return file;
+    }
+
+    public async doDelete(projectId: string, fileIds: string[]) {
+        fileIds.forEach(async (fileId) => {
+            const ref = storage.ref(
+                `${this.collection}/${projectId}/${fileId}`
+            );
+            await ref.delete();
+        });
+        await this.delete(fileIds);
     }
 }
 

@@ -5,7 +5,8 @@ import CodeMirror from "@uiw/react-codemirror";
 import { loadLanguage } from "@uiw/codemirror-extensions-langs";
 import { createTheme } from "@uiw/codemirror-themes";
 
-import { myTheme } from "../project/theme";
+import { myTheme } from "./theme";
+import { languages } from "./extMapping";
 
 export interface CodeEditorProps {
     name: string;
@@ -15,18 +16,19 @@ export interface CodeEditorProps {
 }
 
 export default function CodeEditor(props: CodeEditorProps) {
-    const { value, readOnly } = props;
+    const { value, readOnly, language } = props;
     const [code, setCode] = useState(value);
-    const lang = loadLanguage("tsx");
+    console.log(
+        `Setting editor language: ${language} => ${languages[language]}`
+    );
     const theme = createTheme(myTheme);
     const extensions: Extension[] = [EditorView.lineWrapping];
+    const lang = loadLanguage(languages[language]);
     if (lang) extensions.push(lang);
-    const handleChange = useCallback(
-        (value: string, _viewUpdate: ViewUpdate) => {
-            setCode(value);
-        },
-        []
-    );
+    const handleChange = (value: string, _viewUpdate: ViewUpdate) => {
+        setCode(value);
+    };
+
     return (
         <CodeMirror
             className="code-mirror-wrapper"

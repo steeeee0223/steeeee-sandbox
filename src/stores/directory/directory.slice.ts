@@ -10,6 +10,7 @@ import {
     createFolderAsync,
     deleteDirectoryAsync,
     getDirectoryAsync,
+    uploadFileAsync,
 } from "./directory.thunk";
 
 export const directoryAdapter = createEntityAdapter<DirectoryItem>({
@@ -39,6 +40,7 @@ const directorySlice = createSlice({
     extraReducers(builder) {
         builder.addCase(createFolderAsync.fulfilled, directoryAdapter.addOne);
         builder.addCase(createFileAsync.fulfilled, directoryAdapter.addOne);
+        builder.addCase(uploadFileAsync.fulfilled, directoryAdapter.addOne);
         builder.addCase(getDirectoryAsync.pending, (state) => {
             state.isLoading = true;
         });

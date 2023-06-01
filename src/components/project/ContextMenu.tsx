@@ -24,9 +24,10 @@ interface ContextMenuProps {
 }
 
 export default function ContextMenu({ itemId, children }: ContextMenuProps) {
-    const { directoryState } = useAppSelector(
+    const { projectId, directoryState } = useAppSelector(
         (state: RootState) => ({
             // user: state.auth.user,
+            projectId: state.project.currentProject,
             directoryState: state.directory,
         }),
         shallowEqual
@@ -61,7 +62,8 @@ export default function ContextMenu({ itemId, children }: ContextMenuProps) {
 
     const handleDelete = async (itemId: string) => {
         setContextMenu(null);
-        await dispatch(deleteDirectoryAsync(itemId));
+        if (projectId)
+            await dispatch(deleteDirectoryAsync({ projectId, itemId }));
     };
 
     return (

@@ -1,5 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
+import { storage } from "@/config/firebase";
 import { FilesStorage, FoldersStorage } from "@/lib/storage";
 import { accordion as sampleFolders, children as sampleFiles } from "@/data";
 import { DirectoryItem } from "./directory";
@@ -8,6 +9,8 @@ import { DirectoryState } from "./directory.slice";
 
 const foldersDB = FoldersStorage.getStorage();
 const filesDB = FilesStorage.getStorage();
+
+export type UploadFile = File;
 
 export const createFolderAsync = createAsyncThunk(
     "directory/createFolderAsync",
@@ -20,6 +23,13 @@ export const createFileAsync = createAsyncThunk(
     "directory/createFileAsync",
     async (data: any) => {
         return await filesDB.create(data);
+    }
+);
+
+export const uploadFileAsync = createAsyncThunk(
+    "directory/uploadFile",
+    async ({ file, data }: { file: UploadFile; data: any }) => {
+        return await filesDB.upload(data, file);
     }
 );
 
@@ -40,14 +50,20 @@ export const getDirectoryAsync = createAsyncThunk(
 
 export const deleteDirectoryAsync = createAsyncThunk<
     string[],
-    string,
+    {
+        projectId: string;
+        itemId: string;
+    },
     {
         state: { directory: DirectoryState };
     }
->("directory/deleteDirectoryAsync", async (itemId: string, { getState }) => {
-    const directory = toList(getState().directory);
-    const { folderIds, fileIds } = getRecursiveItemIds(directory, itemId);
-    await foldersDB.delete(folderIds);
-    await filesDB.delete(fileIds);
-    return folderIds.concat(fileIds);
-});
+>(
+    "directory/deleteDirectoryAsync",
+    async ({ projectId, itemId }, { getState }) => {
+        const directory = toList(getState().directory);
+        const { folderIds, fileIds } = getRecursiveItemIds(directory, itemId);
+        await foldersDB.delete(folderIds);
+        await filesDB.doDelete(projectId, fileIds);
+        return folderIds.concat(fileIds);
+    }
+);

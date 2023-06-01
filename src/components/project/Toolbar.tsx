@@ -24,6 +24,7 @@ import { setCreation, setFileAction } from "@/stores/cursor";
 import { drawerWidth } from "@/theme";
 import CreateFolder from "./CreateFolder";
 import CreateFile from "./CreateFile";
+import UploadForm from "./UploadForm";
 
 const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
     "& .MuiToggleButtonGroup-grouped": {
@@ -80,6 +81,8 @@ export default function Toolbar() {
                 return <CreateFolder />;
             case "createFile":
                 return <CreateFile />;
+            case "upload":
+                return <UploadForm />;
             default:
                 return <></>;
         }

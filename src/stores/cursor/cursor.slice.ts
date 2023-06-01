@@ -1,4 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+
+import { SelectedItem, selectItem } from "../directory";
 import { CursorState } from "./cursor";
 
 const initialState: CursorState = {
@@ -17,7 +19,16 @@ const cursorSlice = createSlice({
             state.fileActionType = payload;
         },
     },
-    extraReducers(builder) {},
+    extraReducers(builder) {
+        builder.addCase(
+            selectItem,
+            (state, { payload }: PayloadAction<SelectedItem>) => {
+                if (!payload.item.isFolder) {
+                    state.creationType = null;
+                }
+            }
+        );
+    },
 });
 
 export const { setCreation, setFileAction } = cursorSlice.actions;
