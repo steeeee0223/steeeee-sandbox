@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { Box, Button, Divider, Grid, Typography } from "@mui/material";
-import ViewInArIcon from "@mui/icons-material/ViewInAr";
+import { Divider, Grid, Typography } from "@mui/material";
 
 import { Frame, TabInfo, Tabs } from "@/components/common";
 import { Workspace } from "@/components/project";
@@ -29,18 +28,6 @@ export default function Project() {
 
     return (
         <div>
-            <Box>
-                <h1>
-                    Project{" "}
-                    <Button
-                        href={`/demo/${projectId}`}
-                        variant="contained"
-                        endIcon={<ViewInArIcon />}
-                    >
-                        Demo
-                    </Button>
-                </h1>
-            </Box>
             <Grid container spacing={3}>
                 <Grid item xs={6} sx={{ bgcolor: "inherit", height: "100%" }}>
                     <Workspace />

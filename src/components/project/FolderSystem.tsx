@@ -9,6 +9,7 @@ import {
     RootState,
     useAppDispatch,
     useAppSelector,
+    useDirectory,
 } from "@/hooks";
 import {
     selectItem,
@@ -23,17 +24,17 @@ import ContextMenu from "./ContextMenu";
 export default function FolderSystem({ parent }: { parent: string }) {
     const [toggle, setToggle] = React.useState<Record<string, boolean>>({});
 
-    const { currentItem, directory } = useAppSelector(
+    const { currentItem } = useAppSelector(
         (state: RootState) => ({
             // user: state.auth.user,
-            directory: toList(state.directory),
             currentItem: state.directory.currentItem,
         }),
         shallowEqual
     );
+    const { firstLayerChildren, directory } = useDirectory(parent);
     const dispatch: AppDispatch = useAppDispatch();
-    const children = getChildren(directory, parent);
-
+    // const children = getChildren(directory, parent);
+    const children = firstLayerChildren;
     const handleToggle = (pathIds: string[]) => {
         const map: Record<string, boolean> = {};
         pathIds.forEach((itemId) => (map[itemId] = true));
