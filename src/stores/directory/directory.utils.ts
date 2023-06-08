@@ -25,6 +25,39 @@ export function getAllFiles({ ids, entities }: DirectoryState): File[] {
         .filter(({ isFolder }) => !isFolder) as File[];
 }
 
+export function isFolderPresent(
+    { ids, entities, currentItem }: DirectoryState,
+    folderName: string
+): boolean {
+    const folderPresent = ids
+        .map((id) => entities[id] ?? nothing)
+        .filter(
+            ({ isFolder, parent }) => isFolder && parent === currentItem.item.id
+        )
+        .find(
+            ({ title, parent }: DirectoryItem) =>
+                title === folderName && parent === currentItem.item.id
+        );
+    return !!folderPresent;
+}
+
+export function isFilePresent(
+    { ids, entities, currentItem }: DirectoryState,
+    fileName: string
+): boolean {
+    const filePresent = ids
+        .map((id) => entities[id] ?? nothing)
+        .filter(
+            ({ isFolder, parent }) =>
+                !isFolder && parent === currentItem.item.id
+        )
+        .find(
+            ({ title, parent }: DirectoryItem) =>
+                title === fileName && parent === currentItem.item.id
+        );
+    return !!filePresent;
+}
+
 export function getFile(
     directory: DirectoryItem[],
     itemId: string

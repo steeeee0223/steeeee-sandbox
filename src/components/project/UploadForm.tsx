@@ -10,12 +10,8 @@ import {
     RootState,
 } from "@/hooks";
 import { setCreation } from "@/stores/cursor";
-import {
-    DirectoryItem,
-    UploadFile,
-    getAllFiles,
-    uploadFileAsync,
-} from "@/stores/directory";
+import { UploadFile, isFilePresent, uploadFileAsync } from "@/stores/directory";
+import { getContent, getExtension } from "@/lib/file";
 
 export default function UploadForm() {
     const [uploadFiles, setUploadFiles] = useState<UploadFile[]>([]);
@@ -32,15 +28,8 @@ export default function UploadForm() {
     const { item: currItem, path: currPath } = currentItem;
     const dispatch: AppDispatch = useAppDispatch();
 
-    const userFiles = getAllFiles(directoryState);
     const setFilename = (filename: string): string => {
-        const filePresent = userFiles
-            .filter(({ parent }) => parent === currItem.id)
-            .find(
-                ({ title, parent }: DirectoryItem) =>
-                    title === filename && parent === currItem.id
-            );
-        if (!filePresent) return filename;
+        if (!isFilePresent(directoryState, filename)) return filename;
         const split = filename.split(".");
         if (split.length === 0) {
             return `${filename}-2`;
@@ -49,33 +38,12 @@ export default function UploadForm() {
         return `${split.join(".")}-2.${ext}`;
     };
 
-    const getExt = (name: string): string => {
-        if (name.startsWith(".")) return "";
-        const split = name.split(".");
-        if (split.length === 0) {
-            return "";
-        }
-        return split.at(split.length - 1) ?? "";
-    };
-
     const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
         const files = e.currentTarget.files;
         if (files !== null) {
             console.log(`selected ${files.length} files`);
             setUploadFiles(Object.values(files));
         }
-    };
-
-    const getContent = (file: UploadFile): Promise<string> => {
-        return new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onloadend = () =>
-                resolve(reader.result !== null ? reader.result.toString() : "");
-            reader.readAsText(file);
-            reader.onerror = () => {
-                console.log(`Error while reading file: ${reader.error}`);
-            };
-        });
     };
 
     const handleSubmit: FormEventHandler = (e) => {
@@ -98,7 +66,7 @@ export default function UploadForm() {
                     parent: currItem.id,
                     lastAccessed: null,
                     content,
-                    extension: getExt(file.name),
+                    extension: getExtension(file.name),
                     projectId,
                     // userId: user.uid,
                     // createdBy: user.name

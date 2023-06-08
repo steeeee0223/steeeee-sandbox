@@ -10,11 +10,8 @@ import {
     RootState,
 } from "@/hooks";
 import { setCreation } from "@/stores/cursor";
-import {
-    DirectoryItem,
-    createFileAsync,
-    getAllFiles,
-} from "@/stores/directory";
+import { createFileAsync, isFilePresent } from "@/stores/directory";
+import { getExtension } from "@/lib/file";
 
 export default function CreateFile() {
     const [name, setName] = useState("");
@@ -30,30 +27,10 @@ export default function CreateFile() {
     const { item: currItem, path: currPath } = currentItem;
     const dispatch: AppDispatch = useAppDispatch();
 
-    const userFiles = getAllFiles(directoryState);
-    const isFilePresent = (name: string): boolean => {
-        const filePresent = userFiles
-            .filter(({ parent }) => parent === currItem.id)
-            .find(
-                ({ title, parent }: DirectoryItem) =>
-                    title === name && parent === currItem.id
-            );
-        return !!filePresent;
-    };
-
-    const getExt = (name: string): string => {
-        if (name.startsWith(".")) return "";
-        const split = name.split(".");
-        if (split.length === 0) {
-            return "";
-        }
-        return split.at(split.length - 1) ?? "";
-    };
-
     const handleSubmit: FormEventHandler = (e) => {
         e.preventDefault();
         if (name) {
-            if (!isFilePresent(name)) {
+            if (!isFilePresent(directoryState, name)) {
                 dispatch(setCreation(null));
 
                 const data = {
@@ -67,7 +44,7 @@ export default function CreateFile() {
                     parent: currItem.id,
                     lastAccessed: null,
                     content: "",
-                    extension: getExt(name),
+                    extension: getExtension(name),
                     // userId: user.uid,
                     // createdBy: user.name
                 };

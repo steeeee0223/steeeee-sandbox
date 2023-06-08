@@ -10,11 +10,7 @@ import {
     RootState,
 } from "@/hooks";
 import { setCreation } from "@/stores/cursor";
-import {
-    DirectoryItem,
-    createFolderAsync,
-    getAllFolders,
-} from "@/stores/directory";
+import { createFolderAsync, isFolderPresent } from "@/stores/directory";
 
 export default function CreateFolder() {
     const [folderName, setFolderName] = useState("");
@@ -30,21 +26,10 @@ export default function CreateFolder() {
     const { item, path } = currentItem;
     const dispatch: AppDispatch = useAppDispatch();
 
-    const userFolders = getAllFolders(directoryState);
-    const isFolderPresent = (name: string): boolean => {
-        const folderPresent = userFolders
-            .filter(({ parent }) => parent === item.id)
-            .find(
-                ({ title, parent }: DirectoryItem) =>
-                    title === name && parent === item.id
-            );
-        return !!folderPresent;
-    };
-
     const handleSubmit: FormEventHandler = (e) => {
         e.preventDefault();
         if (folderName) {
-            if (!isFolderPresent(folderName)) {
+            if (!isFolderPresent(directoryState, folderName)) {
                 dispatch(setCreation(null));
                 const data = {
                     createdAt: new Date(),
