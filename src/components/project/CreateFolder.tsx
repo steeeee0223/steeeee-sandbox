@@ -71,6 +71,7 @@ export default function CreateFolder() {
                 inputProps={{ "aria-label": "folder-name" }}
                 value={folderName}
                 onChange={(e) => setFolderName(e.currentTarget.value)}
+                autoFocus
             />
             <Divider sx={{ height: 20, m: 0.5 }} orientation="vertical" />
             <IconButton

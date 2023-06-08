@@ -78,6 +78,7 @@ export default function CreateFile() {
                 inputProps={{ "aria-label": "file-name" }}
                 value={name}
                 onChange={(e) => setName(e.currentTarget.value)}
+                autoFocus
             />
             <Divider sx={{ height: 20, m: 0.5 }} orientation="vertical" />
             <IconButton
