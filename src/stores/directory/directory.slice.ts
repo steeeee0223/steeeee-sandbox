@@ -10,6 +10,7 @@ import {
     createFolderAsync,
     deleteDirectoryAsync,
     getDirectoryAsync,
+    renameDirectoryItemAsync,
     uploadFileAsync,
 } from "./directory.thunk";
 
@@ -54,6 +55,10 @@ const directorySlice = createSlice({
         builder.addCase(
             deleteDirectoryAsync.fulfilled,
             directoryAdapter.removeMany
+        );
+        builder.addCase(
+            renameDirectoryItemAsync.fulfilled,
+            directoryAdapter.updateOne
         );
     },
 });

@@ -7,7 +7,12 @@ import {
     Typography,
     Divider,
 } from "@mui/material";
-import { ContentCopy, ContentCut, ContentPaste } from "@mui/icons-material";
+import {
+    ContentCopy,
+    ContentCut,
+    ContentPaste,
+    DriveFileRenameOutline,
+} from "@mui/icons-material";
 import { shallowEqual } from "react-redux";
 
 import {
@@ -17,6 +22,7 @@ import {
     useAppSelector,
 } from "@/hooks";
 import { deleteDirectoryAsync, directorySelector } from "@/stores/directory";
+import { setRenameItem } from "@/stores/cursor";
 
 interface ContextMenuProps {
     itemId: string;
@@ -43,6 +49,7 @@ export default function ContextMenu({ itemId, children }: ContextMenuProps) {
         event.preventDefault();
         const item = directorySelector.selectById(directoryState, itemId);
         console.log(`Clicking item: ${item?.title}`);
+        dispatch(setRenameItem(null));
         setContextMenu(
             contextMenu === null
                 ? {
@@ -61,9 +68,15 @@ export default function ContextMenu({ itemId, children }: ContextMenuProps) {
     };
 
     const handleDelete = async (itemId: string) => {
-        setContextMenu(null);
+        handleClose();
         if (projectId)
             await dispatch(deleteDirectoryAsync({ projectId, itemId }));
+    };
+
+    const handleRename = async (itemId: string) => {
+        setContextMenu(null);
+        dispatch(setRenameItem(itemId));
+        console.log(`Rename item: ${itemId}`);
     };
 
     return (
@@ -95,6 +108,12 @@ export default function ContextMenu({ itemId, children }: ContextMenuProps) {
                     <Typography variant="body2" color="text.secondary">
                         ⌫
                     </Typography>
+                </MenuItem>
+                <MenuItem onClick={() => handleRename(itemId)}>
+                    <ListItemIcon>
+                        <DriveFileRenameOutline fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText>Rename</ListItemText>
                 </MenuItem>
                 <Divider />
                 <MenuItem onClick={handleClose}>

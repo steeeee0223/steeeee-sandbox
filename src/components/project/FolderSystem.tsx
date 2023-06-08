@@ -1,6 +1,6 @@
 import * as React from "react";
 import { shallowEqual } from "react-redux";
-import { Typography, IconButton } from "@mui/material";
+import { Typography, IconButton, Stack } from "@mui/material";
 import FolderIcon from "@mui/icons-material/Folder";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 
@@ -11,23 +11,20 @@ import {
     useAppSelector,
     useDirectory,
 } from "@/hooks";
-import {
-    selectItem,
-    getChildren,
-    getSelectedItem,
-    toList,
-} from "@/stores/directory";
+import { selectItem, getSelectedItem } from "@/stores/directory";
 import { openEditor } from "@/stores/editor";
 import { Accordion, AccordionDetails, AccordionSummary } from "./Accordion";
 import ContextMenu from "./ContextMenu";
+import Input from "./Input";
 
 export default function FolderSystem({ parent }: { parent: string }) {
     const [toggle, setToggle] = React.useState<Record<string, boolean>>({});
 
-    const { currentItem } = useAppSelector(
+    const { currentItem, renameItem } = useAppSelector(
         (state: RootState) => ({
             // user: state.auth.user,
             currentItem: state.directory.currentItem,
+            renameItem: state.cursor.renameItem,
         }),
         shallowEqual
     );
@@ -69,13 +66,7 @@ export default function FolderSystem({ parent }: { parent: string }) {
                                 aria-controls={`content-${itemId}`}
                                 id={`header-${itemId}`}
                             >
-                                <Typography
-                                    sx={{
-                                        width: "33%",
-                                        flexShrink: 0,
-                                        fontSize: 12,
-                                    }}
-                                >
+                                <Stack direction="row" alignItems="center">
                                     <IconButton size="small" sx={{ mr: 1 }}>
                                         {isFolder ? (
                                             <FolderIcon fontSize="small" />
@@ -83,8 +74,23 @@ export default function FolderSystem({ parent }: { parent: string }) {
                                             <InsertDriveFileIcon fontSize="small" />
                                         )}
                                     </IconButton>
-                                    {title}
-                                </Typography>
+                                    {renameItem === itemId ? (
+                                        <Input
+                                            itemId={itemId}
+                                            placeholder={title}
+                                        />
+                                    ) : (
+                                        <Typography
+                                            sx={{
+                                                width: "70%",
+                                                flexShrink: 0,
+                                                fontSize: 12,
+                                            }}
+                                        >
+                                            {title}
+                                        </Typography>
+                                    )}
+                                </Stack>
                             </AccordionSummary>
                         </ContextMenu>
                         <AccordionDetails sx={{ margin: 0 }}>

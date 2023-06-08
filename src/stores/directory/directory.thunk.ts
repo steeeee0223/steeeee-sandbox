@@ -1,4 +1,4 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
+import { Update, createAsyncThunk } from "@reduxjs/toolkit";
 
 import { storage } from "@/config/firebase";
 import { FilesStorage, FoldersStorage } from "@/lib/storage";
@@ -65,5 +65,29 @@ export const deleteDirectoryAsync = createAsyncThunk<
         await foldersDB.delete(folderIds);
         await filesDB.doDelete(projectId, fileIds);
         return folderIds.concat(fileIds);
+    }
+);
+
+export const renameDirectoryItemAsync = createAsyncThunk(
+    "directory/renameDirectoryItemAsync",
+    async ({
+        isFolder,
+        itemId,
+        name,
+    }: {
+        isFolder: boolean;
+        itemId: string;
+        name: string;
+    }) => {
+        if (isFolder) {
+            await foldersDB.update(itemId, { name });
+        } else {
+            // TODO reset extension as well
+            await filesDB.update(itemId, { name });
+        }
+        return {
+            id: itemId,
+            changes: { title: name },
+        };
     }
 );

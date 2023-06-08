@@ -4,6 +4,7 @@ import { SelectedItem, selectItem } from "../directory";
 import { CursorState } from "./cursor";
 
 const initialState: CursorState = {
+    renameItem: null,
     creationType: null,
     fileActionType: null,
 };
@@ -12,6 +13,9 @@ const cursorSlice = createSlice({
     name: "cursor",
     initialState,
     reducers: {
+        setRenameItem: (state, { payload }: PayloadAction<string | null>) => {
+            state.renameItem = payload;
+        },
         setCreation: (state, { payload }: PayloadAction<string | null>) => {
             state.creationType = payload;
         },
@@ -31,5 +35,6 @@ const cursorSlice = createSlice({
     },
 });
 
-export const { setCreation, setFileAction } = cursorSlice.actions;
+export const { setRenameItem, setCreation, setFileAction } =
+    cursorSlice.actions;
 export default cursorSlice.reducer;
