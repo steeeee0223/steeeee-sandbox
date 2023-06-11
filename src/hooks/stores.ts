@@ -1,5 +1,7 @@
+import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { shallowEqual } from "react-redux";
 
+import store from "@/stores/store";
 import {
     getChildren,
     getFullPath,
@@ -8,7 +10,14 @@ import {
     getSelectedItem,
     toList,
 } from "@/stores/directory";
-import { RootState, useAppSelector } from "./hooks";
+
+// Infer the `RootState` and `AppDispatch` types from the store itself
+export type RootState = ReturnType<typeof store.getState>;
+// Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
+export type AppDispatch = typeof store.dispatch;
+
+export const useAppDispatch: () => AppDispatch = useDispatch;
+export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 
 export const useDirectory = (itemId: string) => {
     const { directory } = useAppSelector(
