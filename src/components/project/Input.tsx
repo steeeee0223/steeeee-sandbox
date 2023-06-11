@@ -20,12 +20,12 @@ export default function Input({ itemId, placeholder }: InputProps) {
     const invalidNames = [placeholder, ""];
 
     const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+        e.stopPropagation();
         setName(e.currentTarget.value);
     };
 
     const handleSubmit: FormEventHandler = (e) => {
         e.preventDefault();
-        console.log(`Save new name to [${itemId}]: [${name}]`);
         if (!invalidNames.includes(name))
             dispatch(renameDirectoryItemAsync({ isFolder, itemId, name }));
         dispatch(setRenameItem(null));
@@ -45,6 +45,7 @@ export default function Input({ itemId, placeholder }: InputProps) {
             <FormControl>
                 <OutlinedInput
                     value={name}
+                    onBlur={() => dispatch(setRenameItem(null))}
                     onChange={handleChange}
                     sx={{
                         fontSize: 12,

@@ -13,12 +13,11 @@ import { Loading } from "@/components/common";
 import Editors from "./Editors";
 
 export default function Workspace() {
-    const { isLoading, currentItem } = useAppSelector(
+    const { isLoading } = useAppSelector(
         (state: RootState) => ({
             // user: state.auth.user,
             // isLoggedIn: state.auth.isAuthenticated,
             isLoading: state.directory.isLoading,
-            currentItem: state.directory.currentItem,
         }),
         shallowEqual
     );

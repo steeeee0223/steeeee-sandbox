@@ -35,8 +35,8 @@ export function isFolderPresent(
             ({ isFolder, parent }) => isFolder && parent === currentItem.item.id
         )
         .find(
-            ({ title, parent }: DirectoryItem) =>
-                title === folderName && parent === currentItem.item.id
+            ({ name, parent }: DirectoryItem) =>
+                name === folderName && parent === currentItem.item.id
         );
     return !!folderPresent;
 }
@@ -52,8 +52,8 @@ export function isFilePresent(
                 !isFolder && parent === currentItem.item.id
         )
         .find(
-            ({ title, parent }: DirectoryItem) =>
-                title === fileName && parent === currentItem.item.id
+            ({ name, parent }: DirectoryItem) =>
+                name === fileName && parent === currentItem.item.id
         );
     return !!filePresent;
 }
@@ -76,7 +76,7 @@ export function getChildren(
 ): DirectoryItem[] {
     const items = directory.filter((item) => item.parent === itemId);
     if (sort) {
-        items.sort((item1, item2) => item1.title.localeCompare(item2.title));
+        items.sort((item1, item2) => item1.name.localeCompare(item2.name));
     }
     return items;
 }
@@ -93,17 +93,17 @@ export function getFullPath(
     directory: DirectoryItem[],
     itemId: string
 ): readonly [string[], string[]] {
-    let name: string[] = [];
-    let id: string[] = [];
+    let pathName: string[] = [];
+    let pathId: string[] = [];
     while (itemId !== "root") {
-        const { parent, title } = getItem(directory, itemId);
-        id.push(itemId);
-        name.push(title);
+        const { parent, name } = getItem(directory, itemId);
+        pathId.push(itemId);
+        pathName.push(name);
         itemId = parent;
     }
-    id = [...id, itemId].reverse();
-    name = [...name, "root"].reverse();
-    return [name, id] as const;
+    pathId = [...pathId, itemId].reverse();
+    pathName = [...pathName, "root"].reverse();
+    return [pathName, pathId] as const;
 }
 
 export function getSelectedItem(

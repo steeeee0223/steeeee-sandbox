@@ -56,7 +56,7 @@ export default function ControlledAccordion({ parent }: { parent: string }) {
     return (
         <div>
             {children.map((child) => {
-                const { itemId, isFolder, title, subtitle, desc } = child;
+                const { itemId, isFolder, name, subtitle, desc } = child;
                 return (
                     <Accordion
                         key={itemId}
@@ -81,7 +81,7 @@ export default function ControlledAccordion({ parent }: { parent: string }) {
                                         <InsertDriveFileIcon />
                                     )}
                                 </IconButton>
-                                {title}
+                                {name}
                             </Typography>
                             {subtitle && (
                                 <Typography
@@ -105,7 +105,7 @@ export default function ControlledAccordion({ parent }: { parent: string }) {
                                 <ControlledAccordion parent={itemId} />
                             ) : (
                                 <CodeBlock
-                                    name={title}
+                                    name={name}
                                     language={child.extension}
                                     value={child.content}
                                     readOnly

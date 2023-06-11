@@ -28,10 +28,9 @@ export default function FolderSystem({ parent }: { parent: string }) {
         }),
         shallowEqual
     );
-    const { firstLayerChildren, directory } = useDirectory(parent);
+    const { firstLayerChildren: children, directory } = useDirectory(parent);
     const dispatch: AppDispatch = useAppDispatch();
-    // const children = getChildren(directory, parent);
-    const children = firstLayerChildren;
+
     const handleToggle = (pathIds: string[]) => {
         const map: Record<string, boolean> = {};
         pathIds.forEach((itemId) => (map[itemId] = true));
@@ -51,7 +50,7 @@ export default function FolderSystem({ parent }: { parent: string }) {
     return (
         <div>
             {children.map((child) => {
-                const { itemId, isFolder, title } = child;
+                const { itemId, isFolder, name } = child;
                 return (
                     <Accordion
                         key={itemId}
@@ -63,6 +62,7 @@ export default function FolderSystem({ parent }: { parent: string }) {
                     >
                         <ContextMenu itemId={itemId}>
                             <AccordionSummary
+                                autoFocus
                                 aria-controls={`content-${itemId}`}
                                 id={`header-${itemId}`}
                             >
@@ -77,7 +77,7 @@ export default function FolderSystem({ parent }: { parent: string }) {
                                     {renameItem === itemId ? (
                                         <Input
                                             itemId={itemId}
-                                            placeholder={title}
+                                            placeholder={name}
                                         />
                                     ) : (
                                         <Typography
@@ -87,7 +87,7 @@ export default function FolderSystem({ parent }: { parent: string }) {
                                                 fontSize: 12,
                                             }}
                                         >
-                                            {title}
+                                            {name}
                                         </Typography>
                                     )}
                                 </Stack>

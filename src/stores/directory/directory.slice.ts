@@ -11,12 +11,13 @@ import {
     deleteDirectoryAsync,
     getDirectoryAsync,
     renameDirectoryItemAsync,
+    updateFileAsync,
     uploadFileAsync,
 } from "./directory.thunk";
 
 export const directoryAdapter = createEntityAdapter<DirectoryItem>({
     selectId: (item) => item.itemId,
-    sortComparer: (a, b) => a.title.localeCompare(b.title),
+    sortComparer: (a, b) => a.name.localeCompare(b.name),
 });
 
 const initialState = directoryAdapter.getInitialState<{
@@ -60,6 +61,7 @@ const directorySlice = createSlice({
             renameDirectoryItemAsync.fulfilled,
             directoryAdapter.updateOne
         );
+        builder.addCase(updateFileAsync.fulfilled, directoryAdapter.updateOne);
     },
 });
 

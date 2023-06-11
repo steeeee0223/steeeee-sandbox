@@ -36,7 +36,8 @@ abstract class IStorage<T> {
 
     public async update(itemId: string, data: any): Promise<T> {
         try {
-            await db.collection(this.collection).doc(itemId).update(data);
+            const updateData = { ...data, updatedAt: new Date() };
+            await db.collection(this.collection).doc(itemId).update(updateData);
             const doc = await db.collection(this.collection).doc(itemId).get();
             return this.unpack(doc);
         } catch (error) {
@@ -78,7 +79,7 @@ export class FilesStorage extends IStorage<File> {
         return {
             itemId: doc.id,
             isFolder: false,
-            title: name,
+            name,
             parent,
             extension,
             content,
@@ -137,8 +138,8 @@ export class FoldersStorage extends IStorage<Folder> {
         const { parent, name } = doc.data();
         return {
             parent,
+            name,
             itemId: doc.id,
-            title: name,
             isFolder: true,
         } as Folder;
     }

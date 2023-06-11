@@ -2,7 +2,7 @@ type BaseItem = {
     parent: string;
     itemId: string;
     isFolder: boolean;
-    title: string;
+    name: string;
     subtitle?: string;
     desc?: string;
 };

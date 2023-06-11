@@ -48,7 +48,7 @@ export default function ContextMenu({ itemId, children }: ContextMenuProps) {
     const handleContextMenu = (event: React.MouseEvent, itemId: string) => {
         event.preventDefault();
         const item = directorySelector.selectById(directoryState, itemId);
-        console.log(`Clicking item: ${item?.title}`);
+        console.log(`Clicking item: ${item?.name}`);
         dispatch(setRenameItem(null));
         setContextMenu(
             contextMenu === null

@@ -1,6 +1,5 @@
 import { Update, createAsyncThunk } from "@reduxjs/toolkit";
 
-import { storage } from "@/config/firebase";
 import { FilesStorage, FoldersStorage } from "@/lib/storage";
 import { accordion as sampleFolders, children as sampleFiles } from "@/data";
 import { DirectoryItem } from "./directory";
@@ -85,9 +84,14 @@ export const renameDirectoryItemAsync = createAsyncThunk(
             // TODO reset extension as well
             await filesDB.update(itemId, { name });
         }
-        return {
-            id: itemId,
-            changes: { title: name },
-        };
+        return { id: itemId, changes: { name } };
+    }
+);
+
+export const updateFileAsync = createAsyncThunk(
+    "directory/updateFileAsync",
+    async ({ itemId, content }: { itemId: string; content: string }) => {
+        await filesDB.update(itemId, { content });
+        return { id: itemId, changes: { content } };
     }
 );
