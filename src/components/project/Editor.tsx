@@ -15,6 +15,7 @@ import Breadcrumbs from "./Breadcrumbs";
 interface EditorProps {
     itemId: string;
 }
+
 export const Editor = ({ itemId }: EditorProps) => {
     const dispatch = useAppDispatch();
 
@@ -37,12 +38,12 @@ export const Editor = ({ itemId }: EditorProps) => {
         []
     );
 
-    const handleSave = () => {
+    const handleSave = useCallback(() => {
         if (inputRef.current !== content) {
             console.log(`saving file: [${itemId}]`);
             dispatch(updateFileAsync({ itemId, content: inputRef.current }));
         }
-    };
+    }, []);
 
     useKeyPress({ meta: ["s"], ctrl: ["s"] }, handleSave);
 

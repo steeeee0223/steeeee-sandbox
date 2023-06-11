@@ -1,4 +1,4 @@
-import { MouseEvent, useEffect, useState } from "react";
+import { MouseEvent, useCallback, useEffect, useState } from "react";
 import { shallowEqual } from "react-redux";
 import { Box, IconButton, Tab } from "@mui/material";
 import { TabContext, TabList } from "@mui/lab";
@@ -31,16 +31,19 @@ export default function Editors() {
     const [tabs, setTabs] = useState(editorIds);
     const [activeTab, setActiveTab] = useState(currentEditor);
 
-    const handleChange = (e: React.SyntheticEvent, editorId: string) => {
-        e.preventDefault();
-        setActiveTab(editorId);
-        dispatch(setEditor(editorId));
-    };
+    const handleChange = useCallback(
+        (e: React.SyntheticEvent, editorId: string) => {
+            e.preventDefault();
+            setActiveTab(editorId);
+            dispatch(setEditor(editorId));
+        },
+        []
+    );
 
-    const handleCloseEditor = (e: MouseEvent, editorId: string) => {
+    const handleCloseEditor = useCallback((e: MouseEvent, editorId: string) => {
         e.stopPropagation();
         dispatch(closeEditors([editorId]));
-    };
+    }, []);
 
     useEffect(() => {
         setTabs(editorIds);

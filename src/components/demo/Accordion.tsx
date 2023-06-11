@@ -1,5 +1,4 @@
 import * as React from "react";
-import { shallowEqual } from "react-redux";
 import {
     Accordion,
     AccordionDetails,
@@ -11,32 +10,15 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import FolderIcon from "@mui/icons-material/Folder";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 
-import {
-    AppDispatch,
-    RootState,
-    useAppDispatch,
-    useAppSelector,
-} from "@/hooks";
-import {
-    selectItem,
-    getChildren,
-    getSelectedItem,
-    toList,
-} from "@/stores/directory";
+import { AppDispatch, useAppDispatch, useDirectory } from "@/hooks";
+import { selectItem, getSelectedItem } from "@/stores/directory";
 import CodeBlock from "./Codeblock";
 
 export default function ControlledAccordion({ parent }: { parent: string }) {
     const [toggle, setToggle] = React.useState<Record<string, boolean>>({});
 
-    const { directory } = useAppSelector(
-        (state: RootState) => ({
-            // user: state.auth.user,
-            directory: toList(state.directory),
-        }),
-        shallowEqual
-    );
     const dispatch: AppDispatch = useAppDispatch();
-    const children = getChildren(directory, parent);
+    const { directory, firstLayerChildren: children } = useDirectory(parent);
 
     const handleToggle = (pathIds: string[]) => {
         const map: Record<string, boolean> = {};
@@ -56,7 +38,7 @@ export default function ControlledAccordion({ parent }: { parent: string }) {
     return (
         <div>
             {children.map((child) => {
-                const { itemId, isFolder, name, subtitle, desc } = child;
+                const { itemId, isFolder, name, desc } = child;
                 return (
                     <Accordion
                         key={itemId}
@@ -70,7 +52,7 @@ export default function ControlledAccordion({ parent }: { parent: string }) {
                         >
                             <Typography
                                 sx={{
-                                    width: "33%",
+                                    width: "70%",
                                     flexShrink: 0,
                                 }}
                             >
@@ -83,17 +65,6 @@ export default function ControlledAccordion({ parent }: { parent: string }) {
                                 </IconButton>
                                 {name}
                             </Typography>
-                            {subtitle && (
-                                <Typography
-                                    variant="subtitle2"
-                                    sx={{
-                                        color: "text.secondary",
-                                        textAlign: "justify",
-                                    }}
-                                >
-                                    {subtitle}
-                                </Typography>
-                            )}
                         </AccordionSummary>
                         <AccordionDetails sx={{ margin: 1 }}>
                             {desc && (
