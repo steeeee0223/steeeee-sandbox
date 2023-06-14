@@ -1,29 +1,19 @@
-import { Button, Divider } from "@mui/material";
-import ViewInArIcon from "@mui/icons-material/ViewInAr";
-import EditIcon from "@mui/icons-material/Edit";
+import { useEffect } from "react";
 
 import { Table } from "@/components/dashboard";
+import { useAppDispatch } from "@/hooks";
+import { setProject } from "@/stores/project";
 
 export default function Dashboard() {
+    const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        dispatch(setProject(null));
+    }, []);
+
     return (
         <div>
             <h1>Dashboard</h1>
-
-            <Button
-                href={`/demo/1`}
-                variant="contained"
-                endIcon={<ViewInArIcon />}
-            >
-                Demo
-            </Button>
-            <Button
-                href={`/project/1`}
-                variant="contained"
-                endIcon={<EditIcon />}
-            >
-                Edit
-            </Button>
-            <Divider sx={{ padding: 3 }} />
             <Table />
         </div>
     );

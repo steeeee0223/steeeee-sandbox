@@ -9,60 +9,13 @@ import {
     TableContainer,
     TablePagination,
     TableRow,
-    IconButton,
 } from "@mui/material";
-import ViewInArIcon from "@mui/icons-material/ViewInAr";
-import EditIcon from "@mui/icons-material/Edit";
 
 import { tableRows } from "@/data";
+import { getComparator, stableSort } from "@/lib/table";
 import TableHeader from "./TableHeader";
 import TableToolbar from "./TableToolbar";
-
-const actions: Record<string, { path: string; icon: React.ReactElement }> = {
-    edit: { path: "project", icon: <EditIcon fontSize="small" /> },
-    demo: { path: "demo", icon: <ViewInArIcon fontSize="small" /> },
-};
-
-function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
-    if (b[orderBy] < a[orderBy]) {
-        return -1;
-    }
-    if (b[orderBy] > a[orderBy]) {
-        return 1;
-    }
-    return 0;
-}
-
-function getComparator<Key extends keyof any>(
-    order: Order,
-    orderBy: Key
-): (
-    a: { [key in Key]: number | string },
-    b: { [key in Key]: number | string }
-) => number {
-    return order === "desc"
-        ? (a, b) => descendingComparator(a, b, orderBy)
-        : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-// Since 2020 all major browsers ensure sort stability with Array.prototype.sort().
-// stableSort() brings sort stability to non-modern browsers (notably IE11). If you
-// only support modern browsers you can replace stableSort(exampleArray, exampleComparator)
-// with exampleArray.slice().sort(exampleComparator)
-function stableSort<T>(
-    array: readonly T[],
-    comparator: (a: T, b: T) => number
-) {
-    const stabilizedThis = array.map((el, index) => [el, index] as [T, number]);
-    stabilizedThis.sort((a, b) => {
-        const order = comparator(a[0], b[0]);
-        if (order !== 0) {
-            return order;
-        }
-        return a[1] - b[1];
-    });
-    return stabilizedThis.map((el) => el[0]);
-}
+import Toolbar from "./Toolbar";
 
 export default function EnhancedTable() {
     const [order, setOrder] = React.useState<Order>("asc");
@@ -142,7 +95,11 @@ export default function EnhancedTable() {
             <Paper sx={{ width: "100%", mb: 2 }}>
                 <TableToolbar numSelected={selected.length} />
                 <TableContainer>
-                    <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle">
+                    <Table
+                        sx={{ minWidth: 750, alignContent: "center" }}
+                        aria-labelledby="tableTitle"
+                        stickyHeader
+                    >
                         <TableHeader
                             numSelected={selected.length}
                             order={order}
@@ -186,28 +143,19 @@ export default function EnhancedTable() {
                                         >
                                             {row.name}
                                         </TableCell>
-                                        <TableCell align="right">
+                                        <TableCell align="center">
                                             {row.tags.toString()}
                                         </TableCell>
-                                        <TableCell align="right">
+                                        <TableCell align="center">
                                             {row.createdBy}
                                         </TableCell>
                                         <TableCell align="right">
                                             {row.lastModifiedAt.toString()}
                                         </TableCell>
-                                        <TableCell align="right">
-                                            {row.actions.map(
-                                                (action, index) => (
-                                                    <IconButton
-                                                        key={index}
-                                                        href={`${actions[action].path}/1`}
-                                                        color="inherit"
-                                                        size="small"
-                                                    >
-                                                        {actions[action].icon}{" "}
-                                                    </IconButton>
-                                                )
-                                            )}
+                                        <TableCell align="center">
+                                            <Toolbar
+                                                projectId={row.projectId}
+                                            />
                                         </TableCell>
                                     </TableRow>
                                 );

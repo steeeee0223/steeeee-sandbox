@@ -4,19 +4,22 @@ import {
     createSlice,
 } from "@reduxjs/toolkit";
 
-import { Project } from "./project";
+import { Project, SelectedProject } from "./project";
 
 export const projectAdapter = createEntityAdapter<Project>();
 
 const initialState = projectAdapter.getInitialState<{
-    currentProject: string | null;
+    currentProject: SelectedProject | null;
 }>({ currentProject: null });
 
 const projectSlice = createSlice({
     name: "project",
     initialState,
     reducers: {
-        setProject: (state, { payload }: PayloadAction<string | null>) => {
+        setProject: (
+            state,
+            { payload }: PayloadAction<SelectedProject | null>
+        ) => {
             state.currentProject = payload;
         },
     },

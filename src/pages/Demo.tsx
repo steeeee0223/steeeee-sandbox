@@ -1,10 +1,23 @@
 import { Box, Container, Divider, Stack, Typography } from "@mui/material";
 
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
+
 import { Workspace } from "@/components/demo";
 import { Frame } from "@/components/common";
 import { sampleCode } from "@/data";
+import { useAppDispatch } from "@/hooks";
+import { setProject } from "@/stores/project";
 
 export default function Demo() {
+    const { pathname } = useLocation();
+    const [, , projectId] = pathname.split("/");
+    const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        dispatch(setProject({ id: projectId ?? null, action: "demo" }));
+    }, [projectId]);
+
     return (
         <div>
             <Box>

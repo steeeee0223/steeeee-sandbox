@@ -1,16 +1,16 @@
 interface TableData {
+    projectId: string;
     name: string;
     tags: string[];
     createdBy: string;
     lastModifiedAt: string;
-    actions: string[];
 }
 
 interface TableHeadCell {
     disablePadding: boolean;
     id: keyof TableData;
     label: string;
-    numeric: boolean;
+    align?: "left" | "center" | "right";
 }
 
 type Order = "asc" | "desc";

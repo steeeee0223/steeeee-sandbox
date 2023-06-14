@@ -6,11 +6,12 @@ abstract class IStorage<T> {
 
     public abstract unpack(doc: any): T;
 
-    public async get(userId: string): Promise<T[]> {
+    public async get(userId: string, projectId: string): Promise<T[]> {
         try {
             const res = await db
                 .collection(this.collection)
                 // .where("userId", "==", userId)
+                .where("projectId", "==", projectId)
                 .get();
             const items: T[] = await res.docs.map((doc) => {
                 return this.unpack(doc);
@@ -22,9 +23,10 @@ abstract class IStorage<T> {
         }
     }
 
-    public async create(data: any): Promise<T> {
+    public async create(projectId: string, data: any): Promise<T> {
         try {
-            const res = await db.collection(this.collection).add(data);
+            const insertData = { ...data, projectId };
+            const res = await db.collection(this.collection).add(insertData);
             const doc = await res.get();
             return this.unpack(doc);
         } catch (error) {
@@ -50,11 +52,7 @@ abstract class IStorage<T> {
     public async delete(ids: string[]) {
         for (const id of ids) {
             try {
-                await db
-                    .collection(this.collection)
-                    // .where("userId", "==", userId)
-                    .doc(id)
-                    .delete();
+                await db.collection(this.collection).doc(id).delete();
             } catch (error) {
                 console.log(error);
             }
@@ -86,10 +84,14 @@ export class FilesStorage extends IStorage<File> {
         } as File;
     }
 
-    public async upload(data: any, uploadFile: UploadFile): Promise<File> {
-        const file = await this.create(data);
+    public async upload(
+        projectId: string,
+        data: any,
+        uploadFile: UploadFile
+    ): Promise<File> {
+        const file = await this.create(projectId, data);
         const ref = storage.ref(
-            `${this.collection}/${data.projectId}/${file.itemId}`
+            `${this.collection}/${projectId}/${file.itemId}`
         );
 
         ref.put(uploadFile).on(
@@ -135,8 +137,9 @@ export class FoldersStorage extends IStorage<Folder> {
     }
 
     public unpack(doc: any): Folder {
-        const { parent, name } = doc.data();
+        const { projectId, parent, name } = doc.data();
         return {
+            projectId,
             parent,
             name,
             itemId: doc.id,

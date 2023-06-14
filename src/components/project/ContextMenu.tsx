@@ -33,7 +33,7 @@ export default function ContextMenu({ itemId, children }: ContextMenuProps) {
     const { projectId, directoryState } = useAppSelector(
         (state: RootState) => ({
             // user: state.auth.user,
-            projectId: state.project.currentProject,
+            projectId: state.project.currentProject?.id,
             directoryState: state.directory,
         }),
         shallowEqual

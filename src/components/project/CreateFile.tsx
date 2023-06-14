@@ -16,9 +16,10 @@ import { getExtension } from "@/lib/file";
 export default function CreateFile() {
     const [name, setName] = useState("");
 
-    const { currentItem, directoryState } = useAppSelector(
+    const { projectId, currentItem, directoryState } = useAppSelector(
         (state: RootState) => ({
             // user: state.auth.user,
+            projectId: state.project.currentProject?.id,
             currentItem: state.directory.currentItem,
             directoryState: state.directory,
         }),
@@ -29,32 +30,36 @@ export default function CreateFile() {
 
     const handleSubmit: FormEventHandler = (e) => {
         e.preventDefault();
-        if (name) {
-            if (!isFilePresent(directoryState, name)) {
-                dispatch(setCreation(null));
+        if (projectId) {
+            if (name) {
+                if (!isFilePresent(directoryState, name)) {
+                    dispatch(setCreation(null));
 
-                const data = {
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                    name,
-                    path:
-                        currItem.id === "root"
-                            ? []
-                            : [...currPath.id, currItem.id],
-                    parent: currItem.id,
-                    lastAccessed: null,
-                    content: "",
-                    extension: getExtension(name),
-                    // userId: user.uid,
-                    // createdBy: user.name
-                };
-                dispatch(createFileAsync(data));
+                    const data = {
+                        createdAt: new Date(),
+                        updatedAt: new Date(),
+                        name,
+                        path:
+                            currItem.id === "root"
+                                ? []
+                                : [...currPath.id, currItem.id],
+                        parent: currItem.id,
+                        lastAccessed: null,
+                        content: "",
+                        extension: getExtension(name),
+                        // userId: user.uid,
+                        // createdBy: user.name
+                    };
+                    dispatch(createFileAsync({ projectId, data }));
+                } else {
+                    setName("");
+                    alert(`File ${name} already present!`);
+                }
             } else {
-                setName("");
-                alert(`File ${name} already present!`);
+                alert(`File name is required!`);
             }
         } else {
-            alert(`File name is required!`);
+            alert(`NO PROJECT SELECTED!`);
         }
     };
 

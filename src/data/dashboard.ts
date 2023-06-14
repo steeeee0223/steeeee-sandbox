@@ -1,64 +1,59 @@
 export const tableTitle = "Projects";
 
 function createData(
+    projectId: string,
     name: string,
     tags: string[],
     createdBy: string
 ): TableData {
     return {
+        projectId,
         name,
         tags,
         createdBy,
         lastModifiedAt: new Date().toTimeString(),
-        actions: ["edit", "demo"],
     };
 }
 
 export const tableRows: TableData[] = [
-    createData("Cupcake", ["python"], "steve"),
-    createData("Donut", ["python"], "steve"),
-    createData("Eclair", ["python"], "steve"),
-    createData("Frozen yoghurt", ["python"], "steve"),
-    createData("Gingerbread", ["nodejs"], "steve"),
-    createData("Honeycomb", ["react"], "kimi"),
-    createData("Ice cream sandwich", ["react"], "kimi"),
-    createData("Jelly Bean", ["react"], "kimi"),
-    createData("KitKat", ["react"], "kimi"),
-    createData("Lollipop", ["react"], "kimi"),
-    createData("Marshmallow", ["php"], "kimi"),
-    createData("Nougat", ["php"], "kimi"),
-    createData("Oreo", ["php"], "kimi"),
+    createData("1", "Cupcake", ["python"], "steve"),
+    createData("2", "Donut", ["python"], "steve"),
+    createData("3", "Eclair", ["python"], "steve"),
+    createData("4", "Frozen yoghurt", ["python"], "steve"),
+    createData("5", "Gingerbread", ["nodejs"], "steve"),
+    createData("6", "Honeycomb", ["react"], "kimi"),
+    createData("7", "Ice cream sandwich", ["react"], "kimi"),
+    createData("8", "Jelly Bean", ["react"], "kimi"),
+    createData("9", "KitKat", ["react"], "kimi"),
+    createData("10", "Lollipop", ["react"], "kimi"),
+    createData("11", "Marshmallow", ["php"], "kimi"),
+    createData("12", "Nougat", ["php"], "kimi"),
+    createData("13", "Oreo", ["php"], "kimi"),
 ];
 
 export const headCells: readonly TableHeadCell[] = [
     {
         id: "name",
-        numeric: false,
+        align: "left",
         disablePadding: true,
         label: "Project Name",
     },
     {
         id: "tags",
-        numeric: true,
+        align: "center",
         disablePadding: false,
         label: "Tags",
     },
     {
         id: "createdBy",
-        numeric: true,
+        align: "center",
         disablePadding: false,
         label: "Created By",
     },
     {
         id: "lastModifiedAt",
-        numeric: true,
+        align: "right",
         disablePadding: false,
         label: "Last Modified At",
-    },
-    {
-        id: "actions",
-        numeric: true,
-        disablePadding: false,
-        label: "Actions",
     },
 ];

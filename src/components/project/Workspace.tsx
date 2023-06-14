@@ -13,11 +13,12 @@ import { Loading } from "@/components/common";
 import Editors from "./Editors";
 
 export default function Workspace() {
-    const { isLoading } = useAppSelector(
+    const { isLoading, projectId } = useAppSelector(
         (state: RootState) => ({
             // user: state.auth.user,
             // isLoggedIn: state.auth.isAuthenticated,
             isLoading: state.directory.isLoading,
+            projectId: state.project.currentProject?.id,
         }),
         shallowEqual
     );
@@ -25,8 +26,9 @@ export default function Workspace() {
     const dispatch: AppDispatch = useAppDispatch();
 
     useEffect(() => {
-        if (isLoading) dispatch(getDirectoryAsync(userId));
-    }, [isLoading, dispatch, userId]);
+        if (isLoading && projectId)
+            dispatch(getDirectoryAsync({ userId, projectId }));
+    }, [isLoading, dispatch, userId, projectId]);
 
     return (
         <Container>

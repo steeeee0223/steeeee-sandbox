@@ -1,12 +1,6 @@
 import { MouseEvent } from "react";
 import { shallowEqual } from "react-redux";
-import {
-    Divider,
-    Paper,
-    ToggleButton,
-    ToggleButtonGroup,
-    styled,
-} from "@mui/material";
+import { Divider, Paper, ToggleButton } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import DownloadIcon from "@mui/icons-material/Download";
@@ -23,40 +17,19 @@ import {
 } from "@/hooks";
 import { setCreation, setFileAction } from "@/stores/cursor";
 import { drawerWidth } from "@/theme";
+import { ButtonGroup } from "@/components/common";
 import CreateFolder from "./CreateFolder";
 import CreateFile from "./CreateFile";
 import UploadForm from "./UploadForm";
 
-const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
-    "& .MuiToggleButtonGroup-grouped": {
-        "&.MuiToggleButton-root": {
-            "&.MuiToggleButton-sizeSmall": {
-                height: 25,
-                width: 25,
-            },
-        },
-        margin: theme.spacing(0.5),
-        border: 0,
-        "&.Mui-disabled": {
-            border: 0,
-        },
-        "&:not(:first-of-type)": {
-            borderRadius: theme.shape.borderRadius,
-        },
-        "&:first-of-type": {
-            borderRadius: theme.shape.borderRadius,
-        },
-    },
-}));
-
 export default function Toolbar() {
-    const { fileActionType, creationType, currentItem, currentProject } =
+    const { fileActionType, creationType, currentItem, projectId } =
         useAppSelector(
             (state: RootState) => ({
                 fileActionType: state.cursor.fileActionType,
                 creationType: state.cursor.creationType,
                 currentItem: state.directory.currentItem,
-                currentProject: state.project.currentProject,
+                projectId: state.project.currentProject?.id,
             }),
             shallowEqual
         );
@@ -103,22 +76,22 @@ export default function Toolbar() {
                     marginBottom: 0,
                 }}
             >
-                <StyledToggleButtonGroup size="small" exclusive>
+                <ButtonGroup size="small" exclusive>
                     <ToggleButton
                         size="small"
-                        href={`/demo/${currentProject}`}
+                        href={`/demo/${projectId}`}
                         value="demo"
                         aria-label="demo"
                     >
                         <ViewInArIcon fontSize="small" />
                     </ToggleButton>
-                </StyledToggleButtonGroup>
+                </ButtonGroup>
                 <Divider
                     flexItem
                     orientation="vertical"
                     sx={{ mx: 0.5, my: 1, ml: "1px", mr: "1px" }}
                 />
-                <StyledToggleButtonGroup
+                <ButtonGroup
                     size="small"
                     value={fileActionType}
                     exclusive
@@ -134,13 +107,13 @@ export default function Toolbar() {
                     <ToggleButton value="download" aria-label="download">
                         <DownloadIcon fontSize="small" />
                     </ToggleButton>
-                </StyledToggleButtonGroup>
+                </ButtonGroup>
                 <Divider
                     flexItem
                     orientation="vertical"
                     sx={{ mx: 0.5, my: 1, ml: "1px", mr: "1px" }}
                 />
-                <StyledToggleButtonGroup
+                <ButtonGroup
                     size="small"
                     value={creationType}
                     exclusive
@@ -160,7 +133,7 @@ export default function Toolbar() {
                     <ToggleButton value="upload" aria-label="upload">
                         <CloudUploadIcon fontSize="small" />
                     </ToggleButton>
-                </StyledToggleButtonGroup>
+                </ButtonGroup>
                 <Form />
             </Paper>
         </div>

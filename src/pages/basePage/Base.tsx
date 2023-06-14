@@ -67,7 +67,7 @@ const Base = () => {
             <Drawer
                 variant="permanent"
                 open={open}
-                aria-label={currentProject ?? undefined}
+                aria-label={currentProject?.id ?? undefined}
             >
                 <DrawerHeader>
                     <Button
@@ -86,7 +86,7 @@ const Base = () => {
                     </IconButton>
                 </DrawerHeader>
                 <Divider />
-                {currentProject ? (
+                {currentProject?.action === "edit" ? (
                     <>
                         <Toolbar />
                         <Divider />

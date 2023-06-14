@@ -5,16 +5,16 @@ import { Divider, Grid, Typography } from "@mui/material";
 import { Frame, TabInfo, Tabs } from "@/components/common";
 import { Workspace } from "@/components/project";
 import { sampleCode } from "@/data";
-import { AppDispatch, useAppDispatch } from "@/hooks";
+import { useAppDispatch } from "@/hooks";
 import { setProject } from "@/stores/project";
 
 export default function Project() {
     const { pathname } = useLocation();
     const [, , projectId] = pathname.split("/");
-    const dispatch: AppDispatch = useAppDispatch();
+    const dispatch = useAppDispatch();
 
     useEffect(() => {
-        dispatch(setProject(projectId ?? null));
+        dispatch(setProject({ id: projectId ?? null, action: "edit" }));
     }, [projectId]);
 
     const frames: TabInfo[] = [

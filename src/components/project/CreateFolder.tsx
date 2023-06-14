@@ -15,11 +15,12 @@ import { createFolderAsync, isFolderPresent } from "@/stores/directory";
 export default function CreateFolder() {
     const [folderName, setFolderName] = useState("");
 
-    const { directoryState, currentItem } = useAppSelector(
+    const { directoryState, currentItem, projectId } = useAppSelector(
         (state: RootState) => ({
             // user: state.auth.user,
             directoryState: state.directory,
             currentItem: state.directory.currentItem,
+            projectId: state.project.currentProject?.id,
         }),
         shallowEqual
     );
@@ -28,26 +29,30 @@ export default function CreateFolder() {
 
     const handleSubmit: FormEventHandler = (e) => {
         e.preventDefault();
-        if (folderName) {
-            if (!isFolderPresent(directoryState, folderName)) {
-                dispatch(setCreation(null));
-                const data = {
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                    name: folderName,
-                    path: item.id === "root" ? [] : [...path.id, item.id],
-                    parent: item.id,
-                    lastAccessed: null,
-                    // userId: user.uid,
-                    // createdBy: user.name
-                };
-                dispatch(createFolderAsync(data));
+        if (projectId) {
+            if (folderName) {
+                if (!isFolderPresent(directoryState, folderName)) {
+                    dispatch(setCreation(null));
+                    const data = {
+                        createdAt: new Date(),
+                        updatedAt: new Date(),
+                        name: folderName,
+                        path: item.id === "root" ? [] : [...path.id, item.id],
+                        parent: item.id,
+                        lastAccessed: null,
+                        // userId: user.uid,
+                        // createdBy: user.name
+                    };
+                    dispatch(createFolderAsync({ projectId, data }));
+                } else {
+                    setFolderName("");
+                    alert(`Folder ${folderName} already present!`);
+                }
             } else {
-                setFolderName("");
-                alert(`Folder ${folderName} already present!`);
+                alert(`Folder name is required!`);
             }
         } else {
-            alert(`Folder name is required!`);
+            alert(`NO PROJECT SELECTED`);
         }
     };
 

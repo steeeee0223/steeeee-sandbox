@@ -45,35 +45,42 @@ export default function TableHeader(props: TableProps) {
                         }}
                     />
                 </TableCell>
-                {headCells.map((headCell) => (
-                    <TableCell
-                        key={headCell.id}
-                        align={headCell.numeric ? "right" : "left"}
-                        padding={headCell.disablePadding ? "none" : "normal"}
-                        sortDirection={orderBy === headCell.id ? order : false}
-                    >
-                        {isSortField(headCell.id) ? (
-                            <TableSortLabel
-                                active={orderBy === headCell.id}
-                                direction={
-                                    orderBy === headCell.id ? order : "asc"
-                                }
-                                onClick={createSortHandler(headCell.id)}
-                            >
-                                {headCell.label}
-                                {orderBy === headCell.id ? (
-                                    <Box component="span" sx={visuallyHidden}>
-                                        {order === "desc"
-                                            ? "sorted descending"
-                                            : "sorted ascending"}
-                                    </Box>
-                                ) : null}
-                            </TableSortLabel>
-                        ) : (
-                            <>{headCell.label}</>
-                        )}
-                    </TableCell>
-                ))}
+                {headCells.map((headCell) => {
+                    const { id, align, disablePadding, label } = headCell;
+                    return (
+                        <TableCell
+                            key={id}
+                            align={align}
+                            padding={disablePadding ? "none" : "normal"}
+                            sortDirection={orderBy === id ? order : false}
+                        >
+                            {isSortField(id) ? (
+                                <TableSortLabel
+                                    active={orderBy === id}
+                                    direction={orderBy === id ? order : "asc"}
+                                    onClick={createSortHandler(id)}
+                                >
+                                    {label}
+                                    {orderBy === id ? (
+                                        <Box
+                                            component="span"
+                                            sx={visuallyHidden}
+                                        >
+                                            {order === "desc"
+                                                ? "sorted descending"
+                                                : "sorted ascending"}
+                                        </Box>
+                                    ) : null}
+                                </TableSortLabel>
+                            ) : (
+                                <>{label}</>
+                            )}
+                        </TableCell>
+                    );
+                })}
+                <TableCell align="center" padding="normal">
+                    Actions
+                </TableCell>
             </TableRow>
         </TableHead>
     );

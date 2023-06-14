@@ -1,4 +1,4 @@
-import { Update, createAsyncThunk } from "@reduxjs/toolkit";
+import { createAsyncThunk } from "@reduxjs/toolkit";
 
 import { FilesStorage, FoldersStorage } from "@/lib/storage";
 import { accordion as sampleFolders, children as sampleFiles } from "@/data";
@@ -13,31 +13,39 @@ export type UploadFile = File;
 
 export const createFolderAsync = createAsyncThunk(
     "directory/createFolderAsync",
-    async (data: any) => {
-        return await foldersDB.create(data);
+    async ({ projectId, data }: { projectId: string; data: any }) => {
+        return await foldersDB.create(projectId, data);
     }
 );
 
 export const createFileAsync = createAsyncThunk(
     "directory/createFileAsync",
-    async (data: any) => {
-        return await filesDB.create(data);
+    async ({ projectId, data }: { projectId: string; data: any }) => {
+        return await filesDB.create(projectId, data);
     }
 );
 
 export const uploadFileAsync = createAsyncThunk(
     "directory/uploadFile",
-    async ({ file, data }: { file: UploadFile; data: any }) => {
-        return await filesDB.upload(data, file);
+    async ({
+        projectId,
+        file,
+        data,
+    }: {
+        projectId: string;
+        file: UploadFile;
+        data: any;
+    }) => {
+        return await filesDB.upload(projectId, data, file);
     }
 );
 
 export const getDirectoryAsync = createAsyncThunk(
     "directory/getDirectoryAsync",
-    async (userId: string) => {
+    async ({ userId, projectId }: { userId: string; projectId: string }) => {
         const directoryItems: DirectoryItem[] = [];
-        const folders = await foldersDB.get(userId);
-        const files = await filesDB.get(userId);
+        const folders = await foldersDB.get(userId, projectId);
+        const files = await filesDB.get(userId, projectId);
         return directoryItems.concat(
             folders,
             sampleFolders,

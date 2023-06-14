@@ -14,11 +14,12 @@ import { Loading } from "@/components/common";
 import Breadcrumbs from "./Breadcrumbs";
 
 const Workspace = () => {
-    const { isLoading } = useAppSelector(
+    const { isLoading, projectId } = useAppSelector(
         (state: RootState) => ({
             // user: state.auth.user,
             // isLoggedIn: state.auth.isAuthenticated,
             isLoading: state.directory.isLoading,
+            projectId: state.project.currentProject?.id,
         }),
         shallowEqual
     );
@@ -26,10 +27,10 @@ const Workspace = () => {
     const dispatch: AppDispatch = useAppDispatch();
 
     useEffect(() => {
-        if (isLoading) {
-            dispatch(getDirectoryAsync(userId));
+        if (isLoading && projectId) {
+            dispatch(getDirectoryAsync({ userId, projectId }));
         }
-    }, [isLoading, dispatch, userId]);
+    }, [isLoading, dispatch, userId, projectId]);
 
     return (
         <Container>

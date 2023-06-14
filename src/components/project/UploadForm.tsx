@@ -19,7 +19,7 @@ export default function UploadForm() {
     const { projectId, currentItem, directoryState } = useAppSelector(
         (state: RootState) => ({
             // user: state.auth.user,
-            projectId: state.project.currentProject,
+            projectId: state.project.currentProject?.id,
             currentItem: state.directory.currentItem,
             directoryState: state.directory,
         }),
@@ -49,32 +49,35 @@ export default function UploadForm() {
     const handleSubmit: FormEventHandler = (e) => {
         e.preventDefault();
 
-        if (uploadFiles) {
-            dispatch(setCreation(null));
+        if (projectId) {
+            if (uploadFiles) {
+                dispatch(setCreation(null));
 
-            uploadFiles.forEach(async (file) => {
-                const content = await getContent(file);
-                const filename = setFilename(file.name);
-                const data = {
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                    name: filename,
-                    path:
-                        currItem.id === "root"
-                            ? []
-                            : [...currPath.id, currItem.id],
-                    parent: currItem.id,
-                    lastAccessed: null,
-                    content,
-                    extension: getExtension(file.name),
-                    projectId,
-                    // userId: user.uid,
-                    // createdBy: user.name
-                };
-                dispatch(uploadFileAsync({ file, data }));
-            });
+                uploadFiles.forEach(async (file) => {
+                    const content = await getContent(file);
+                    const filename = setFilename(file.name);
+                    const data = {
+                        createdAt: new Date(),
+                        updatedAt: new Date(),
+                        name: filename,
+                        path:
+                            currItem.id === "root"
+                                ? []
+                                : [...currPath.id, currItem.id],
+                        parent: currItem.id,
+                        lastAccessed: null,
+                        content,
+                        extension: getExtension(file.name),
+                        // userId: user.uid,
+                        // createdBy: user.name
+                    };
+                    dispatch(uploadFileAsync({ projectId, file, data }));
+                });
+            } else {
+                alert(`File name is required!`);
+            }
         } else {
-            alert(`File name is required!`);
+            alert(`NO PROJECT SELECTED`);
         }
     };
 
