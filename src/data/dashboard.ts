@@ -11,7 +11,7 @@ function createData(
         name,
         tags,
         createdBy,
-        lastModifiedAt: new Date().toTimeString(),
+        lastModifiedAt: new Date().toLocaleString(),
     };
 }
 
@@ -55,5 +55,24 @@ export const headCells: readonly TableHeadCell[] = [
         align: "right",
         disablePadding: false,
         label: "Last Modified At",
+    },
+];
+
+export const projectTemplates = [
+    {
+        value: "React",
+        label: "React",
+    },
+    {
+        value: "Python",
+        label: "Python",
+    },
+    {
+        value: "C++",
+        label: "C++",
+    },
+    {
+        value: "NodeJs",
+        label: "NodeJs",
     },
 ];

@@ -1,8 +1,9 @@
 import { alpha } from "@mui/material/styles";
 import { IconButton, Toolbar, Tooltip, Typography } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import FilterListIcon from "@mui/icons-material/FilterList";
+
 import { tableTitle } from "@/data";
+import { HeaderToolbar } from "./Toolbars";
 
 export default function TableToolbar(props: TableToolbarProps) {
     const { numSelected } = props;
@@ -47,11 +48,7 @@ export default function TableToolbar(props: TableToolbarProps) {
                     </IconButton>
                 </Tooltip>
             ) : (
-                <Tooltip title="Filter list">
-                    <IconButton>
-                        <FilterListIcon />
-                    </IconButton>
-                </Tooltip>
+                <HeaderToolbar />
             )}
         </Toolbar>
     );

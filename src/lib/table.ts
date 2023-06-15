@@ -38,3 +38,7 @@ export function stableSort<T>(
     });
     return stabilizedThis.map((el) => el[0]);
 }
+
+export function isSortField(value: string): value is SortFields {
+    return ["name", "createdBy", "lastModifiedAt"].includes(value);
+}

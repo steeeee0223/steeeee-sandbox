@@ -15,7 +15,7 @@ import { tableRows } from "@/data";
 import { getComparator, stableSort } from "@/lib/table";
 import TableHeader from "./TableHeader";
 import TableToolbar from "./TableToolbar";
-import Toolbar from "./Toolbar";
+import { ActionToolbar } from "./Toolbars";
 
 export default function EnhancedTable() {
     const [order, setOrder] = React.useState<Order>("asc");
@@ -150,10 +150,10 @@ export default function EnhancedTable() {
                                             {row.createdBy}
                                         </TableCell>
                                         <TableCell align="right">
-                                            {row.lastModifiedAt.toString()}
+                                            {row.lastModifiedAt}
                                         </TableCell>
                                         <TableCell align="center">
-                                            <Toolbar
+                                            <ActionToolbar
                                                 projectId={row.projectId}
                                             />
                                         </TableCell>

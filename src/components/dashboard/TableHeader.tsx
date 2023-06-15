@@ -10,10 +10,7 @@ import {
 } from "@mui/material";
 
 import { headCells } from "@/data";
-
-function isSortField(value: string): value is SortFields {
-    return ["name", "createdBy", "lastModifiedAt"].includes(value);
-}
+import { isSortField } from "@/lib/table";
 
 export default function TableHeader(props: TableProps) {
     const {
