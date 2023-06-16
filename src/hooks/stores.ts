@@ -3,13 +3,14 @@ import { shallowEqual } from "react-redux";
 
 import store from "@/stores/store";
 import {
+    directorySelector,
     getChildren,
     getFullPath,
     getItem,
     getRecursiveItemIds,
     getSelectedItem,
-    toList,
 } from "@/stores/directory";
+import { projectSelector } from "@/stores/project";
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
 export type RootState = ReturnType<typeof store.getState>;
@@ -20,13 +21,11 @@ export const useAppDispatch: () => AppDispatch = useDispatch;
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 
 export const useDirectory = (itemId: string) => {
-    const { directory } = useAppSelector(
-        (state: RootState) => ({
-            directory: toList(state.directory),
-        }),
+    const { directoryState } = useAppSelector(
+        (state) => ({ directoryState: state.directory }),
         shallowEqual
     );
-
+    const directory = directorySelector.selectAll(directoryState);
     const item = getItem(directory, itemId);
     const firstLayerChildren = getChildren(directory, itemId);
     const children = getRecursiveItemIds(directory, itemId);
@@ -41,4 +40,19 @@ export const useDirectory = (itemId: string) => {
         selectedItem,
         path,
     };
+};
+
+export const useProjects = () => {
+    const { projectState } = useAppSelector(
+        (state) => ({ projectState: state.project }),
+        shallowEqual
+    );
+    const projects = projectSelector.selectAll(projectState);
+    const isProjectPresent = (projectName: string): boolean => {
+        const projectPresent = projects.find(
+            ({ name }) => projectName === name
+        );
+        return !!projectPresent;
+    };
+    return { projects, isProjectPresent };
 };

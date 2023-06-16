@@ -7,6 +7,7 @@ const initialState: CursorState = {
     renameItem: null,
     creationType: null,
     fileActionType: null,
+    dashboardAction: null,
 };
 
 const cursorSlice = createSlice({
@@ -22,6 +23,12 @@ const cursorSlice = createSlice({
         setFileAction: (state, { payload }: PayloadAction<string | null>) => {
             state.fileActionType = payload;
         },
+        setDashboardAction: (
+            state,
+            { payload }: PayloadAction<typeof state.dashboardAction>
+        ) => {
+            state.dashboardAction = payload;
+        },
     },
     extraReducers(builder) {
         builder.addCase(
@@ -35,6 +42,6 @@ const cursorSlice = createSlice({
     },
 });
 
-export const { setRenameItem, setCreation, setFileAction } =
+export const { setRenameItem, setCreation, setFileAction, setDashboardAction } =
     cursorSlice.actions;
 export default cursorSlice.reducer;

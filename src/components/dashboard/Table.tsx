@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState, useMemo, MouseEvent, ChangeEvent } from "react";
 import {
     Box,
     Checkbox,
@@ -11,21 +11,25 @@ import {
     TableRow,
 } from "@mui/material";
 
-import { tableRows } from "@/data";
+import { useProjects } from "@/hooks";
 import { getComparator, stableSort } from "@/lib/table";
+import { Project } from "@/stores/project";
+
 import TableHeader from "./TableHeader";
 import TableToolbar from "./TableToolbar";
 import { ActionToolbar } from "./Toolbars";
 
 export default function EnhancedTable() {
-    const [order, setOrder] = React.useState<Order>("asc");
-    const [orderBy, setOrderBy] = React.useState<SortFields>("name");
-    const [selected, setSelected] = React.useState<readonly string[]>([]);
-    const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(5);
+    const { projects } = useProjects();
+
+    const [order, setOrder] = useState<Order>("asc");
+    const [orderBy, setOrderBy] = useState<SortFields>("name");
+    const [selected, setSelected] = useState<readonly string[]>([]);
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
 
     const handleRequestSort = (
-        event: React.MouseEvent<unknown>,
+        event: MouseEvent<unknown>,
         property: SortFields
     ) => {
         const isAsc = orderBy === property && order === "asc";
@@ -33,18 +37,16 @@ export default function EnhancedTable() {
         setOrderBy(property);
     };
 
-    const handleSelectAllClick = (
-        event: React.ChangeEvent<HTMLInputElement>
-    ) => {
+    const handleSelectAllClick = (event: ChangeEvent<HTMLInputElement>) => {
         if (event.target.checked) {
-            const newSelected = tableRows.map((n) => n.name);
+            const newSelected = projects.map((n) => n.name);
             setSelected(newSelected);
             return;
         }
         setSelected([]);
     };
 
-    const handleClick = (event: React.MouseEvent<unknown>, name: string) => {
+    const handleClick = (event: MouseEvent<unknown>, name: string) => {
         const selectedIndex = selected.indexOf(name);
         let newSelected: readonly string[] = [];
 
@@ -68,9 +70,7 @@ export default function EnhancedTable() {
         setPage(newPage);
     };
 
-    const handleChangeRowsPerPage = (
-        event: React.ChangeEvent<HTMLInputElement>
-    ) => {
+    const handleChangeRowsPerPage = (event: ChangeEvent<HTMLInputElement>) => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
     };
@@ -79,14 +79,19 @@ export default function EnhancedTable() {
 
     // Avoid a layout jump when reaching the last page with empty rows.
     const emptyRows =
-        page > 0 ? Math.max(0, (1 + page) * rowsPerPage - tableRows.length) : 0;
+        page > 0 ? Math.max(0, (1 + page) * rowsPerPage - projects.length) : 0;
 
-    const visibleRows = React.useMemo(
+    const normalize = (project: Project): TableData => ({
+        ...project,
+        lastModifiedAt: new Date(project.lastModifiedAt).toLocaleString(),
+    });
+
+    const visibleRows = useMemo(
         () =>
-            stableSort(tableRows, getComparator(order, orderBy)).slice(
-                page * rowsPerPage,
-                page * rowsPerPage + rowsPerPage
-            ),
+            stableSort(
+                projects.map(normalize),
+                getComparator(order, orderBy)
+            ).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
         [order, orderBy, page, rowsPerPage]
     );
 
@@ -106,7 +111,7 @@ export default function EnhancedTable() {
                             orderBy={orderBy}
                             onSelectAllClick={handleSelectAllClick}
                             onRequestSort={handleRequestSort}
-                            rowCount={tableRows.length}
+                            rowCount={projects.length}
                         />
                         <TableBody>
                             {visibleRows.map((row, index) => {
@@ -175,7 +180,7 @@ export default function EnhancedTable() {
                 <TablePagination
                     rowsPerPageOptions={[5, 10, 25]}
                     component="div"
-                    count={tableRows.length}
+                    count={projects.length}
                     rowsPerPage={rowsPerPage}
                     page={page}
                     onPageChange={handleChangePage}

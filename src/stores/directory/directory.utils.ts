@@ -1,10 +1,5 @@
-import {
-    SelectedItem,
-    DirectoryItem,
-    File,
-    Folder,
-    DirectoryState,
-} from "@/stores/directory";
+import { SelectedItem, DirectoryItem, File, Folder } from "./directory";
+import { DirectoryState } from "./directory.slice";
 
 const nothing: never = undefined as never;
 

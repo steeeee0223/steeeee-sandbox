@@ -1,3 +1,5 @@
+import { Project } from "@/stores/project";
+
 export const tableTitle = "Projects";
 
 function createData(
@@ -5,30 +7,21 @@ function createData(
     name: string,
     tags: string[],
     createdBy: string
-): TableData {
+): Project {
     return {
         projectId,
         name,
         tags,
         createdBy,
-        lastModifiedAt: new Date().toLocaleString(),
+        lastModifiedAt: new Date(),
     };
 }
 
-export const tableRows: TableData[] = [
-    createData("1", "Cupcake", ["python"], "steve"),
-    createData("2", "Donut", ["python"], "steve"),
-    createData("3", "Eclair", ["python"], "steve"),
-    createData("4", "Frozen yoghurt", ["python"], "steve"),
-    createData("5", "Gingerbread", ["nodejs"], "steve"),
-    createData("6", "Honeycomb", ["react"], "kimi"),
-    createData("7", "Ice cream sandwich", ["react"], "kimi"),
-    createData("8", "Jelly Bean", ["react"], "kimi"),
-    createData("9", "KitKat", ["react"], "kimi"),
-    createData("10", "Lollipop", ["react"], "kimi"),
-    createData("11", "Marshmallow", ["php"], "kimi"),
-    createData("12", "Nougat", ["php"], "kimi"),
-    createData("13", "Oreo", ["php"], "kimi"),
+export const tableRows: Project[] = [
+    createData("1", "Typescript", ["typescript"], "admin"),
+    createData("2", "Node JS", ["nodejs"], "steve"),
+    createData("3", "Python", ["python"], "kimi"),
+    createData("4", "C++", ["c++"], "kimi"),
 ];
 
 export const headCells: readonly TableHeadCell[] = [
@@ -74,5 +67,9 @@ export const projectTemplates = [
     {
         value: "NodeJs",
         label: "NodeJs",
+    },
+    {
+        value: "Blank",
+        label: "Blank",
     },
 ];

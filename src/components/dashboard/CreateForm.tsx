@@ -17,6 +17,9 @@ import {
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 
 import { projectTemplates } from "@/data";
+import { useAppDispatch, useProjects } from "@/hooks";
+import { createProjectAsync } from "@/stores/project";
+import { setDashboardAction } from "@/stores/cursor";
 
 const formStyle = {
     position: "absolute" as "absolute",
@@ -33,13 +36,32 @@ const formStyle = {
 interface CreateFormProps {}
 
 const CreateForm = forwardRef(({}: CreateFormProps, ref) => {
+    const { isProjectPresent } = useProjects();
+    const dispatch = useAppDispatch();
+
     const [name, setName] = useState("");
     const [template, setTemplate] = useState<string>("");
 
     const handleSubmit: FormEventHandler = (e) => {
         e.preventDefault();
-        console.log(`Entered project name: ${name}`);
-        console.log(`Selected template: ${template}`);
+        if (name && template) {
+            if (!isProjectPresent(name)) {
+                const userId = "admin";
+                const data = {
+                    createdAt: new Date(),
+                    lastModifiedAt: new Date(),
+                    name,
+                    tags: [template],
+                };
+                dispatch(createProjectAsync({ userId, data }));
+                dispatch(setDashboardAction(null));
+            } else {
+                alert(`Project name already present: ${name}`);
+                setName("");
+            }
+        } else {
+            alert(`All fields are required`);
+        }
     };
 
     const handleChange: ChangeEventHandler<HTMLInputElement> = useCallback(

@@ -15,6 +15,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 
 import { ButtonGroup } from "../common";
 import CreateForm from "./CreateForm";
+import { useAppDispatch, useAppSelector } from "@/hooks";
+import { setDashboardAction } from "@/stores/cursor";
 
 interface ToolbarProps {
     projectId: string;
@@ -67,15 +69,19 @@ export const ActionToolbar = ({ projectId }: ToolbarProps) => {
 };
 
 export const HeaderToolbar = () => {
-    const [createForm, setCreateForm] = useState(false);
+    const dispatch = useAppDispatch();
+    const { dashboardAction } = useAppSelector((state) => ({
+        dashboardAction: state.cursor.dashboardAction,
+    }));
+
     const formRef = useRef<HTMLFormElement>(null);
 
     const handleFormOpen = () => {
-        setCreateForm(true);
+        dispatch(setDashboardAction("create"));
     };
 
     const handleFormClosed = () => {
-        setCreateForm(false);
+        dispatch(setDashboardAction(null));
     };
 
     return (
@@ -97,7 +103,7 @@ export const HeaderToolbar = () => {
                 </Tooltip>
             </ButtonGroup>
             <Modal
-                open={createForm}
+                open={dashboardAction === "create"}
                 onClose={handleFormClosed}
                 aria-labelledby="modal-title"
             >

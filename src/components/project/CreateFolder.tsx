@@ -45,8 +45,8 @@ export default function CreateFolder() {
                     };
                     dispatch(createFolderAsync({ projectId, data }));
                 } else {
-                    setFolderName("");
                     alert(`Folder ${folderName} already present!`);
+                    setFolderName("");
                 }
             } else {
                 alert(`Folder name is required!`);

@@ -2,19 +2,14 @@ import { useEffect } from "react";
 import { shallowEqual } from "react-redux";
 import { Container } from "@mui/material";
 
-import {
-    useAppDispatch,
-    useAppSelector,
-    AppDispatch,
-    RootState,
-} from "@/hooks";
+import { useAppDispatch, useAppSelector } from "@/hooks";
 import { getDirectoryAsync } from "@/stores/directory";
 import { Loading } from "@/components/common";
 import Editors from "./Editors";
 
 export default function Workspace() {
     const { isLoading, projectId } = useAppSelector(
-        (state: RootState) => ({
+        (state) => ({
             // user: state.auth.user,
             // isLoggedIn: state.auth.isAuthenticated,
             isLoading: state.directory.isLoading,
@@ -23,7 +18,7 @@ export default function Workspace() {
         shallowEqual
     );
     const userId = "admin"; // temp
-    const dispatch: AppDispatch = useAppDispatch();
+    const dispatch = useAppDispatch();
 
     useEffect(() => {
         if (isLoading && projectId)

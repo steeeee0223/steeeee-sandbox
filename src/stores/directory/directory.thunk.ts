@@ -14,14 +14,14 @@ export type UploadFile = File;
 export const createFolderAsync = createAsyncThunk(
     "directory/createFolderAsync",
     async ({ projectId, data }: { projectId: string; data: any }) => {
-        return await foldersDB.create(projectId, data);
+        return await foldersDB.create({ ...data, projectId });
     }
 );
 
 export const createFileAsync = createAsyncThunk(
     "directory/createFileAsync",
     async ({ projectId, data }: { projectId: string; data: any }) => {
-        return await filesDB.create(projectId, data);
+        return await filesDB.create({ ...data, projectId });
     }
 );
 
@@ -42,10 +42,10 @@ export const uploadFileAsync = createAsyncThunk(
 
 export const getDirectoryAsync = createAsyncThunk(
     "directory/getDirectoryAsync",
-    async ({ userId, projectId }: { userId: string; projectId: string }) => {
+    async (payload: { userId: string; projectId: string }) => {
         const directoryItems: DirectoryItem[] = [];
-        const folders = await foldersDB.get(userId, projectId);
-        const files = await filesDB.get(userId, projectId);
+        const folders = await foldersDB.get(payload);
+        const files = await filesDB.get(payload);
         return directoryItems.concat(
             folders,
             sampleFolders,

@@ -1,32 +1,19 @@
+import { Timestamp } from "firebase/firestore";
+
 import { db, storage } from "@/config/firebase";
 import { File, Folder, UploadFile } from "@/stores/directory";
+import { Project } from "@/stores/project";
 
 abstract class IStorage<T> {
     public collection!: string;
 
     public abstract unpack(doc: any): T;
 
-    public async get(userId: string, projectId: string): Promise<T[]> {
-        try {
-            const res = await db
-                .collection(this.collection)
-                // .where("userId", "==", userId)
-                .where("projectId", "==", projectId)
-                .get();
-            const items: T[] = await res.docs.map((doc) => {
-                return this.unpack(doc);
-            });
-            return items;
-        } catch (error) {
-            console.log(error);
-            return [];
-        }
-    }
+    public abstract get(params: any): Promise<T[]>;
 
-    public async create(projectId: string, data: any): Promise<T> {
+    public async create(data: any): Promise<T> {
         try {
-            const insertData = { ...data, projectId };
-            const res = await db.collection(this.collection).add(insertData);
+            const res = await db.collection(this.collection).add(data);
             const doc = await res.get();
             return this.unpack(doc);
         } catch (error) {
@@ -60,6 +47,48 @@ abstract class IStorage<T> {
     }
 }
 
+export class ProjectStorage extends IStorage<Project> {
+    public static __instance: ProjectStorage;
+    public collection = "projects";
+
+    private constructor() {
+        super();
+    }
+
+    public static getStorage(): ProjectStorage {
+        return this.__instance ?? new ProjectStorage();
+    }
+
+    public unpack(doc: any): Project {
+        const {
+            name,
+            tags,
+            createdBy,
+            lastModifiedAt: { seconds, nanoseconds },
+        } = doc.data();
+        return {
+            projectId: doc.id,
+            name,
+            tags,
+            createdBy,
+            lastModifiedAt: new Timestamp(seconds, nanoseconds).toDate(),
+        };
+    }
+
+    public async get(userId: string): Promise<Project[]> {
+        try {
+            const res = await db
+                .collection(this.collection)
+                .where("createdBy", "==", userId)
+                .get();
+            return await res.docs.map(this.unpack);
+        } catch (error) {
+            console.log(error);
+            return [];
+        }
+    }
+}
+
 export class FilesStorage extends IStorage<File> {
     public static __instance: FilesStorage;
     public collection = "files";
@@ -72,7 +101,7 @@ export class FilesStorage extends IStorage<File> {
         return this.__instance ?? new FilesStorage();
     }
 
-    public unpack<File>(doc: any): File {
+    public unpack(doc: any): File {
         const { parent, name, extension, content } = doc.data();
         return {
             itemId: doc.id,
@@ -84,12 +113,32 @@ export class FilesStorage extends IStorage<File> {
         } as File;
     }
 
+    public async get({
+        userId,
+        projectId,
+    }: {
+        userId: string;
+        projectId: string;
+    }): Promise<File[]> {
+        try {
+            const res = await db
+                .collection(this.collection)
+                // .where("userId", "==", userId)
+                .where("projectId", "==", projectId)
+                .get();
+            return await res.docs.map(this.unpack);
+        } catch (error) {
+            console.log(error);
+            return [];
+        }
+    }
+
     public async upload(
         projectId: string,
         data: any,
         uploadFile: UploadFile
     ): Promise<File> {
-        const file = await this.create(projectId, data);
+        const file = await this.create({ ...data, projectId });
         const ref = storage.ref(
             `${this.collection}/${projectId}/${file.itemId}`
         );
@@ -145,5 +194,25 @@ export class FoldersStorage extends IStorage<Folder> {
             itemId: doc.id,
             isFolder: true,
         } as Folder;
+    }
+
+    public async get({
+        userId,
+        projectId,
+    }: {
+        userId: string;
+        projectId: string;
+    }): Promise<Folder[]> {
+        try {
+            const res = await db
+                .collection(this.collection)
+                // .where("userId", "==", userId)
+                .where("projectId", "==", projectId)
+                .get();
+            return await res.docs.map(this.unpack);
+        } catch (error) {
+            console.log(error);
+            return [];
+        }
     }
 }
