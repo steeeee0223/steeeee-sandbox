@@ -1,7 +1,23 @@
-import { Typography } from "@mui/material";
+import { Skeleton, Typography } from "@mui/material";
 
 const Loading = () => {
-    return <Typography variant="h1">Loading</Typography>;
+    const rows = 5;
+    return (
+        <>
+            {Array(rows)
+                .fill(null)
+                .map((_, index) => (
+                    <Skeleton
+                        key={index}
+                        animation="wave"
+                        variant="rounded"
+                        width="100%"
+                        height={30}
+                        sx={{ marginBottom: 3 }}
+                    />
+                ))}
+        </>
+    );
 };
 
 export default Loading;
