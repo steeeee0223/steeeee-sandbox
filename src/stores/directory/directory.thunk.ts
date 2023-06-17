@@ -3,8 +3,8 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { FilesStorage, FoldersStorage } from "@/lib/storage";
 import { accordion as sampleFolders, children as sampleFiles } from "@/data";
 import { DirectoryItem } from "./directory";
-import { getRecursiveItemIds, toList } from "./directory.utils";
-import { DirectoryState } from "./directory.slice";
+import { getRecursiveItemIds } from "./directory.utils";
+import { DirectoryState, directorySelector } from "./directory.slice";
 
 const foldersDB = FoldersStorage.getStorage();
 const filesDB = FilesStorage.getStorage();
@@ -67,7 +67,7 @@ export const deleteDirectoryAsync = createAsyncThunk<
 >(
     "directory/deleteDirectoryAsync",
     async ({ projectId, itemId }, { getState }) => {
-        const directory = toList(getState().directory);
+        const directory = directorySelector.selectAll(getState().directory);
         const { folderIds, fileIds } = getRecursiveItemIds(directory, itemId);
         await foldersDB.delete(folderIds);
         await filesDB.doDelete(projectId, fileIds);
