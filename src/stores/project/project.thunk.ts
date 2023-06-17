@@ -1,9 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
-import { ProjectStorage } from "@/lib/storage";
 import { tableRows as sampleProjects } from "@/data";
-
-const projectsDB = ProjectStorage.getStorage();
+import { filesDB, foldersDB, projectsDB } from "@/lib/storage";
 
 export const createProjectAsync = createAsyncThunk(
     "project/createProjectAsync",
@@ -22,8 +20,24 @@ export const getProjectsAsync = createAsyncThunk(
 
 export const deleteProjectsAsync = createAsyncThunk(
     "project/deleteProjectsAsync",
-    async (projectIds: string[]) => {
+    async ({
+        userId,
+        projectIds,
+    }: {
+        userId: string;
+        projectIds: string[];
+    }) => {
         await projectsDB.delete(projectIds);
+        projectIds.forEach(async (projectId) => {
+            const folderIds = (await foldersDB.get({ userId, projectId })).map(
+                ({ itemId }) => itemId
+            );
+            await foldersDB.delete(folderIds);
+            const fileIds = (await filesDB.get({ userId, projectId })).map(
+                ({ itemId }) => itemId
+            );
+            await filesDB.delete(fileIds);
+        });
         return projectIds;
     }
 );

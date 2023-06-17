@@ -1,13 +1,10 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
-import { FilesStorage, FoldersStorage } from "@/lib/storage";
 import { accordion as sampleFolders, children as sampleFiles } from "@/data";
 import { DirectoryItem } from "./directory";
 import { getRecursiveItemIds } from "./directory.utils";
 import { DirectoryState, directorySelector } from "./directory.slice";
-
-const foldersDB = FoldersStorage.getStorage();
-const filesDB = FilesStorage.getStorage();
+import { filesDB, foldersDB } from "@/lib/storage";
 
 export type UploadFile = File;
 

@@ -47,7 +47,7 @@ abstract class IStorage<T> {
     }
 }
 
-export class ProjectStorage extends IStorage<Project> {
+class ProjectStorage extends IStorage<Project> {
     public static __instance: ProjectStorage;
     public collection = "projects";
 
@@ -89,7 +89,7 @@ export class ProjectStorage extends IStorage<Project> {
     }
 }
 
-export class FilesStorage extends IStorage<File> {
+class FilesStorage extends IStorage<File> {
     public static __instance: FilesStorage;
     public collection = "files";
 
@@ -173,7 +173,7 @@ export class FilesStorage extends IStorage<File> {
     }
 }
 
-export class FoldersStorage extends IStorage<Folder> {
+class FoldersStorage extends IStorage<Folder> {
     public static __instance: FoldersStorage;
     public collection = "folders";
 
@@ -216,3 +216,7 @@ export class FoldersStorage extends IStorage<Folder> {
         }
     }
 }
+
+export const projectsDB = ProjectStorage.getStorage();
+export const foldersDB = FoldersStorage.getStorage();
+export const filesDB = FilesStorage.getStorage();
