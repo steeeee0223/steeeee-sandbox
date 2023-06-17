@@ -10,12 +10,21 @@ import {
     TableRow,
 } from "@mui/material";
 
-import { useTable } from "@/hooks";
+import { useAppSelector, useTable } from "@/hooks";
 import TableHeader from "./TableHeader";
 import TableToolbar from "./TableToolbar";
 import { ActionToolbar } from "./Toolbars";
+import { shallowEqual } from "react-redux";
+import RenameForm from "./RenameForm";
 
 export default function EnhancedTable() {
+    const { currentProject } = useAppSelector(
+        (state) => ({
+            currentProject: state.project.currentProject,
+        }),
+        shallowEqual
+    );
+
     const {
         emptyRows,
         order,
@@ -53,7 +62,7 @@ export default function EnhancedTable() {
                             rowCount={tableData.length}
                         />
                         <TableBody>
-                            {visibleRows.map((tableRow, index) => {
+                            {visibleRows.map((tableRow) => {
                                 const {
                                     projectId,
                                     name,
@@ -62,7 +71,7 @@ export default function EnhancedTable() {
                                     lastModifiedAt,
                                 } = tableRow;
                                 const isItemSelected = isSelected(name);
-                                const labelId = `enhanced-table-checkbox-${index}`;
+                                const labelId = `enhanced-table-checkbox-${projectId}`;
 
                                 return (
                                     <TableRow
@@ -73,7 +82,7 @@ export default function EnhancedTable() {
                                         role="checkbox"
                                         aria-checked={isItemSelected}
                                         tabIndex={-1}
-                                        key={name}
+                                        key={projectId}
                                         selected={isItemSelected}
                                         sx={{ cursor: "pointer" }}
                                     >
@@ -92,7 +101,17 @@ export default function EnhancedTable() {
                                             scope="row"
                                             padding="none"
                                         >
-                                            {name}
+                                            {shallowEqual(currentProject, {
+                                                action: "rename",
+                                                id: projectId,
+                                            }) ? (
+                                                <RenameForm
+                                                    projectId={projectId}
+                                                    placeholder={name}
+                                                />
+                                            ) : (
+                                                <>{name}</>
+                                            )}
                                         </TableCell>
                                         <TableCell align="center">
                                             {tags.toString()}

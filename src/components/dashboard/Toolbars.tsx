@@ -1,4 +1,5 @@
 import { MouseEvent, useRef } from "react";
+import { shallowEqual } from "react-redux";
 import { Modal, Paper, ToggleButton, Tooltip } from "@mui/material";
 import CodeIcon from "@mui/icons-material/Code";
 import ViewInArIcon from "@mui/icons-material/ViewInAr";
@@ -22,9 +23,12 @@ interface ToolbarProps {
 
 export const ActionToolbar = ({ projectName, projectId }: ToolbarProps) => {
     const dispatch = useAppDispatch();
-    const { currentProject } = useAppSelector((state) => ({
-        currentProject: state.project.currentProject,
-    }));
+    const { currentProject } = useAppSelector(
+        (state) => ({
+            currentProject: state.project.currentProject,
+        }),
+        shallowEqual
+    );
 
     const deleteFormRef = useRef<HTMLFormElement>(null);
 
@@ -33,7 +37,6 @@ export const ActionToolbar = ({ projectName, projectId }: ToolbarProps) => {
         action: ProjectAction
     ) => {
         e.stopPropagation();
-        console.log(`Action: ${action}`);
         const validActions: (string | null)[] = ["rename", "delete"];
         if (validActions.includes(action)) {
             dispatch(setProject({ action, id: projectId }));
@@ -66,22 +69,22 @@ export const ActionToolbar = ({ projectName, projectId }: ToolbarProps) => {
                         <ViewInArIcon fontSize="small" />
                     </ToggleButton>
                 </Tooltip>
-                <Tooltip title="Rename Project">
+                <Tooltip title="Rename project">
                     <ToggleButton value="rename" aria-label="rename">
                         <EditIcon fontSize="small" />
                     </ToggleButton>
                 </Tooltip>
-                <Tooltip title="Delete Project">
+                <Tooltip title="Delete project">
                     <ToggleButton value="delete" aria-label="delete">
                         <DeleteIcon fontSize="small" />
                     </ToggleButton>
                 </Tooltip>
             </ButtonGroup>
             <Modal
-                open={
-                    currentProject?.id === projectId &&
-                    currentProject?.action === "delete"
-                }
+                open={shallowEqual(currentProject, {
+                    action: "delete",
+                    id: projectId,
+                })}
                 onClose={() => dispatch(setDashboardAction(null))}
             >
                 <DeleteForm
