@@ -33,6 +33,7 @@ const DeleteForm = forwardRef(
         const { isProjectMatch } = useProjects();
         const dispatch = useAppDispatch();
 
+        const userId = "admin";
         const [name, setName] = useState("");
 
         const handleSubmit: FormEventHandler = (e) => {
@@ -42,7 +43,9 @@ const DeleteForm = forwardRef(
                 name === projectName &&
                 isProjectMatch(projectName, projectId)
             ) {
-                dispatch(deleteProjectsAsync([projectId]));
+                dispatch(
+                    deleteProjectsAsync({ userId, projectIds: [projectId] })
+                );
                 dispatch(setProject(null));
             } else {
                 setName("");
