@@ -3,47 +3,39 @@ import { shallowEqual } from "react-redux";
 import { Divider, IconButton, InputBase, Paper } from "@mui/material";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 
-import {
-    useAppDispatch,
-    useAppSelector,
-    AppDispatch,
-    RootState,
-} from "@/hooks";
+import { useAppDispatch, useAppSelector, useDirectory } from "@/hooks";
 import { setCreation } from "@/stores/cursor";
-import { createFileAsync, isFilePresent } from "@/stores/directory";
+import { createFileAsync } from "@/stores/directory";
 import { getExtension } from "@/lib/file";
 
 export default function CreateFile() {
     const [name, setName] = useState("");
 
-    const { projectId, currentItem, directoryState } = useAppSelector(
-        (state: RootState) => ({
+    const { projectId, currentItem } = useAppSelector(
+        (state) => ({
             // user: state.auth.user,
             projectId: state.project.currentProject?.id,
             currentItem: state.directory.currentItem,
-            directoryState: state.directory,
         }),
         shallowEqual
     );
-    const { item: currItem, path: currPath } = currentItem;
-    const dispatch: AppDispatch = useAppDispatch();
+    const { item, path } = currentItem;
+    const { isFilePresent } = useDirectory(item.id);
+    const dispatch = useAppDispatch();
 
     const handleSubmit: FormEventHandler = (e) => {
         e.preventDefault();
         if (projectId) {
             if (name) {
-                if (!isFilePresent(directoryState, name)) {
+                if (!isFilePresent(name)) {
                     dispatch(setCreation(null));
 
                     const data = {
                         createdAt: new Date(),
                         updatedAt: new Date(),
                         name,
-                        path:
-                            currItem.id === "root"
-                                ? []
-                                : [...currPath.id, currItem.id],
-                        parent: currItem.id,
+                        path: item.id === "root" ? [] : [...path.id, item.id],
+                        parent: item.id,
                         lastAccessed: null,
                         content: "",
                         extension: getExtension(name),

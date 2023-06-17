@@ -1,7 +1,6 @@
-import { Box, Container, Divider, Stack, Typography } from "@mui/material";
-
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import { Box, Container, Divider, Stack, Typography } from "@mui/material";
 
 import { Workspace } from "@/components/demo";
 import { Frame } from "@/components/common";

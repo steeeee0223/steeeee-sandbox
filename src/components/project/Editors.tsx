@@ -1,40 +1,31 @@
-import { MouseEvent, useCallback, useEffect, useState } from "react";
+import { MouseEvent, useCallback } from "react";
 import { shallowEqual } from "react-redux";
 import { Box, IconButton, Tab } from "@mui/material";
 import { TabContext, TabList } from "@mui/lab";
 import CloseIcon from "@mui/icons-material/Close";
 
-import {
-    useAppDispatch,
-    useAppSelector,
-    AppDispatch,
-    RootState,
-} from "@/hooks";
-import { getItem, toList } from "@/stores/directory";
+import { useAppDispatch, useAppSelector, useDirectory } from "@/hooks";
+import { getItem } from "@/stores/directory";
 import { closeEditors, setEditor } from "@/stores/editor";
 
 import { Editor } from "./Editor";
 
 export default function Editors() {
-    const { editorIds, currentEditor, directory } = useAppSelector(
-        (state: RootState) => ({
+    const { editorIds, currentEditor } = useAppSelector(
+        (state) => ({
             // user: state.auth.user,
             // isLoggedIn: state.auth.isAuthenticated,
             editorIds: state.editor.ids,
             currentEditor: state.editor.currentEditor,
-            directory: toList(state.directory),
         }),
         shallowEqual
     );
-    const dispatch: AppDispatch = useAppDispatch();
-
-    const [tabs, setTabs] = useState(editorIds);
-    const [activeTab, setActiveTab] = useState(currentEditor);
+    const { directory } = useDirectory("root");
+    const dispatch = useAppDispatch();
 
     const handleChange = useCallback(
         (e: React.SyntheticEvent, editorId: string) => {
             e.preventDefault();
-            setActiveTab(editorId);
             dispatch(setEditor(editorId));
         },
         []
@@ -45,16 +36,11 @@ export default function Editors() {
         dispatch(closeEditors([editorId]));
     }, []);
 
-    useEffect(() => {
-        setTabs(editorIds);
-        setActiveTab(currentEditor);
-    }, [currentEditor, editorIds]);
-
     return (
         <>
-            {activeTab && (
+            {currentEditor && (
                 <Box sx={{ maxWidth: "100%", typography: "body1" }}>
-                    <TabContext value={activeTab}>
+                    <TabContext value={currentEditor}>
                         <Box
                             sx={{
                                 borderBottom: 1,
@@ -69,7 +55,7 @@ export default function Editors() {
                                 aria-label="tabs"
                                 sx={{ fontSize: "small" }}
                             >
-                                {tabs.map((editorId) => {
+                                {editorIds.map((editorId) => {
                                     const itemId = editorId as string;
                                     const { name } = getItem(directory, itemId);
                                     return (
@@ -103,7 +89,7 @@ export default function Editors() {
                                 })}
                             </TabList>
                         </Box>
-                        {tabs.map((editorId) => {
+                        {editorIds.map((editorId) => {
                             const itemId = editorId as string;
                             return <Editor key={itemId} itemId={itemId} />;
                         })}

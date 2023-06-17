@@ -22,7 +22,10 @@ export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 
 export const useDirectory = (itemId: string) => {
     const { directoryState } = useAppSelector(
-        (state) => ({ directoryState: state.directory }),
+        (state) => ({
+            directoryState: state.directory,
+            // currentItem: state.directory.currentItem,
+        }),
         shallowEqual
     );
     const directory = directorySelector.selectAll(directoryState);
@@ -32,6 +35,19 @@ export const useDirectory = (itemId: string) => {
     const selectedItem = getSelectedItem(directory, itemId);
     const path = getFullPath(directory, itemId);
 
+    const isFolderPresent = (folderName: string): boolean => {
+        return !!directory.find(
+            ({ isFolder, parent, name }) =>
+                isFolder && parent === itemId && name === folderName
+        );
+    };
+    const isFilePresent = (fileName: string): boolean => {
+        return !!directory.find(
+            ({ isFolder, parent, name }) =>
+                !isFolder && parent === itemId && name === fileName
+        );
+    };
+
     return {
         directory,
         item,
@@ -39,6 +55,8 @@ export const useDirectory = (itemId: string) => {
         children,
         selectedItem,
         path,
+        isFolderPresent,
+        isFilePresent,
     };
 };
 

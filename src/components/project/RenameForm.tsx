@@ -5,18 +5,18 @@ import { useAppDispatch, useDirectory } from "@/hooks";
 import { setRenameItem } from "@/stores/cursor";
 import { renameDirectoryItemAsync } from "@/stores/directory";
 
-interface InputProps {
+interface RenameFormProps {
     itemId: string;
     placeholder?: string;
 }
 
-export default function Input({ itemId, placeholder }: InputProps) {
-    const [name, setName] = useState(placeholder ?? "");
+export default function RenameForm({ itemId, placeholder }: RenameFormProps) {
     const {
         item: { isFolder },
     } = useDirectory(itemId);
     const dispatch = useAppDispatch();
 
+    const [name, setName] = useState(placeholder ?? "");
     const invalidNames = [placeholder, ""];
 
     const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {

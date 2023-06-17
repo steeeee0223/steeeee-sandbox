@@ -1,68 +1,6 @@
-import { SelectedItem, DirectoryItem, File, Folder } from "./directory";
-import { DirectoryState } from "./directory.slice";
+import { SelectedItem, DirectoryItem } from "./directory";
 
 const nothing: never = undefined as never;
-
-export function toList(directoryEntity: DirectoryState): DirectoryItem[] {
-    const { ids, entities } = directoryEntity;
-    return ids.map((id) => entities[id] ?? nothing);
-}
-
-export function getAllFolders({ ids, entities }: DirectoryState): Folder[] {
-    return ids
-        .map((id) => entities[id] ?? nothing)
-        .filter(({ isFolder }) => isFolder) as Folder[];
-}
-
-export function getAllFiles({ ids, entities }: DirectoryState): File[] {
-    return ids
-        .map((id) => entities[id] ?? nothing)
-        .filter(({ isFolder }) => !isFolder) as File[];
-}
-
-export function isFolderPresent(
-    { ids, entities, currentItem }: DirectoryState,
-    folderName: string
-): boolean {
-    const folderPresent = ids
-        .map((id) => entities[id] ?? nothing)
-        .filter(
-            ({ isFolder, parent }) => isFolder && parent === currentItem.item.id
-        )
-        .find(
-            ({ name, parent }: DirectoryItem) =>
-                name === folderName && parent === currentItem.item.id
-        );
-    return !!folderPresent;
-}
-
-export function isFilePresent(
-    { ids, entities, currentItem }: DirectoryState,
-    fileName: string
-): boolean {
-    const filePresent = ids
-        .map((id) => entities[id] ?? nothing)
-        .filter(
-            ({ isFolder, parent }) =>
-                !isFolder && parent === currentItem.item.id
-        )
-        .find(
-            ({ name, parent }: DirectoryItem) =>
-                name === fileName && parent === currentItem.item.id
-        );
-    return !!filePresent;
-}
-
-export function getFile(
-    directory: DirectoryItem[],
-    itemId: string
-): File | undefined {
-    return (
-        (directory.find(
-            (item) => !item.isFolder && item.itemId === itemId
-        ) as File) ?? undefined
-    );
-}
 
 export function getChildren(
     directory: DirectoryItem[],

@@ -15,12 +15,7 @@ import {
 } from "@mui/icons-material";
 import { shallowEqual } from "react-redux";
 
-import {
-    AppDispatch,
-    RootState,
-    useAppDispatch,
-    useAppSelector,
-} from "@/hooks";
+import { useAppDispatch, useAppSelector } from "@/hooks";
 import { deleteDirectoryAsync, directorySelector } from "@/stores/directory";
 import { setRenameItem } from "@/stores/cursor";
 
@@ -31,14 +26,14 @@ interface ContextMenuProps {
 
 export default function ContextMenu({ itemId, children }: ContextMenuProps) {
     const { projectId, directoryState } = useAppSelector(
-        (state: RootState) => ({
+        (state) => ({
             // user: state.auth.user,
             projectId: state.project.currentProject?.id,
             directoryState: state.directory,
         }),
         shallowEqual
     );
-    const dispatch: AppDispatch = useAppDispatch();
+    const dispatch = useAppDispatch();
 
     const [contextMenu, setContextMenu] = React.useState<{
         mouseX: number;
@@ -46,6 +41,7 @@ export default function ContextMenu({ itemId, children }: ContextMenuProps) {
     } | null>(null);
 
     const handleContextMenu = (event: React.MouseEvent, itemId: string) => {
+        event.stopPropagation();
         event.preventDefault();
         const item = directorySelector.selectById(directoryState, itemId);
         console.log(`Clicking item: ${item?.name}`);

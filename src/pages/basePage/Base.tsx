@@ -14,7 +14,7 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 import { appBarTitle, list1, list2 } from "@/data";
-import { RootState, useAppSelector } from "@/hooks";
+import { useAppSelector } from "@/hooks";
 import { AppBar } from "@/components/navbar";
 import { FolderSystem, Toolbar } from "@/components/project";
 import { Drawer, DrawerHeader, DrawerList } from "@/components/sidebar";
@@ -22,7 +22,7 @@ import { appBarColor } from "@/theme";
 
 const Base = () => {
     const { currentProject } = useAppSelector(
-        (state: RootState) => ({
+        (state) => ({
             // user: state.auth.user,
             // isLoggedIn: state.auth.isAuthenticated,
             currentProject: state.project.currentProject,

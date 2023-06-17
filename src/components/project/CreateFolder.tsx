@@ -3,35 +3,30 @@ import { shallowEqual } from "react-redux";
 import { Divider, IconButton, InputBase, Paper } from "@mui/material";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 
-import {
-    useAppDispatch,
-    useAppSelector,
-    AppDispatch,
-    RootState,
-} from "@/hooks";
+import { useAppDispatch, useAppSelector, useDirectory } from "@/hooks";
 import { setCreation } from "@/stores/cursor";
-import { createFolderAsync, isFolderPresent } from "@/stores/directory";
+import { createFolderAsync } from "@/stores/directory";
 
 export default function CreateFolder() {
     const [folderName, setFolderName] = useState("");
 
-    const { directoryState, currentItem, projectId } = useAppSelector(
-        (state: RootState) => ({
+    const { currentItem, projectId } = useAppSelector(
+        (state) => ({
             // user: state.auth.user,
-            directoryState: state.directory,
             currentItem: state.directory.currentItem,
             projectId: state.project.currentProject?.id,
         }),
         shallowEqual
     );
     const { item, path } = currentItem;
-    const dispatch: AppDispatch = useAppDispatch();
+    const { isFolderPresent } = useDirectory(item.id);
+    const dispatch = useAppDispatch();
 
     const handleSubmit: FormEventHandler = (e) => {
         e.preventDefault();
         if (projectId) {
             if (folderName) {
-                if (!isFolderPresent(directoryState, folderName)) {
+                if (!isFolderPresent(folderName)) {
                     dispatch(setCreation(null));
                     const data = {
                         createdAt: new Date(),

@@ -3,33 +3,28 @@ import { shallowEqual } from "react-redux";
 import { Divider, IconButton, InputBase, Paper } from "@mui/material";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 
-import {
-    useAppDispatch,
-    useAppSelector,
-    AppDispatch,
-    RootState,
-} from "@/hooks";
+import { useAppDispatch, useAppSelector, useDirectory } from "@/hooks";
 import { setCreation } from "@/stores/cursor";
-import { UploadFile, isFilePresent, uploadFileAsync } from "@/stores/directory";
+import { UploadFile, uploadFileAsync } from "@/stores/directory";
 import { getContent, getExtension } from "@/lib/file";
 
 export default function UploadForm() {
     const [uploadFiles, setUploadFiles] = useState<UploadFile[]>([]);
 
-    const { projectId, currentItem, directoryState } = useAppSelector(
-        (state: RootState) => ({
+    const { projectId, currentItem } = useAppSelector(
+        (state) => ({
             // user: state.auth.user,
             projectId: state.project.currentProject?.id,
             currentItem: state.directory.currentItem,
-            directoryState: state.directory,
         }),
         shallowEqual
     );
-    const { item: currItem, path: currPath } = currentItem;
-    const dispatch: AppDispatch = useAppDispatch();
+    const { item, path } = currentItem;
+    const { isFilePresent } = useDirectory(item.id);
+    const dispatch = useAppDispatch();
 
     const setFilename = (filename: string): string => {
-        if (!isFilePresent(directoryState, filename)) return filename;
+        if (!isFilePresent(filename)) return filename;
         const split = filename.split(".");
         if (split.length === 0) {
             return `${filename}-2`;
@@ -60,11 +55,8 @@ export default function UploadForm() {
                         createdAt: new Date(),
                         updatedAt: new Date(),
                         name: filename,
-                        path:
-                            currItem.id === "root"
-                                ? []
-                                : [...currPath.id, currItem.id],
-                        parent: currItem.id,
+                        path: item.id === "root" ? [] : [...path.id, item.id],
+                        parent: item.id,
                         lastAccessed: null,
                         content,
                         extension: getExtension(file.name),

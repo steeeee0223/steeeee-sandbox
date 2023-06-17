@@ -4,24 +4,19 @@ import { Typography, IconButton, Stack } from "@mui/material";
 import FolderIcon from "@mui/icons-material/Folder";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 
-import {
-    AppDispatch,
-    RootState,
-    useAppDispatch,
-    useAppSelector,
-    useDirectory,
-} from "@/hooks";
+import { useAppDispatch, useAppSelector, useDirectory } from "@/hooks";
 import { selectItem, getSelectedItem } from "@/stores/directory";
 import { openEditor } from "@/stores/editor";
+
 import { Accordion, AccordionDetails, AccordionSummary } from "./Accordion";
 import ContextMenu from "./ContextMenu";
-import Input from "./Input";
+import RenameForm from "./RenameForm";
 
 export default function FolderSystem({ parent }: { parent: string }) {
     const [toggle, setToggle] = React.useState<Record<string, boolean>>({});
 
     const { currentItem, renameItem } = useAppSelector(
-        (state: RootState) => ({
+        (state) => ({
             // user: state.auth.user,
             currentItem: state.directory.currentItem,
             renameItem: state.cursor.renameItem,
@@ -29,7 +24,7 @@ export default function FolderSystem({ parent }: { parent: string }) {
         shallowEqual
     );
     const { firstLayerChildren: children, directory } = useDirectory(parent);
-    const dispatch: AppDispatch = useAppDispatch();
+    const dispatch = useAppDispatch();
 
     const handleToggle = (pathIds: string[]) => {
         const map: Record<string, boolean> = {};
@@ -75,7 +70,7 @@ export default function FolderSystem({ parent }: { parent: string }) {
                                         )}
                                     </IconButton>
                                     {renameItem === itemId ? (
-                                        <Input
+                                        <RenameForm
                                             itemId={itemId}
                                             placeholder={name}
                                         />

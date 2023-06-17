@@ -9,15 +9,11 @@ import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import ViewInArIcon from "@mui/icons-material/ViewInAr";
 
-import {
-    useAppDispatch,
-    useAppSelector,
-    AppDispatch,
-    RootState,
-} from "@/hooks";
+import { useAppDispatch, useAppSelector } from "@/hooks";
 import { setCreation, setFileAction } from "@/stores/cursor";
 import { drawerWidth } from "@/theme";
 import { ButtonGroup } from "@/components/common";
+
 import CreateFolder from "./CreateFolder";
 import CreateFile from "./CreateFile";
 import UploadForm from "./UploadForm";
@@ -25,7 +21,7 @@ import UploadForm from "./UploadForm";
 export default function Toolbar() {
     const { fileActionType, creationType, currentItem, projectId } =
         useAppSelector(
-            (state: RootState) => ({
+            (state) => ({
                 fileActionType: state.cursor.fileActionType,
                 creationType: state.cursor.creationType,
                 currentItem: state.directory.currentItem,
@@ -33,7 +29,7 @@ export default function Toolbar() {
             }),
             shallowEqual
         );
-    const dispatch: AppDispatch = useAppDispatch();
+    const dispatch = useAppDispatch();
 
     const handleCreation = (
         e: MouseEvent<HTMLElement>,
