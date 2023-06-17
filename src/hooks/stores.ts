@@ -49,10 +49,13 @@ export const useProjects = () => {
     );
     const projects = projectSelector.selectAll(projectState);
     const isProjectPresent = (projectName: string): boolean => {
-        const projectPresent = projects.find(
-            ({ name }) => projectName === name
-        );
-        return !!projectPresent;
+        return !!projects.find(({ name }) => projectName === name);
     };
-    return { projects, isProjectPresent };
+    const isProjectMatch = (projectName: string, id: string): boolean => {
+        return !!projects.find(
+            ({ name, projectId }) => name === projectName && projectId === id
+        );
+    };
+
+    return { projects, isProjectPresent, isProjectMatch };
 };

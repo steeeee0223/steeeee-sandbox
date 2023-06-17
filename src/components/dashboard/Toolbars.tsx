@@ -1,10 +1,4 @@
-import {
-    MouseEvent,
-    MouseEventHandler,
-    ReactElement,
-    useRef,
-    useState,
-} from "react";
+import { MouseEvent, useRef } from "react";
 import { Modal, Paper, ToggleButton, Tooltip } from "@mui/material";
 import CodeIcon from "@mui/icons-material/Code";
 import ViewInArIcon from "@mui/icons-material/ViewInAr";
@@ -13,24 +7,43 @@ import FilterListIcon from "@mui/icons-material/FilterList";
 import FiberNewIcon from "@mui/icons-material/FiberNew";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-import { ButtonGroup } from "../common";
-import CreateForm from "./CreateForm";
 import { useAppDispatch, useAppSelector } from "@/hooks";
+import { ProjectAction, setProject } from "@/stores/project";
 import { setDashboardAction } from "@/stores/cursor";
 
+import { ButtonGroup } from "../common";
+import CreateForm from "./CreateForm";
+import DeleteForm from "./DeleteForm";
+
 interface ToolbarProps {
+    projectName: string;
     projectId: string;
 }
 
-export const ActionToolbar = ({ projectId }: ToolbarProps) => {
-    const handleChange: MouseEventHandler = (e) => {
+export const ActionToolbar = ({ projectName, projectId }: ToolbarProps) => {
+    const dispatch = useAppDispatch();
+    const { currentProject } = useAppSelector((state) => ({
+        currentProject: state.project.currentProject,
+    }));
+
+    const deleteFormRef = useRef<HTMLFormElement>(null);
+
+    const handleActionChange = (
+        e: MouseEvent<HTMLElement>,
+        action: ProjectAction
+    ) => {
         e.stopPropagation();
+        console.log(`Action: ${action}`);
+        const validActions: (string | null)[] = ["rename", "delete"];
+        if (validActions.includes(action)) {
+            dispatch(setProject({ action, id: projectId }));
+        }
     };
 
     return (
         <Paper elevation={0} sx={{ border: null }}>
             <ButtonGroup
-                onChange={handleChange}
+                onChange={handleActionChange}
                 size="small"
                 exclusive
                 aria-label="project-actions"
@@ -64,6 +77,19 @@ export const ActionToolbar = ({ projectId }: ToolbarProps) => {
                     </ToggleButton>
                 </Tooltip>
             </ButtonGroup>
+            <Modal
+                open={
+                    currentProject?.id === projectId &&
+                    currentProject?.action === "delete"
+                }
+                onClose={() => dispatch(setDashboardAction(null))}
+            >
+                <DeleteForm
+                    projectName={projectName}
+                    projectId={projectId}
+                    ref={deleteFormRef}
+                />
+            </Modal>
         </Paper>
     );
 };

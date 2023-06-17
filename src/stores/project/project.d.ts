@@ -6,7 +6,9 @@ export type Project = {
     lastModifiedAt: Date;
 };
 
+export type ProjectAction = "edit" | "demo" | "delete" | "rename" | null;
+
 export type SelectedProject = {
     id: string;
-    action: "edit" | "demo" | null;
+    action: ProjectAction;
 };

@@ -1,4 +1,4 @@
-import { useState, useMemo, MouseEvent, ChangeEvent } from "react";
+import { useState, MouseEvent, ChangeEvent } from "react";
 import {
     Box,
     Checkbox,
@@ -86,14 +86,10 @@ export default function EnhancedTable() {
         lastModifiedAt: new Date(project.lastModifiedAt).toLocaleString(),
     });
 
-    const visibleRows = useMemo(
-        () =>
-            stableSort(
-                projects.map(normalize),
-                getComparator(order, orderBy)
-            ).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
-        [order, orderBy, page, rowsPerPage]
-    );
+    const visibleRows = stableSort(
+        projects.map(normalize),
+        getComparator(order, orderBy)
+    ).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
     return (
         <Box sx={{ width: "100%" }}>
@@ -114,20 +110,27 @@ export default function EnhancedTable() {
                             rowCount={projects.length}
                         />
                         <TableBody>
-                            {visibleRows.map((row, index) => {
-                                const isItemSelected = isSelected(row.name);
+                            {visibleRows.map((project, index) => {
+                                const {
+                                    projectId,
+                                    name,
+                                    tags,
+                                    createdBy,
+                                    lastModifiedAt,
+                                } = project;
+                                const isItemSelected = isSelected(name);
                                 const labelId = `enhanced-table-checkbox-${index}`;
 
                                 return (
                                     <TableRow
                                         hover
                                         onClick={(event) =>
-                                            handleClick(event, row.name)
+                                            handleClick(event, name)
                                         }
                                         role="checkbox"
                                         aria-checked={isItemSelected}
                                         tabIndex={-1}
-                                        key={row.name}
+                                        key={name}
                                         selected={isItemSelected}
                                         sx={{ cursor: "pointer" }}
                                     >
@@ -146,20 +149,21 @@ export default function EnhancedTable() {
                                             scope="row"
                                             padding="none"
                                         >
-                                            {row.name}
+                                            {name}
                                         </TableCell>
                                         <TableCell align="center">
-                                            {row.tags.toString()}
+                                            {tags.toString()}
                                         </TableCell>
                                         <TableCell align="center">
-                                            {row.createdBy}
+                                            {createdBy}
                                         </TableCell>
                                         <TableCell align="right">
-                                            {row.lastModifiedAt}
+                                            {lastModifiedAt}
                                         </TableCell>
                                         <TableCell align="center">
                                             <ActionToolbar
-                                                projectId={row.projectId}
+                                                projectName={name}
+                                                projectId={projectId}
                                             />
                                         </TableCell>
                                     </TableRow>

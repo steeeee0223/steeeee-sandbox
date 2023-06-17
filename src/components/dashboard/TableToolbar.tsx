@@ -1,6 +1,6 @@
 import { alpha } from "@mui/material/styles";
 import { IconButton, Toolbar, Tooltip, Typography } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
+import CancelIcon from "@mui/icons-material/Cancel";
 
 import { tableTitle } from "@/data";
 import { HeaderToolbar } from "./Toolbars";
@@ -42,9 +42,9 @@ export default function TableToolbar(props: TableToolbarProps) {
                 </Typography>
             )}
             {numSelected > 0 ? (
-                <Tooltip title="Delete">
+                <Tooltip title="Cancel">
                     <IconButton>
-                        <DeleteIcon />
+                        <CancelIcon />
                     </IconButton>
                 </Tooltip>
             ) : (
