@@ -28,10 +28,7 @@ export default function Demo() {
                 divider={<Divider orientation="vertical" flexItem />}
             >
                 <Container style={{ padding: 0 }}>
-                    <Typography
-                        variant="body1"
-                        sx={{ color: "text.primary", marginBottom: 3 }}
-                    >
+                    <Typography variant="body1" sx={{ marginBottom: 3 }}>
                         The accordion behaves like the root directory of your
                         project
                     </Typography>
@@ -40,7 +37,6 @@ export default function Demo() {
                 <Container style={{ padding: 0 }}>
                     <Box
                         sx={{
-                            bgcolor: "white",
                             width: "100%",
                             height: "100%",
                         }}

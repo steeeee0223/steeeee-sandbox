@@ -52,7 +52,7 @@ export default function FolderSystem({ parent }: { parent: string }) {
                         expanded={toggle[itemId]}
                         onChange={handleChange(itemId, isFolder)}
                         {...(currentItem.item.id === itemId && {
-                            sx: { backgroundColor: "#e0e0e0" },
+                            sx: { bgcolor: "action.selected" },
                         })}
                     >
                         <ContextMenu itemId={itemId}>

@@ -78,12 +78,7 @@ export default function CreateFile() {
                 autoFocus
             />
             <Divider sx={{ height: 20, m: 0.5 }} orientation="vertical" />
-            <IconButton
-                type="submit"
-                color="primary"
-                sx={{ p: "10px 5px" }}
-                aria-label="file"
-            >
+            <IconButton type="submit" sx={{ p: "10px 5px" }} aria-label="file">
                 <AddBoxIcon fontSize="small" />
             </IconButton>
         </Paper>

@@ -18,7 +18,6 @@ import { useAppSelector } from "@/hooks";
 import { AppBar } from "@/components/navbar";
 import { FolderSystem, Toolbar } from "@/components/project";
 import { Drawer, DrawerHeader, DrawerList } from "@/components/sidebar";
-import { appBarColor } from "@/theme";
 
 const Base = () => {
     const { currentProject } = useAppSelector(
@@ -41,11 +40,7 @@ const Base = () => {
 
     return (
         <>
-            <AppBar
-                position="fixed"
-                open={open}
-                sx={{ backgroundColor: appBarColor }}
-            >
+            <AppBar position="fixed" open={open}>
                 <MuiToolbar>
                     <IconButton
                         color="inherit"
@@ -70,11 +65,7 @@ const Base = () => {
                 aria-label={currentProject?.id ?? undefined}
             >
                 <DrawerHeader>
-                    <Button
-                        href="/"
-                        size="large"
-                        sx={{ color: "#ccc", bgcolor: "inherit" }}
-                    >
+                    <Button href="/" size="large">
                         Home
                     </Button>
                     <IconButton onClick={handleDrawerClose}>

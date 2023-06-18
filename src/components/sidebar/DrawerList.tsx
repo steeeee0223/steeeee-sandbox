@@ -43,10 +43,7 @@ export default function DrawerList({ open, data }: DrawerListProps) {
                             </ListItemIcon>
                             <ListItemText
                                 primary={name}
-                                sx={{
-                                    opacity: open ? 1 : 0,
-                                    color: "gray",
-                                }}
+                                sx={{ opacity: open ? 1 : 0 }}
                             />
                         </ListItemButton>
                     </Link>

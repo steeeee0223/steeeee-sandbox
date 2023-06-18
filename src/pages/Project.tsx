@@ -29,11 +29,11 @@ export default function Project() {
     return (
         <div>
             <Grid container spacing={3}>
-                <Grid item xs={6} sx={{ bgcolor: "inherit", height: "100%" }}>
+                <Grid item xs={6} sx={{ height: "100%" }}>
                     <Workspace />
                 </Grid>
                 <Divider flexItem orientation="vertical" />
-                <Grid item xs={6} sx={{ bgcolor: "inherit", height: "100%" }}>
+                <Grid item xs={6} sx={{ height: "100%" }}>
                     <Tabs children={frames} defaultValue="1" />
                 </Grid>
             </Grid>

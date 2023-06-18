@@ -99,7 +99,6 @@ export default function UploadForm() {
             <Divider sx={{ height: 20, m: 0.5 }} orientation="vertical" />
             <IconButton
                 type="submit"
-                color="primary"
                 sx={{ m: "2px", p: "5px", borderRadius: "2px", height: 30 }}
                 aria-label="files"
                 size="small"
