@@ -1,5 +1,6 @@
 import { MouseEvent } from "react";
 import { shallowEqual } from "react-redux";
+import { Link as RouterLink } from "react-router-dom";
 import { Divider, Paper, ToggleButton } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
@@ -75,6 +76,7 @@ export default function Toolbar() {
                 <ButtonGroup size="small" exclusive>
                     <ToggleButton
                         size="small"
+                        LinkComponent={RouterLink}
                         href={`/demo/${projectId}`}
                         value="demo"
                         aria-label="demo"

@@ -30,21 +30,24 @@ interface DeleteFormProps {
 
 const DeleteForm = forwardRef(
     ({ projectName, projectId }: DeleteFormProps, ref) => {
-        const { isProjectMatch } = useProjects();
         const dispatch = useAppDispatch();
+        const { user, isProjectMatch } = useProjects();
 
-        const userId = "admin";
         const [name, setName] = useState("");
 
         const handleSubmit: FormEventHandler = (e) => {
             e.stopPropagation();
             e.preventDefault();
             if (
+                user &&
                 name === projectName &&
                 isProjectMatch(projectName, projectId)
             ) {
                 dispatch(
-                    deleteProjectsAsync({ userId, projectIds: [projectId] })
+                    deleteProjectsAsync({
+                        userId: user.uid,
+                        projectIds: [projectId],
+                    })
                 );
                 dispatch(setProject(null));
             } else {

@@ -6,13 +6,19 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import AppBar from "./AppBar";
 import { useAppContext } from "@/contexts/app";
 import { appBarTitle, pathsWithoutSidebar } from "@/data";
-import { useAuthContext } from "@/contexts/auth";
+import { useAppSelector, usePath } from "@/hooks";
+import { shallowEqual } from "react-redux";
+import { signOutAsync } from "@/stores/auth";
 
 const Navbar = () => {
     const { sidebarOpen, setSidebarOpen } = useAppContext();
-    const { user, logOut } = useAuthContext();
-    const { pathname } = useLocation();
-    const [, path] = pathname.split("/");
+    const { user } = useAppSelector(
+        (state) => ({ user: state.auth.user }),
+        shallowEqual
+    );
+    const {
+        path: [, path],
+    } = usePath();
 
     return (
         <AppBar position="fixed" open={false}>
@@ -35,7 +41,7 @@ const Navbar = () => {
                 >
                     {appBarTitle}
                 </Typography>
-                {user && <Button onClick={logOut}>Sign Out</Button>}
+                {user && <Button onClick={signOutAsync}>Sign Out</Button>}
             </Toolbar>
         </AppBar>
     );

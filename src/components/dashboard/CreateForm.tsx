@@ -36,24 +36,23 @@ const formStyle = {
 interface CreateFormProps {}
 
 const CreateForm = forwardRef(({}: CreateFormProps, ref) => {
-    const { isProjectPresent } = useProjects();
     const dispatch = useAppDispatch();
+    const { user, isProjectPresent } = useProjects();
 
     const [name, setName] = useState("");
     const [template, setTemplate] = useState<string>("");
 
     const handleSubmit: FormEventHandler = (e) => {
         e.preventDefault();
-        if (name && template) {
+        if (user && name && template) {
             if (!isProjectPresent(name)) {
-                const userId = "admin";
                 const data = {
                     createdAt: new Date(),
                     lastModifiedAt: new Date(),
                     name,
                     tags: [template],
                 };
-                dispatch(createProjectAsync({ userId, data }));
+                dispatch(createProjectAsync({ userId: user.uid, data }));
                 dispatch(setDashboardAction(null));
             } else {
                 alert(`Project name already present: ${name}`);

@@ -1,16 +1,16 @@
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
 import { Divider, Grid, Typography } from "@mui/material";
 
 import { Frame, TabInfo, Tabs } from "@/components/common";
 import { Workspace } from "@/components/project";
 import { sampleCode } from "@/data";
-import { useAppDispatch } from "@/hooks";
+import { useAppDispatch, usePath } from "@/hooks";
 import { setProject } from "@/stores/project";
 
 export default function Project() {
-    const { pathname } = useLocation();
-    const [, , projectId] = pathname.split("/");
+    const {
+        path: [, , projectId],
+    } = usePath();
     const dispatch = useAppDispatch();
 
     useEffect(() => {

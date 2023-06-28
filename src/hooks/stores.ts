@@ -61,8 +61,11 @@ export const useDirectory = (itemId: string) => {
 };
 
 export const useProjects = () => {
-    const { projectState } = useAppSelector(
-        (state) => ({ projectState: state.project }),
+    const { user, projectState } = useAppSelector(
+        (state) => ({
+            user: state.auth.user,
+            projectState: state.project,
+        }),
         shallowEqual
     );
     const projects = projectSelector.selectAll(projectState);
@@ -75,5 +78,5 @@ export const useProjects = () => {
         );
     };
 
-    return { projects, isProjectPresent, isProjectMatch };
+    return { user, projects, isProjectPresent, isProjectMatch };
 };

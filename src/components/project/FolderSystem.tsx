@@ -17,7 +17,6 @@ export default function FolderSystem({ parent }: { parent: string }) {
 
     const { currentItem, renameItem } = useAppSelector(
         (state) => ({
-            // user: state.auth.user,
             currentItem: state.directory.currentItem,
             renameItem: state.cursor.renameItem,
         }),

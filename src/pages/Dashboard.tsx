@@ -8,20 +8,20 @@ import { getProjectsAsync, setProject } from "@/stores/project";
 
 export default function Dashboard() {
     const dispatch = useAppDispatch();
-    const { isLoading } = useAppSelector(
+    const { isLoading, user } = useAppSelector(
         (state) => ({
             isLoading: state.project.isLoading,
+            user: state.auth.user,
         }),
         shallowEqual
     );
-    const userId = "admin";
 
     useEffect(() => {
         dispatch(setProject(null));
-        if (isLoading) {
-            dispatch(getProjectsAsync(userId));
+        if (isLoading && user) {
+            dispatch(getProjectsAsync(user.uid));
         }
-    }, [isLoading, userId]);
+    }, [isLoading, user]);
 
     return (
         <div>

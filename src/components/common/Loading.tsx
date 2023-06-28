@@ -1,4 +1,4 @@
-import { Skeleton, Typography } from "@mui/material";
+import { Skeleton } from "@mui/material";
 
 const Loading = () => {
     const rows = 5;

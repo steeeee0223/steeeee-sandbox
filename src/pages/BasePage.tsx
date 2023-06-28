@@ -1,22 +1,18 @@
-import { useLocation } from "react-router-dom";
 import { shallowEqual } from "react-redux";
 import { Box, Container, Divider, List } from "@mui/material";
 
 import { Drawer, DrawerHeader, DrawerList } from "@/components/sidebar";
 import { FolderSystem, Toolbar } from "@/components/project";
 import { useAppContext } from "@/contexts/app";
-import { useAuthContext } from "@/contexts/auth";
 import { list1, list2, pathsWithoutSidebar } from "@/data";
-import { useAppSelector } from "@/hooks";
+import { useAppSelector, usePath } from "@/hooks";
 
 const Sidebar = () => {
     const { sidebarOpen } = useAppContext();
-    const { user } = useAuthContext();
 
-    const { currentProject } = useAppSelector(
+    const { user, currentProject } = useAppSelector(
         (state) => ({
-            // user: state.auth.user,
-            // isLoggedIn: state.auth.isAuthenticated,
+            user: state.auth.user,
             currentProject: state.project.currentProject,
         }),
         shallowEqual
@@ -46,8 +42,9 @@ const Sidebar = () => {
 };
 
 export default function BasePage({ children }: { children: React.ReactNode }) {
-    const { pathname } = useLocation();
-    const [, path] = pathname.split("/");
+    const {
+        path: [, path],
+    } = usePath();
 
     return (
         <Box sx={{ display: "flex" }}>

@@ -8,22 +8,20 @@ import { Loading } from "@/components/common";
 import Editors from "./Editors";
 
 export default function Workspace() {
-    const { isLoading, projectId } = useAppSelector(
+    const { user, isLoading, projectId } = useAppSelector(
         (state) => ({
-            // user: state.auth.user,
-            // isLoggedIn: state.auth.isAuthenticated,
+            user: state.auth.user,
             isLoading: state.directory.isLoading,
             projectId: state.project.currentProject?.id,
         }),
         shallowEqual
     );
-    const userId = "admin"; // temp
     const dispatch = useAppDispatch();
 
     useEffect(() => {
-        if (isLoading && projectId)
-            dispatch(getDirectoryAsync({ userId, projectId }));
-    }, [isLoading, dispatch, userId, projectId]);
+        if (isLoading && user && projectId)
+            dispatch(getDirectoryAsync({ userId: user.uid, projectId }));
+    }, [isLoading, dispatch, user, projectId]);
 
     return (
         <Container>

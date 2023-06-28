@@ -13,8 +13,6 @@ import { Editor } from "./Editor";
 export default function Editors() {
     const { editorIds, currentEditor } = useAppSelector(
         (state) => ({
-            // user: state.auth.user,
-            // isLoggedIn: state.auth.isAuthenticated,
             editorIds: state.editor.ids,
             currentEditor: state.editor.currentEditor,
         }),
