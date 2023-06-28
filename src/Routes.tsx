@@ -1,18 +1,33 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 
-import { Home, Demo, Dashboard, Project } from "@/pages";
+import { Home, Demo, Dashboard, Project, Login, Introduction } from "@/pages";
+import { Protected } from "./components/common";
 
 export function AppRoutes() {
     return (
-        <BrowserRouter>
-            <Routes>
-                <Route path="/">
-                    <Route index element={<Home />} />
-                    <Route path="dashboard" element={<Dashboard />} />
-                    <Route path="demo/:projectId" element={<Demo />} />
-                    <Route path="project/:projectId" element={<Project />} />
-                </Route>
-            </Routes>
-        </BrowserRouter>
+        <Routes>
+            <Route path="/">
+                <Route index element={<Introduction />} />
+                <Route path="login" element={<Login />} />
+                <Route path="home" element={<Home />} />
+                <Route
+                    path="dashboard"
+                    element={
+                        <Protected>
+                            <Dashboard />
+                        </Protected>
+                    }
+                />
+                <Route path="demo/:projectId" element={<Demo />} />
+                <Route
+                    path="project/:projectId"
+                    element={
+                        <Protected>
+                            <Project />
+                        </Protected>
+                    }
+                />
+            </Route>
+        </Routes>
     );
 }

@@ -7,8 +7,10 @@ import { DrawerItem } from "@/components/sidebar";
 
 export const appBarTitle = "Steeeee";
 
+export const pathsWithoutSidebar = ["", "login"];
+
 export const list1: DrawerItem[] = [
-    { name: "Home", icon: <HomeIcon />, href: "/" },
+    { name: "Home", icon: <HomeIcon />, href: "/home" },
     { name: "Dashboard", icon: <DashboardIcon />, href: "/dashboard" },
 ];
 

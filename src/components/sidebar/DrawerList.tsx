@@ -1,6 +1,6 @@
 import * as React from "react";
+import { Link as RouterLink } from "react-router-dom";
 import {
-    Link,
     List,
     ListItem,
     ListItemButton,
@@ -16,37 +16,39 @@ export type DrawerItem = {
 
 interface DrawerListProps {
     open: boolean;
-    data: DrawerItem[];
+    listItems: DrawerItem[];
 }
 
-export default function DrawerList({ open, data }: DrawerListProps) {
+export default function DrawerList({ open, listItems }: DrawerListProps) {
     return (
         <List>
-            {data.map(({ name, icon, href }, index) => (
+            {listItems.map(({ name, icon, href }, index) => (
                 <ListItem key={index} disablePadding sx={{ display: "block" }}>
-                    <Link href={href} underline="none">
-                        <ListItemButton
+                    <ListItemButton
+                        sx={{
+                            minHeight: 48,
+                            justifyContent: open ? "initial" : "center",
+                            px: 2.5,
+                        }}
+                        component={RouterLink}
+                        to={href}
+                    >
+                        <ListItemIcon
                             sx={{
-                                minHeight: 48,
-                                justifyContent: open ? "initial" : "center",
-                                px: 2.5,
+                                minWidth: 0,
+                                mr: open ? 3 : "auto",
+                                justifyContent: "center",
                             }}
                         >
-                            <ListItemIcon
-                                sx={{
-                                    minWidth: 0,
-                                    mr: open ? 3 : "auto",
-                                    justifyContent: "center",
-                                }}
-                            >
-                                {icon}
-                            </ListItemIcon>
-                            <ListItemText
-                                primary={name}
-                                sx={{ opacity: open ? 1 : 0 }}
-                            />
-                        </ListItemButton>
-                    </Link>
+                            {icon}
+                        </ListItemIcon>
+                        <ListItemText
+                            primary={name}
+                            sx={{
+                                opacity: open ? 1 : 0,
+                            }}
+                        />
+                    </ListItemButton>
                 </ListItem>
             ))}
         </List>
