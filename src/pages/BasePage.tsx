@@ -5,16 +5,13 @@ import { Drawer, DrawerHeader, DrawerList } from "@/components/sidebar";
 import { FolderSystem, Toolbar } from "@/components/project";
 import { useAppContext } from "@/contexts/app";
 import { list1, list2, pathsWithoutSidebar } from "@/data";
-import { useAppSelector, usePath } from "@/hooks";
+import { useAppSelector, useAuth, usePath } from "@/hooks";
 
 const Sidebar = () => {
     const { sidebarOpen } = useAppContext();
-
-    const { user, currentProject } = useAppSelector(
-        (state) => ({
-            user: state.auth.user,
-            currentProject: state.project.currentProject,
-        }),
+    const { user } = useAuth();
+    const { currentProject } = useAppSelector(
+        (state) => ({ currentProject: state.project.currentProject }),
         shallowEqual
     );
     return (

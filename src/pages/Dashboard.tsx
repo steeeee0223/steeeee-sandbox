@@ -3,16 +3,14 @@ import { shallowEqual } from "react-redux";
 
 import { Loading } from "@/components/common";
 import { Table } from "@/components/dashboard";
-import { useAppDispatch, useAppSelector } from "@/hooks";
+import { useAppDispatch, useAppSelector, useAuth } from "@/hooks";
 import { getProjectsAsync, setProject } from "@/stores/project";
 
 export default function Dashboard() {
     const dispatch = useAppDispatch();
-    const { isLoading, user } = useAppSelector(
-        (state) => ({
-            isLoading: state.project.isLoading,
-            user: state.auth.user,
-        }),
+    const { user } = useAuth();
+    const { isLoading } = useAppSelector(
+        (state) => ({ isLoading: state.project.isLoading }),
         shallowEqual
     );
 

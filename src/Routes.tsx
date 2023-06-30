@@ -9,7 +9,14 @@ export function AppRoutes() {
             <Route path="/">
                 <Route index element={<Introduction />} />
                 <Route path="login" element={<Login />} />
-                <Route path="home" element={<Home />} />
+                <Route
+                    path="home"
+                    element={
+                        <Protected>
+                            <Home />
+                        </Protected>
+                    }
+                />
                 <Route
                     path="dashboard"
                     element={

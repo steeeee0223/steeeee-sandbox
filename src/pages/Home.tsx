@@ -1,15 +1,11 @@
 import { useEffect } from "react";
-import { shallowEqual } from "react-redux";
 
-import { useAppDispatch, useAppSelector } from "@/hooks";
+import { useAppDispatch, useAuth } from "@/hooks";
 import { setProject } from "@/stores/project";
 
 export default function Home() {
     const dispatch = useAppDispatch();
-    const { user } = useAppSelector(
-        (state) => ({ user: state.auth.user }),
-        shallowEqual
-    );
+    const { user } = useAuth();
 
     useEffect(() => {
         dispatch(setProject(null));

@@ -1,21 +1,16 @@
-import { ReactNode, useEffect } from "react";
-import { shallowEqual } from "react-redux";
+import { ReactNode } from "react";
 import { Navigate } from "react-router-dom";
 
-import { useAppSelector } from "@/hooks";
+import { useAuth } from "@/hooks";
 
 interface ProtectedProps {
     children: ReactNode;
 }
 
 const Protected = ({ children }: ProtectedProps) => {
-    const { user } = useAppSelector(
-        (state) => ({ user: state.auth.user }),
-        shallowEqual
-    );
-    useEffect(() => {}, [user]);
+    const { user } = useAuth();
 
-    return user ? <>{children}</> : <Navigate to="/login" />;
+    return user ? <>{children}</> : <Navigate to="/" />;
 };
 
 export default Protected;

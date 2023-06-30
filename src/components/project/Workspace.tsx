@@ -2,15 +2,15 @@ import { useEffect } from "react";
 import { shallowEqual } from "react-redux";
 import { Container } from "@mui/material";
 
-import { useAppDispatch, useAppSelector } from "@/hooks";
+import { useAppDispatch, useAppSelector, useAuth } from "@/hooks";
 import { getDirectoryAsync } from "@/stores/directory";
 import { Loading } from "@/components/common";
 import Editors from "./Editors";
 
 export default function Workspace() {
-    const { user, isLoading, projectId } = useAppSelector(
+    const { user } = useAuth();
+    const { isLoading, projectId } = useAppSelector(
         (state) => ({
-            user: state.auth.user,
             isLoading: state.directory.isLoading,
             projectId: state.project.currentProject?.id,
         }),

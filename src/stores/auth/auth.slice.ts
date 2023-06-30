@@ -1,5 +1,4 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { AuthState } from "./auth";
 import {
     GithubAuthProvider,
     GoogleAuthProvider,
@@ -7,7 +6,9 @@ import {
     signInWithPopup,
     signOut,
 } from "firebase/auth";
+
 import { auth } from "@/config/firebase";
+import { AuthState } from "./auth";
 
 const initialState: AuthState = {
     user: null,
@@ -33,7 +34,12 @@ export const signOutAsync = createAsyncThunk("auth/signOutAsync", async () => {
 const authSlice = createSlice({
     name: "auth",
     initialState,
-    reducers: {},
+    reducers: {
+        setUser: (state, { payload }: PayloadAction<User | null>) => {
+            state.user = payload;
+            state.isLoggedIn = payload !== null;
+        },
+    },
     extraReducers(builder) {
         builder.addCase(
             googleSignIn.fulfilled,
@@ -56,5 +62,5 @@ const authSlice = createSlice({
     },
 });
 
-export const {} = authSlice.actions;
+export const { setUser } = authSlice.actions;
 export default authSlice.reducer;

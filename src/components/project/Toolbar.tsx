@@ -75,11 +75,11 @@ export default function Toolbar() {
             >
                 <ButtonGroup size="small" exclusive>
                     <ToggleButton
-                        size="small"
-                        LinkComponent={RouterLink}
-                        href={`/demo/${projectId}`}
+                        component={RouterLink}
+                        to={`/demo/${projectId}`}
                         value="demo"
                         aria-label="demo"
+                        size="small"
                     >
                         <ViewInArIcon fontSize="small" />
                     </ToggleButton>

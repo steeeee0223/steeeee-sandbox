@@ -1,7 +1,11 @@
+import { useEffect } from "react";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { shallowEqual } from "react-redux";
+import { onAuthStateChanged } from "firebase/auth";
 
+import { auth } from "@/config/firebase";
 import store from "@/stores/store";
+import { setUser } from "@/stores/auth";
 import {
     directorySelector,
     getChildren,
@@ -60,10 +64,31 @@ export const useDirectory = (itemId: string) => {
     };
 };
 
-export const useProjects = () => {
-    const { user, projectState } = useAppSelector(
+export const useAuth = () => {
+    const dispatch = useAppDispatch();
+    const { user, isLoggedIn } = useAppSelector(
         (state) => ({
             user: state.auth.user,
+            isLoggedIn: state.auth.isLoggedIn,
+        }),
+        shallowEqual
+    );
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (currentUser) =>
+            dispatch(setUser(currentUser))
+        );
+
+        return () => unsubscribe();
+    }, []);
+
+    return { user, isLoggedIn };
+};
+
+export const useProjects = () => {
+    const { user } = useAuth();
+    const { projectState } = useAppSelector(
+        (state) => ({
             projectState: state.project,
         }),
         shallowEqual
