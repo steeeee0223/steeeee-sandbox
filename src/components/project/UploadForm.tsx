@@ -63,7 +63,9 @@ export default function UploadForm() {
                         // userId: user.uid,
                         // createdBy: user.name
                     };
-                    dispatch(uploadFileAsync({ projectId, file, data }));
+                    dispatch(
+                        uploadFileAsync({ projectId, uploadFile: file, data })
+                    );
                 });
             } else {
                 alert(`File name is required!`);

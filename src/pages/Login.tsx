@@ -1,7 +1,6 @@
 import { useEffect } from "react";
-import { shallowEqual } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { Button, Container, Stack, Typography } from "@mui/material";
+import { Button, Container, Stack } from "@mui/material";
 import GoogleIcon from "@mui/icons-material/Google";
 import GitHubIcon from "@mui/icons-material/GitHub";
 

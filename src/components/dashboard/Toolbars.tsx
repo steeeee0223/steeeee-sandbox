@@ -1,5 +1,6 @@
 import { MouseEvent, useRef } from "react";
 import { shallowEqual } from "react-redux";
+import { Link as RouterLink } from "react-router-dom";
 import { Modal, Paper, ToggleButton, Tooltip } from "@mui/material";
 import CodeIcon from "@mui/icons-material/Code";
 import ViewInArIcon from "@mui/icons-material/ViewInAr";
@@ -53,7 +54,8 @@ export const ActionToolbar = ({ projectName, projectId }: ToolbarProps) => {
             >
                 <Tooltip title="Edit project">
                     <ToggleButton
-                        href={`/project/${projectId}`}
+                        component={RouterLink}
+                        to={`/project/${projectId}`}
                         value="edit"
                         aria-label="edit"
                     >
@@ -62,7 +64,8 @@ export const ActionToolbar = ({ projectName, projectId }: ToolbarProps) => {
                 </Tooltip>
                 <Tooltip title="Demo project">
                     <ToggleButton
-                        href={`/demo/${projectId}`}
+                        component={RouterLink}
+                        to={`/demo/${projectId}`}
                         value="demo"
                         aria-label="demo"
                     >

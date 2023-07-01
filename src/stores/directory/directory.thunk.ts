@@ -4,7 +4,7 @@ import { accordion as sampleFolders, children as sampleFiles } from "@/data";
 import { DirectoryItem } from "./directory";
 import { getRecursiveItemIds } from "./directory.utils";
 import { DirectoryState, directorySelector } from "./directory.slice";
-import { filesDB, foldersDB } from "@/lib/storage";
+import { filesDB, foldersDB, fireStoreDB } from "@/lib/storage";
 
 export type UploadFile = File;
 
@@ -23,17 +23,21 @@ export const createFileAsync = createAsyncThunk(
 );
 
 export const uploadFileAsync = createAsyncThunk(
-    "directory/uploadFile",
+    "directory/uploadFileAsync",
     async ({
         projectId,
-        file,
+        uploadFile,
         data,
     }: {
         projectId: string;
-        file: UploadFile;
+        uploadFile: UploadFile;
         data: any;
     }) => {
-        return await filesDB.upload(projectId, data, file);
+        const file = await filesDB.create({ ...data, projectId });
+        const refId = `${projectId}/${file.itemId}`;
+        const ref = await fireStoreDB.create({ refId, uploadFile });
+        await filesDB.update(file.itemId, { url: await ref.getDownloadURL() });
+        return file;
     }
 );
 
@@ -67,7 +71,10 @@ export const deleteDirectoryAsync = createAsyncThunk<
         const directory = directorySelector.selectAll(getState().directory);
         const { folderIds, fileIds } = getRecursiveItemIds(directory, itemId);
         await foldersDB.delete(folderIds);
-        await filesDB.doDelete(projectId, fileIds);
+        await filesDB.delete(fileIds);
+
+        const refIds = fileIds.map((fileId) => `${projectId}/${fileId}`);
+        await fireStoreDB.delete(refIds);
         return folderIds.concat(fileIds);
     }
 );
@@ -95,8 +102,21 @@ export const renameDirectoryItemAsync = createAsyncThunk(
 
 export const updateFileAsync = createAsyncThunk(
     "directory/updateFileAsync",
-    async ({ itemId, content }: { itemId: string; content: string }) => {
-        await filesDB.update(itemId, { content });
+    async ({
+        projectId,
+        itemId,
+        content,
+    }: {
+        projectId: string;
+        itemId: string;
+        content: string;
+    }) => {
+        const refId = `${projectId}/${itemId}`;
+        const ref = await fireStoreDB.updateContent(refId, content);
+        await filesDB.update(itemId, {
+            content,
+            url: await ref.getDownloadURL(),
+        });
         return { id: itemId, changes: { content } };
     }
 );

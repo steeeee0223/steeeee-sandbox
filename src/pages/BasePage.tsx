@@ -58,7 +58,6 @@ export default function BasePage({ children }: { children: React.ReactNode }) {
                 >
                     {children}
                 </Container>
-                S
             </Box>
         </Box>
     );

@@ -20,6 +20,7 @@ export const Editor = ({ itemId }: EditorProps) => {
     const dispatch = useAppDispatch();
 
     const {
+        projectId,
         item,
         path: [path, _],
     } = useDirectory(itemId);
@@ -39,9 +40,15 @@ export const Editor = ({ itemId }: EditorProps) => {
     );
 
     const handleSave = useCallback(() => {
-        if (inputRef.current !== content) {
+        if (projectId && inputRef.current !== content) {
             console.log(`saving file: [${itemId}]`);
-            dispatch(updateFileAsync({ itemId, content: inputRef.current }));
+            dispatch(
+                updateFileAsync({
+                    projectId,
+                    itemId,
+                    content: inputRef.current,
+                })
+            );
         }
     }, []);
 

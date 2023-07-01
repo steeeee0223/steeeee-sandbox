@@ -25,10 +25,10 @@ export const useAppDispatch: () => AppDispatch = useDispatch;
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 
 export const useDirectory = (itemId: string) => {
-    const { directoryState } = useAppSelector(
+    const { directoryState, projectId } = useAppSelector(
         (state) => ({
             directoryState: state.directory,
-            // currentItem: state.directory.currentItem,
+            projectId: state.project.currentProject?.id,
         }),
         shallowEqual
     );
@@ -53,6 +53,7 @@ export const useDirectory = (itemId: string) => {
     };
 
     return {
+        projectId,
         directory,
         item,
         firstLayerChildren,

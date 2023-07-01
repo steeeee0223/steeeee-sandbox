@@ -161,16 +161,6 @@ class FilesStorage extends IStorage<File> {
         );
         return file;
     }
-
-    public async doDelete(projectId: string, fileIds: string[]) {
-        fileIds.forEach(async (fileId) => {
-            const ref = storage.ref(
-                `${this.collection}/${projectId}/${fileId}`
-            );
-            await ref.delete();
-        });
-        await this.delete(fileIds);
-    }
 }
 
 class FoldersStorage extends IStorage<Folder> {
@@ -217,6 +207,88 @@ class FoldersStorage extends IStorage<Folder> {
     }
 }
 
+const $ref = storage.ref();
+type Reference = typeof $ref;
+const taskSnapshot = (snapshot: any) => {
+    const progress = Math.round(
+        (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+    );
+    console.log("uploading " + progress + "%");
+};
+class FireStorage extends IStorage<Reference> {
+    public collection = "files";
+    public static __instance: FireStorage;
+
+    private constructor() {
+        super();
+    }
+
+    public static getStorage(): FireStorage {
+        return this.__instance ?? new FireStorage();
+    }
+
+    public unpack(doc: any): Reference {
+        throw new Error("Method not implemented.");
+    }
+
+    /**
+     *
+     * @param refIds list of refId: `${projectId}/${fileId}`
+     * @returns
+     */
+    public async get(refIds: string[]): Promise<Reference[]> {
+        return refIds.map((refId) =>
+            storage.ref(`${this.collection}/${refId}`)
+        );
+    }
+
+    public async create({
+        refId,
+        uploadFile,
+    }: {
+        refId: string;
+        uploadFile: UploadFile;
+    }): Promise<Reference> {
+        const [ref] = await this.get([refId]);
+        ref.put(uploadFile).on(
+            "state_changed",
+            taskSnapshot,
+            (error) => console.log(error),
+            async () => {
+                const url = await ref.getDownloadURL();
+                console.log(`Upload completed: ${url}`);
+            }
+        );
+        return ref;
+    }
+
+    public async updateContent(
+        refId: string,
+        content: string
+    ): Promise<Reference> {
+        const [ref] = await this.get([refId]);
+        const metadata = await ref.getMetadata();
+        ref.putString(content, "raw", metadata).on(
+            "state_changed",
+            taskSnapshot,
+            (error) => console.log(error),
+            async () => {
+                const url = await ref.getDownloadURL();
+                console.log(`Content update complete!`);
+                console.log(`New url: ${url}`);
+            }
+        );
+        return ref;
+    }
+
+    public async delete(refIds: string[]): Promise<void> {
+        for (let ref of await this.get(refIds)) {
+            await ref.delete();
+        }
+    }
+}
+
 export const projectsDB = ProjectStorage.getStorage();
 export const foldersDB = FoldersStorage.getStorage();
 export const filesDB = FilesStorage.getStorage();
+export const fireStoreDB = FireStorage.getStorage();

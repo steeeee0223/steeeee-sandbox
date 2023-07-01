@@ -1,7 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 
 import { Home, Demo, Dashboard, Project, Login, Introduction } from "@/pages";
-import { Protected } from "./components/common";
+import { Protected } from "@/components/common";
 
 export function AppRoutes() {
     return (
