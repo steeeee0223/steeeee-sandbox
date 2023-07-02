@@ -1,4 +1,5 @@
 import { Timestamp } from "firebase/firestore";
+import { Reference } from "@firebase/storage-types";
 
 import { db, storage } from "@/config/firebase";
 import { File, Folder, UploadFile } from "@/stores/directory";
@@ -178,8 +179,6 @@ class FoldersStorage extends IStorage<Folder> {
     }
 }
 
-const $ref = storage.ref();
-type Reference = typeof $ref;
 const taskSnapshot = (snapshot: any) => {
     const progress = Math.round(
         (snapshot.bytesTransferred / snapshot.totalBytes) * 100
