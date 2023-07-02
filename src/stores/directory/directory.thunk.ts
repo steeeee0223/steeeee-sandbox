@@ -1,6 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
-import { accordion as sampleFolders, children as sampleFiles } from "@/data";
 import { DirectoryItem } from "./directory";
 import { getRecursiveItemIds } from "./directory.utils";
 import { DirectoryState, directorySelector } from "./directory.slice";
@@ -47,12 +46,7 @@ export const getDirectoryAsync = createAsyncThunk(
         const directoryItems: DirectoryItem[] = [];
         const folders = await foldersDB.get(payload);
         const files = await filesDB.get(payload);
-        return directoryItems.concat(
-            folders,
-            sampleFolders,
-            files,
-            sampleFiles
-        );
+        return directoryItems.concat(folders, files);
     }
 );
 

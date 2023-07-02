@@ -132,35 +132,6 @@ class FilesStorage extends IStorage<File> {
             return [];
         }
     }
-
-    public async upload(
-        projectId: string,
-        data: any,
-        uploadFile: UploadFile
-    ): Promise<File> {
-        const file = await this.create({ ...data, projectId });
-        const ref = storage.ref(
-            `${this.collection}/${projectId}/${file.itemId}`
-        );
-
-        ref.put(uploadFile).on(
-            "state_changed",
-            (snapshot) => {
-                const progress = Math.round(
-                    (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-                );
-                console.log("uploading " + progress + "%");
-            },
-            (error) => {
-                console.log(error);
-            },
-            async () => {
-                const url = await ref.getDownloadURL();
-                await this.update(file.itemId, { url });
-            }
-        );
-        return file;
-    }
 }
 
 class FoldersStorage extends IStorage<Folder> {

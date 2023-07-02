@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { shallowEqual } from "react-redux";
 import { Box, Container, Divider, List } from "@mui/material";
 
@@ -5,15 +6,28 @@ import { Drawer, DrawerHeader, DrawerList } from "@/components/sidebar";
 import { FolderSystem, Toolbar } from "@/components/project";
 import { useAppContext } from "@/contexts/app";
 import { list1, list2, pathsWithoutSidebar } from "@/data";
-import { useAppSelector, useAuth, usePath } from "@/hooks";
+import { useAppDispatch, useAppSelector, useAuth, usePath } from "@/hooks";
+import { getDirectoryAsync } from "@/stores/directory";
 
 const Sidebar = () => {
+    const dispatch = useAppDispatch();
     const { sidebarOpen } = useAppContext();
     const { user } = useAuth();
     const { currentProject } = useAppSelector(
         (state) => ({ currentProject: state.project.currentProject }),
         shallowEqual
     );
+
+    useEffect(() => {
+        if (user && currentProject)
+            dispatch(
+                getDirectoryAsync({
+                    userId: user.uid,
+                    projectId: currentProject.id,
+                })
+            );
+    }, [user, currentProject]);
+
     return (
         <Drawer
             variant="permanent"

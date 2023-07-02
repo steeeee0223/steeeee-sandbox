@@ -49,7 +49,7 @@ const directorySlice = createSlice({
         builder.addCase(
             getDirectoryAsync.fulfilled,
             (state, { payload }: PayloadAction<DirectoryItem[]>) => {
-                directoryAdapter.addMany(state, payload);
+                directoryAdapter.setAll(state, payload);
                 state.isLoading = false;
             }
         );
