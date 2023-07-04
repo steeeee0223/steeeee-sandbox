@@ -15,8 +15,8 @@ import {
 } from "@mui/icons-material";
 import { shallowEqual } from "react-redux";
 
-import { useAppDispatch, useAppSelector } from "@/hooks";
-import { deleteDirectoryAsync, directorySelector } from "@/stores/directory";
+import { useAppDispatch, useAppSelector, useDirectory } from "@/hooks";
+import { copyItems, deleteDirectoryAsync } from "@/stores/directory";
 import { setRenameItem } from "@/stores/cursor";
 
 interface ContextMenuProps {
@@ -25,25 +25,25 @@ interface ContextMenuProps {
 }
 
 export default function ContextMenu({ itemId, children }: ContextMenuProps) {
-    const { projectId, directoryState } = useAppSelector(
+    const { copiedItems } = useAppSelector(
         (state) => ({
-            // user: state.auth.user,
-            projectId: state.project.currentProject?.id,
-            directoryState: state.directory,
+            copiedItems: state.directory.copiedItems,
         }),
         shallowEqual
     );
     const dispatch = useAppDispatch();
+
+    const { projectId, item, children: childrenItems } = useDirectory(itemId);
 
     const [contextMenu, setContextMenu] = React.useState<{
         mouseX: number;
         mouseY: number;
     } | null>(null);
 
-    const handleContextMenu = (event: React.MouseEvent, itemId: string) => {
+    const handleContextMenu = (event: React.MouseEvent) => {
         event.stopPropagation();
         event.preventDefault();
-        const item = directorySelector.selectById(directoryState, itemId);
+        // const item = directorySelector.selectById(directoryState, itemId);
         console.log(`Clicking item: ${item?.name}`);
         dispatch(setRenameItem(null));
         setContextMenu(
@@ -63,22 +63,33 @@ export default function ContextMenu({ itemId, children }: ContextMenuProps) {
         setContextMenu(null);
     };
 
-    const handleDelete = async (itemId: string) => {
+    const handleDelete = () => {
         handleClose();
-        if (projectId)
-            await dispatch(deleteDirectoryAsync({ projectId, itemId }));
+        if (projectId) dispatch(deleteDirectoryAsync({ projectId, itemId }));
     };
 
-    const handleRename = async (itemId: string) => {
-        setContextMenu(null);
+    const handleRename = () => {
+        handleClose();
         dispatch(setRenameItem(itemId));
         console.log(`Rename item: ${itemId}`);
+    };
+
+    const handleCopy = () => {
+        handleClose();
+        console.log(`Copy item: ${itemId}`);
+        dispatch(copyItems({ rootId: itemId, items: childrenItems }));
+    };
+
+    const handlePaste = () => {
+        handleClose();
+        console.log(`Pasting items to: ${itemId}`);
+        console.log(copiedItems);
     };
 
     return (
         <>
             <div
-                onContextMenu={(e) => handleContextMenu(e, itemId)}
+                onContextMenu={handleContextMenu}
                 style={{ cursor: "context-menu" }}
             >
                 {children}
@@ -96,7 +107,7 @@ export default function ContextMenu({ itemId, children }: ContextMenuProps) {
                         : undefined
                 }
             >
-                <MenuItem onClick={() => handleDelete(itemId)}>
+                <MenuItem onClick={handleDelete}>
                     <ListItemIcon>
                         <ContentCut fontSize="small" />
                     </ListItemIcon>
@@ -105,14 +116,14 @@ export default function ContextMenu({ itemId, children }: ContextMenuProps) {
                         ⌫
                     </Typography>
                 </MenuItem>
-                <MenuItem onClick={() => handleRename(itemId)}>
+                <MenuItem onClick={handleRename}>
                     <ListItemIcon>
                         <DriveFileRenameOutline fontSize="small" />
                     </ListItemIcon>
                     <ListItemText>Rename</ListItemText>
                 </MenuItem>
                 <Divider />
-                <MenuItem onClick={handleClose}>
+                <MenuItem onClick={handleCopy}>
                     <ListItemIcon>
                         <ContentCopy fontSize="small" />
                     </ListItemIcon>
@@ -121,7 +132,7 @@ export default function ContextMenu({ itemId, children }: ContextMenuProps) {
                         ⌘C
                     </Typography>
                 </MenuItem>
-                <MenuItem onClick={handleClose}>
+                <MenuItem onClick={handlePaste}>
                     <ListItemIcon>
                         <ContentPaste fontSize="small" />
                     </ListItemIcon>

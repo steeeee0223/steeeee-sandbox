@@ -10,7 +10,7 @@ abstract class IStorage<T> {
 
     public abstract unpack(doc: any): T;
 
-    public abstract get(params: any): Promise<T[]>;
+    public abstract get(params: any): Promise<T[]> | T[];
 
     public async create(data: any): Promise<T> {
         try {
@@ -82,7 +82,7 @@ class ProjectStorage extends IStorage<Project> {
                 .collection(this.collection)
                 .where("createdBy", "==", userId)
                 .get();
-            return await res.docs.map(this.unpack);
+            return res.docs.map(this.unpack);
         } catch (error) {
             console.log(error);
             return [];
@@ -127,7 +127,7 @@ class FilesStorage extends IStorage<File> {
                 // .where("userId", "==", userId)
                 .where("projectId", "==", projectId)
                 .get();
-            return await res.docs.map(this.unpack);
+            return res.docs.map(this.unpack);
         } catch (error) {
             console.log(error);
             return [];
@@ -171,7 +171,7 @@ class FoldersStorage extends IStorage<Folder> {
                 // .where("userId", "==", userId)
                 .where("projectId", "==", projectId)
                 .get();
-            return await res.docs.map(this.unpack);
+            return res.docs.map(this.unpack);
         } catch (error) {
             console.log(error);
             return [];
@@ -183,7 +183,7 @@ const taskSnapshot = (snapshot: any) => {
     const progress = Math.round(
         (snapshot.bytesTransferred / snapshot.totalBytes) * 100
     );
-    console.log("uploading " + progress + "%");
+    console.log(`uploading ${progress}%`);
 };
 class FireStorage extends IStorage<Reference> {
     public collection = "files";
@@ -206,7 +206,7 @@ class FireStorage extends IStorage<Reference> {
      * @param refIds list of refId: `${projectId}/${fileId}`
      * @returns
      */
-    public async get(refIds: string[]): Promise<Reference[]> {
+    public get(refIds: string[]): Reference[] {
         return refIds.map((refId) =>
             storage.ref(`${this.collection}/${refId}`)
         );
@@ -219,7 +219,7 @@ class FireStorage extends IStorage<Reference> {
         refId: string;
         uploadFile: UploadFile;
     }): Promise<Reference> {
-        const [ref] = await this.get([refId]);
+        const [ref] = this.get([refId]);
         ref.put(uploadFile).on(
             "state_changed",
             taskSnapshot,
@@ -236,8 +236,11 @@ class FireStorage extends IStorage<Reference> {
         refId: string,
         content: string
     ): Promise<Reference> {
-        const [ref] = await this.get([refId]);
-        const metadata = await ref.getMetadata();
+        const [ref] = this.get([refId]);
+        const metadata = (await ref.getMetadata()) || {
+            contentType: "text",
+        };
+        console.log(metadata);
         ref.putString(content, "raw", metadata).on(
             "state_changed",
             taskSnapshot,
@@ -252,7 +255,7 @@ class FireStorage extends IStorage<Reference> {
     }
 
     public async delete(refIds: string[]): Promise<void> {
-        for (let ref of await this.get(refIds)) {
+        for (let ref of this.get(refIds)) {
             await ref.delete();
         }
     }

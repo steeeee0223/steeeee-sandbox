@@ -4,7 +4,7 @@ import {
     createSlice,
 } from "@reduxjs/toolkit";
 
-import { DirectoryItem, SelectedItem } from "./directory";
+import { CopiedItems, DirectoryItem, SelectedItem } from "./directory";
 import {
     createFileAsync,
     createFolderAsync,
@@ -20,15 +20,19 @@ export const directoryAdapter = createEntityAdapter<DirectoryItem>({
     sortComparer: (a, b) => a.name.localeCompare(b.name),
 });
 
+const rootItem: SelectedItem = {
+    item: { id: "root", name: "root", isFolder: true },
+    path: { id: [], name: [] },
+};
+
 const initialState = directoryAdapter.getInitialState<{
     isLoading: boolean;
     currentItem: SelectedItem;
+    copiedItems: CopiedItems | null;
 }>({
     isLoading: true,
-    currentItem: {
-        item: { id: "root", name: "root", isFolder: true },
-        path: { id: [], name: [] },
-    },
+    currentItem: rootItem,
+    copiedItems: null,
 });
 
 const directorySlice = createSlice({
@@ -38,14 +42,26 @@ const directorySlice = createSlice({
         selectItem: (state, { payload }: PayloadAction<SelectedItem>) => {
             state.currentItem = payload;
         },
+        copyItems: (state, { payload }: PayloadAction<CopiedItems | null>) => {
+            state.copiedItems = payload;
+        },
     },
     extraReducers(builder) {
-        builder.addCase(createFolderAsync.fulfilled, directoryAdapter.addOne);
-        builder.addCase(createFileAsync.fulfilled, directoryAdapter.addOne);
-        builder.addCase(uploadFileAsync.fulfilled, directoryAdapter.addOne);
-        builder.addCase(getDirectoryAsync.pending, (state) => {
-            state.isLoading = true;
-        });
+        builder.addCase(
+            createFolderAsync.fulfilled ||
+                createFileAsync.fulfilled ||
+                uploadFileAsync.fulfilled,
+            directoryAdapter.addOne
+        );
+        builder.addCase(
+            getDirectoryAsync.pending ||
+                createFolderAsync.rejected ||
+                createFileAsync.rejected ||
+                uploadFileAsync.rejected,
+            (state) => {
+                state.isLoading = true;
+            }
+        );
         builder.addCase(
             getDirectoryAsync.fulfilled,
             (state, { payload }: PayloadAction<DirectoryItem[]>) => {
@@ -55,13 +71,15 @@ const directorySlice = createSlice({
         );
         builder.addCase(
             deleteDirectoryAsync.fulfilled,
-            directoryAdapter.removeMany
+            (state, { payload }) => {
+                directoryAdapter.removeMany(state, payload);
+                state.currentItem = rootItem;
+            }
         );
         builder.addCase(
-            renameDirectoryItemAsync.fulfilled,
+            renameDirectoryItemAsync.fulfilled || updateFileAsync.fulfilled,
             directoryAdapter.updateOne
         );
-        builder.addCase(updateFileAsync.fulfilled, directoryAdapter.updateOne);
     },
 });
 
@@ -70,5 +88,5 @@ export const directorySelector = directoryAdapter.getSelectors(
     (state: DirectoryState) => state
 );
 
-export const { selectItem } = directorySlice.actions;
+export const { selectItem, copyItems } = directorySlice.actions;
 export default directorySlice.reducer;

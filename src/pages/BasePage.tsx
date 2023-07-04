@@ -13,20 +13,23 @@ const Sidebar = () => {
     const dispatch = useAppDispatch();
     const { sidebarOpen } = useAppContext();
     const { user } = useAuth();
-    const { currentProject } = useAppSelector(
-        (state) => ({ currentProject: state.project.currentProject }),
+    const { isLoading, currentProject } = useAppSelector(
+        (state) => ({
+            isLoading: state.directory.isLoading,
+            currentProject: state.project.currentProject,
+        }),
         shallowEqual
     );
 
     useEffect(() => {
-        if (user && currentProject)
+        if (isLoading && user && currentProject)
             dispatch(
                 getDirectoryAsync({
                     userId: user.uid,
                     projectId: currentProject.id,
                 })
             );
-    }, [user, currentProject]);
+    }, [isLoading, user, currentProject]);
 
     return (
         <Drawer

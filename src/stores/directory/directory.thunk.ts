@@ -4,6 +4,7 @@ import { DirectoryItem } from "./directory";
 import { getRecursiveItemIds } from "./directory.utils";
 import { DirectoryState, directorySelector } from "./directory.slice";
 import { filesDB, foldersDB, fireStoreDB } from "@/lib/storage";
+import { getDefaultFile } from "@/lib/file";
 
 export type UploadFile = File;
 
@@ -17,7 +18,12 @@ export const createFolderAsync = createAsyncThunk(
 export const createFileAsync = createAsyncThunk(
     "directory/createFileAsync",
     async ({ projectId, data }: { projectId: string; data: any }) => {
-        return await filesDB.create({ ...data, projectId });
+        const file = await filesDB.create({ ...data, projectId });
+        const refId = `${projectId}/${file.itemId}`;
+        const uploadFile = getDefaultFile(file.name);
+        const ref = await fireStoreDB.create({ refId, uploadFile });
+        await filesDB.update(file.itemId, { url: await ref.getDownloadURL() });
+        return file;
     }
 );
 

@@ -39,15 +39,7 @@ const editorSlice = createSlice({
     },
     extraReducers(builder) {
         builder.addCase(
-            createFileAsync.fulfilled,
-            (state, { payload }: PayloadAction<File>) => {
-                const { itemId } = payload;
-                editorAdapter.addOne(state, { id: itemId });
-                state.currentEditor = itemId;
-            }
-        );
-        builder.addCase(
-            uploadFileAsync.fulfilled,
+            createFileAsync.fulfilled || uploadFileAsync.fulfilled,
             (state, { payload }: PayloadAction<File>) => {
                 const { itemId } = payload;
                 editorAdapter.addOne(state, { id: itemId });
