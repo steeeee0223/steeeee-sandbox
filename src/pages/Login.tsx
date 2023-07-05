@@ -1,11 +1,16 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Container, Stack } from "@mui/material";
+import { Button, Container, Stack, Typography } from "@mui/material";
 import GoogleIcon from "@mui/icons-material/Google";
 import GitHubIcon from "@mui/icons-material/GitHub";
 
 import { useAppDispatch, useAuth } from "@/hooks";
 import { githubSignIn, googleSignIn } from "@/stores/auth";
+
+const center = {
+    alignItems: "center",
+    justifyContent: "center",
+};
 
 export default function Login() {
     const dispatch = useAppDispatch();
@@ -18,13 +23,20 @@ export default function Login() {
 
     return (
         <Container sx={{}}>
-            <h1>Login</h1>
-            <Stack direction="row" spacing={3}>
+            <h1 style={{ display: "flex", ...center }}>Login</h1>
+            <Typography
+                variant="body1"
+                sx={{ ...center, display: "flex", mb: 3 }}
+            >
+                Choose a method to login
+            </Typography>
+            <Stack spacing={3} sx={center}>
                 <Button
                     onClick={() => dispatch(googleSignIn())}
                     startIcon={<GoogleIcon />}
                     variant="contained"
                     color="success"
+                    sx={{ width: 150 }}
                 >
                     Google
                 </Button>
@@ -33,6 +45,7 @@ export default function Login() {
                     startIcon={<GitHubIcon />}
                     variant="contained"
                     color="warning"
+                    sx={{ width: 150 }}
                 >
                     GitHub
                 </Button>
