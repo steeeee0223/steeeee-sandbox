@@ -31,17 +31,15 @@ export default function Project() {
     return isLoading ? (
         <Loading />
     ) : projectIds.includes(projectId) ? (
-        <div>
-            <Grid container spacing={3}>
-                <Grid item xs={6} sx={{ height: "100%" }}>
-                    <Editors />
-                </Grid>
-                <Divider flexItem orientation="vertical" />
-                <Grid item xs={6} sx={{ height: "100%" }}>
-                    <Tabs children={frames} defaultValue="1" />
-                </Grid>
+        <Grid container spacing={0}>
+            <Grid item xs={6} sx={{ height: "100%" }}>
+                <Editors />
             </Grid>
-        </div>
+            <Divider flexItem orientation="vertical" />
+            <Grid item xs={6} sx={{ height: "100%" }}>
+                <Tabs children={frames} defaultValue="1" />
+            </Grid>
+        </Grid>
     ) : (
         <NotFound message="Project Not Found" />
     );

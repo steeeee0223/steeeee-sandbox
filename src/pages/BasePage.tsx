@@ -9,9 +9,12 @@ import { list1, list2, pathsWithoutSidebar } from "@/data";
 import { useAppDispatch, useAppSelector, useAuth, usePath } from "@/hooks";
 import { getDirectoryAsync } from "@/stores/directory";
 
-const Sidebar = () => {
+export default function BasePage({ children }: { children: React.ReactNode }) {
     const dispatch = useAppDispatch();
     const { sidebarOpen } = useAppContext();
+    const {
+        path: [, path],
+    } = usePath();
     const { user } = useAuth();
     const { isLoading, currentProject } = useAppSelector(
         (state) => ({
@@ -20,6 +23,7 @@ const Sidebar = () => {
         }),
         shallowEqual
     );
+    const isEditPage = currentProject?.action === "edit";
 
     useEffect(() => {
         if (isLoading && user && currentProject)
@@ -32,38 +36,33 @@ const Sidebar = () => {
     }, [isLoading, user, currentProject]);
 
     return (
-        <Drawer
-            variant="permanent"
-            open={sidebarOpen}
-            aria-label={currentProject?.id ?? undefined}
-        >
-            <DrawerHeader />
-            {user && currentProject?.action === "edit" ? (
-                <>
-                    <Toolbar />
-                    <Divider />
-                    <FolderSystem parent="root" />
-                </>
-            ) : (
-                <List>
-                    <DrawerList open={sidebarOpen} listItems={list1} />
-                    <Divider />
-                    <DrawerList open={sidebarOpen} listItems={list2} />
-                </List>
-            )}
-        </Drawer>
-    );
-};
-
-export default function BasePage({ children }: { children: React.ReactNode }) {
-    const {
-        path: [, path],
-    } = usePath();
-
-    return (
         <Box sx={{ display: "flex" }}>
-            {!pathsWithoutSidebar.includes(path) && <Sidebar />}
-            <Box component="main" sx={{ flexGrow: 1, p: 2 }}>
+            {!pathsWithoutSidebar.includes(path) && (
+                <Drawer
+                    variant="permanent"
+                    open={sidebarOpen}
+                    aria-label={currentProject?.id ?? undefined}
+                >
+                    <DrawerHeader />
+                    {user && isEditPage ? (
+                        <>
+                            <Toolbar />
+                            <Divider />
+                            <FolderSystem parent="root" />
+                        </>
+                    ) : (
+                        <List>
+                            <DrawerList open={sidebarOpen} listItems={list1} />
+                            <Divider />
+                            <DrawerList open={sidebarOpen} listItems={list2} />
+                        </List>
+                    )}
+                </Drawer>
+            )}
+            <Box
+                component="main"
+                sx={{ flexGrow: 1, ...(isEditPage && { px: 0 }) }}
+            >
                 <DrawerHeader />
                 <Container
                     sx={{
@@ -72,6 +71,7 @@ export default function BasePage({ children }: { children: React.ReactNode }) {
                         border: 0,
                         flexGrow: 1,
                     }}
+                    disableGutters={isEditPage}
                 >
                     {children}
                 </Container>

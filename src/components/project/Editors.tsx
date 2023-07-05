@@ -13,7 +13,7 @@ import { Editor } from "./Editor";
 export default function Editors() {
     const { editorIds, currentEditor } = useAppSelector(
         (state) => ({
-            editorIds: state.editor.ids,
+            editorIds: state.editor.ids as string[],
             currentEditor: state.editor.currentEditor,
         }),
         shallowEqual
@@ -53,8 +53,7 @@ export default function Editors() {
                                 aria-label="tabs"
                                 sx={{ fontSize: "small" }}
                             >
-                                {editorIds.map((editorId) => {
-                                    const itemId = editorId as string;
+                                {editorIds.map((itemId) => {
                                     const { name } = getItem(directory, itemId);
                                     return (
                                         <Tab
@@ -81,14 +80,13 @@ export default function Editors() {
                                                     <CloseIcon fontSize="inherit" />
                                                 </IconButton>
                                             }
-                                            sx={{ padding: "0px 10px" }}
+                                            sx={{ padding: "0px 10px", h: 20 }}
                                         />
                                     );
                                 })}
                             </TabList>
                         </Box>
-                        {editorIds.map((editorId) => {
-                            const itemId = editorId as string;
+                        {editorIds.map((itemId) => {
                             return <Editor key={itemId} itemId={itemId} />;
                         })}
                     </TabContext>
