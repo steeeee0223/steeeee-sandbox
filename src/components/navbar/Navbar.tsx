@@ -35,7 +35,7 @@ const Navbar = () => {
                     variant="h6"
                     noWrap
                     component="div"
-                    sx={{ flexGrow: 1 }}
+                    sx={{ flexGrow: 1, fontWeight: "bold" }}
                 >
                     {appBarTitle}
                 </Typography>

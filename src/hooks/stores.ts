@@ -14,7 +14,7 @@ import {
     getRecursiveItemIds,
     getSelectedItem,
 } from "@/stores/directory";
-import { projectSelector } from "@/stores/project";
+import { getProjectsAsync, projectSelector } from "@/stores/project";
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
 export type RootState = ReturnType<typeof store.getState>;
@@ -83,18 +83,24 @@ export const useAuth = () => {
         return () => unsubscribe();
     }, []);
 
+    useEffect(() => {
+        if (user) dispatch(getProjectsAsync(user.uid));
+    }, [user]);
+
     return { user, isLoggedIn };
 };
 
 export const useProjects = () => {
     const { user } = useAuth();
-    const { projectState } = useAppSelector(
+    const { projectState, isLoading } = useAppSelector(
         (state) => ({
             projectState: state.project,
+            isLoading: state.project.isLoading,
         }),
         shallowEqual
     );
     const projects = projectSelector.selectAll(projectState);
+    const projectIds = projectSelector.selectIds(projectState) as string[];
     const isProjectPresent = (projectName: string): boolean => {
         return !!projects.find(({ name }) => projectName === name);
     };
@@ -104,5 +110,12 @@ export const useProjects = () => {
         );
     };
 
-    return { user, projects, isProjectPresent, isProjectMatch };
+    return {
+        user,
+        projects,
+        projectIds,
+        isLoading,
+        isProjectPresent,
+        isProjectMatch,
+    };
 };

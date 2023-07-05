@@ -1,16 +1,17 @@
 import { useEffect } from "react";
 import { Divider, Grid, Typography } from "@mui/material";
 
-import { Frame, TabInfo, Tabs } from "@/components/common";
+import { Frame, Loading, NotFound, TabInfo, Tabs } from "@/components/common";
 import { Editors } from "@/components/project";
 import { sampleCode } from "@/data";
-import { useAppDispatch, usePath } from "@/hooks";
+import { useAppDispatch, usePath, useProjects } from "@/hooks";
 import { setProject } from "@/stores/project";
 
 export default function Project() {
     const {
         path: [, , projectId],
     } = usePath();
+    const { projectIds, isLoading } = useProjects();
     const dispatch = useAppDispatch();
 
     useEffect(() => {
@@ -27,7 +28,9 @@ export default function Project() {
         },
     ];
 
-    return (
+    return isLoading ? (
+        <Loading />
+    ) : projectIds.includes(projectId) ? (
         <div>
             <Grid container spacing={3}>
                 <Grid item xs={6} sx={{ height: "100%" }}>
@@ -39,5 +42,7 @@ export default function Project() {
                 </Grid>
             </Grid>
         </div>
+    ) : (
+        <NotFound message="Project Not Found" />
     );
 }

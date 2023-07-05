@@ -1,7 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 
 import { Home, Demo, Dashboard, Project, Login, Introduction } from "@/pages";
-import { Protected } from "@/components/common";
+import { Protected, NotFound } from "@/components/common";
 
 export function AppRoutes() {
     return (
@@ -33,6 +33,10 @@ export function AppRoutes() {
                             <Project />
                         </Protected>
                     }
+                />
+                <Route
+                    path="*"
+                    element={<NotFound message="Page Not Found" />}
                 />
             </Route>
         </Routes>
