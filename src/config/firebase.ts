@@ -4,9 +4,6 @@ import "firebase/compat/firestore";
 import "firebase/compat/storage";
 import "firebase/compat/auth";
 
-// import admin, { initializeApp } from "firebase-admin";
-// import { applicationDefault } from "firebase-admin/app";
-
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -31,10 +28,3 @@ export const storage = app.storage();
 
 // Authentication
 export const auth = app.auth();
-
-// const adminApp = initializeApp({
-//     credential: applicationDefault(),
-//     databaseURL: `https://${firebaseConfig.authDomain}`,
-// });
-
-// const adminAuth = adminApp.auth();

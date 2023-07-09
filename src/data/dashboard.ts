@@ -12,16 +12,16 @@ function createData(
         projectId,
         name,
         tags,
-        createdBy,
+        createdBy: { uid: createdBy, displayName: createdBy, email: "" },
         lastModifiedAt: new Date(),
     };
 }
 
 export const tableRows: Project[] = [
     createData("1", "Typescript", ["typescript"], "admin"),
-    createData("2", "Node JS", ["nodejs"], "steve"),
-    createData("3", "Python", ["python"], "kimi"),
-    createData("4", "C++", ["c++"], "kimi"),
+    createData("2", "Node JS", ["nodejs"], "admin"),
+    createData("3", "Python", ["python"], "admin"),
+    createData("4", "C++", ["c++"], "admin"),
 ];
 
 export const headCells: readonly TableHeadCell[] = [

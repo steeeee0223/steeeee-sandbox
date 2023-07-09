@@ -2,11 +2,12 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 
 import { tableRows as sampleProjects } from "@/data";
 import { filesDB, foldersDB, projectsDB } from "@/lib/storage";
+import { CreatedBy } from "./project";
 
 export const createProjectAsync = createAsyncThunk(
     "project/createProjectAsync",
-    async ({ userId, data }: { userId: string; data: any }) => {
-        return await projectsDB.create({ ...data, createdBy: userId });
+    async ({ user, data }: { user: CreatedBy; data: any }) => {
+        return await projectsDB.create({ ...data, createdBy: user });
     }
 );
 

@@ -17,6 +17,7 @@ export function useTable() {
 
     const normalize = (project: Project): TableData => ({
         ...project,
+        createdBy: project.createdBy.displayName ?? "unknown",
         lastModifiedAt: new Date(project.lastModifiedAt).toLocaleString(),
     });
     const tableData = projects.map(normalize);

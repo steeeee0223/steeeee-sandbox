@@ -80,7 +80,7 @@ class ProjectStorage extends IStorage<Project> {
         try {
             const res = await db
                 .collection(this.collection)
-                .where("createdBy", "==", userId)
+                .where("createdBy.uid", "==", userId)
                 .get();
             return res.docs.map(this.unpack);
         } catch (error) {

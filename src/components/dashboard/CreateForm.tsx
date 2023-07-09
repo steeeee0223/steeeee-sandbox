@@ -46,13 +46,19 @@ const CreateForm = forwardRef(({}: CreateFormProps, ref) => {
         e.preventDefault();
         if (user && name && template) {
             if (!isProjectPresent(name)) {
+                const { uid, displayName, email } = user;
                 const data = {
                     createdAt: new Date(),
                     lastModifiedAt: new Date(),
                     name,
                     tags: [template],
                 };
-                dispatch(createProjectAsync({ userId: user.uid, data }));
+                dispatch(
+                    createProjectAsync({
+                        user: { uid, displayName, email },
+                        data,
+                    })
+                );
                 dispatch(setDashboardAction(null));
             } else {
                 alert(`Project name already present: ${name}`);
