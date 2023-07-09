@@ -36,7 +36,7 @@ export default function Project() {
                 <Editors />
             </Grid>
             <Divider flexItem orientation="vertical" />
-            <Grid item xs={6} sx={{ height: "100%" }}>
+            <Grid item xs={6} sx={{ height: "100vh" }}>
                 <Tabs children={frames} defaultValue="1" />
             </Grid>
         </Grid>

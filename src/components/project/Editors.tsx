@@ -1,6 +1,6 @@
 import { MouseEvent, useCallback } from "react";
 import { shallowEqual } from "react-redux";
-import { Box, IconButton, Tab } from "@mui/material";
+import { Box, IconButton, SxProps, Tab } from "@mui/material";
 import { TabContext, TabList } from "@mui/lab";
 import CloseIcon from "@mui/icons-material/Close";
 
@@ -9,6 +9,7 @@ import { getItem } from "@/stores/directory";
 import { closeEditors, setEditor } from "@/stores/editor";
 
 import { Editor } from "./Editor";
+import { editorTabHeight, editorTabStyle } from "./styles";
 
 export default function Editors() {
     const { editorIds, currentEditor } = useAppSelector(
@@ -35,63 +36,59 @@ export default function Editors() {
     }, []);
 
     return (
-        <>
-            {currentEditor && (
-                <Box sx={{ maxWidth: "100%", typography: "body1" }}>
-                    <TabContext value={currentEditor}>
-                        <Box
-                            sx={{
-                                borderBottom: 1,
-                                borderColor: "divider",
-                            }}
+        <Box sx={{ maxWidth: "100%", typography: "body1" }}>
+            {currentEditor ? (
+                <TabContext value={currentEditor}>
+                    <Box sx={editorTabStyle}>
+                        <TabList
+                            onChange={handleChange}
+                            variant="scrollable"
+                            scrollButtons="auto"
+                            allowScrollButtonsMobile
+                            aria-label="tabs"
+                            sx={{ fontSize: "small" }}
                         >
-                            <TabList
-                                onChange={handleChange}
-                                variant="scrollable"
-                                scrollButtons="auto"
-                                allowScrollButtonsMobile
-                                aria-label="tabs"
-                                sx={{ fontSize: "small" }}
-                            >
-                                {editorIds.map((itemId) => {
-                                    const { name } = getItem(directory, itemId);
-                                    return (
-                                        <Tab
-                                            label={name}
-                                            key={itemId}
-                                            value={itemId}
-                                            component="span"
-                                            disableRipple
-                                            iconPosition="end"
-                                            icon={
-                                                <IconButton
-                                                    component="span"
-                                                    sx={{
-                                                        padding: 0,
-                                                        fontSize: "inherit",
-                                                    }}
-                                                    onClick={(e) =>
-                                                        handleCloseEditor(
-                                                            e,
-                                                            itemId
-                                                        )
-                                                    }
-                                                >
-                                                    <CloseIcon fontSize="inherit" />
-                                                </IconButton>
-                                            }
-                                            sx={{ padding: "0px 10px", h: 20 }}
-                                        />
-                                    );
-                                })}
-                            </TabList>
-                        </Box>
-                        {editorIds.map((itemId) => {
-                            return <Editor key={itemId} itemId={itemId} />;
-                        })}
-                    </TabContext>
-                </Box>
+                            {editorIds.map((itemId) => {
+                                const { name } = getItem(directory, itemId);
+                                return (
+                                    <Tab
+                                        label={name}
+                                        key={itemId}
+                                        value={itemId}
+                                        disableRipple
+                                        iconPosition="end"
+                                        icon={
+                                            <IconButton
+                                                component="span"
+                                                sx={{
+                                                    padding: 0,
+                                                    fontSize: "inherit",
+                                                }}
+                                                onClick={(e) =>
+                                                    handleCloseEditor(e, itemId)
+                                                }
+                                            >
+                                                <CloseIcon fontSize="inherit" />
+                                            </IconButton>
+                                        }
+                                        sx={{ minHeight: editorTabHeight }}
+                                    />
+                                );
+                            })}
+                        </TabList>
+                    </Box>
+                    {editorIds.map((itemId) => {
+                        return <Editor key={itemId} itemId={itemId} />;
+                    })}
+                </TabContext>
+            ) : (
+                <Box
+                    sx={{
+                        ...editorTabStyle,
+                        minHeight: editorTabHeight + 1,
+                    }}
+                />
             )}
-        </>
+        </Box>
     );
 }
