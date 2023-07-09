@@ -2,6 +2,9 @@ import HomeIcon from "@mui/icons-material/Home";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import SourceIcon from "@mui/icons-material/Source";
 import ViewInArIcon from "@mui/icons-material/ViewInAr";
+import SportsEsportsIcon from "@mui/icons-material/SportsEsports";
+import PublicIcon from "@mui/icons-material/Public";
+import SettingsIcon from "@mui/icons-material/Settings";
 
 import { DrawerItem } from "@/components/sidebar";
 
@@ -17,7 +20,13 @@ export const list1: DrawerItem[] = [
 /**
  * temparory
  */
+// export const list2: DrawerItem[] = [
+//     { name: "Project", icon: <SourceIcon />, href: "/project/1" },
+//     { name: "Demo", icon: <ViewInArIcon />, href: "/demo/1" },
+// ];
+
 export const list2: DrawerItem[] = [
-    { name: "Project", icon: <SourceIcon />, href: "/project/1" },
-    { name: "Demo", icon: <ViewInArIcon />, href: "/demo/1" },
+    { name: "Playground", icon: <SportsEsportsIcon />, href: "/playground" },
+    { name: "Discover", icon: <PublicIcon />, href: "/discover" },
+    { name: "Settings", icon: <SettingsIcon />, href: "/settings" },
 ];

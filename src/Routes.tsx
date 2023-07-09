@@ -1,6 +1,14 @@
 import { Route, Routes } from "react-router-dom";
 
-import { Home, Demo, Dashboard, Project, Login, Introduction } from "@/pages";
+import {
+    Home,
+    Demo,
+    Dashboard,
+    Project,
+    Login,
+    Introduction,
+    Playground,
+} from "@/pages";
 import { Protected, NotFound } from "@/components/common";
 
 export function AppRoutes() {
@@ -25,6 +33,7 @@ export function AppRoutes() {
                         </Protected>
                     }
                 />
+                <Route path="playground" element={<Playground />} />
                 <Route path="demo/:projectId" element={<Demo />} />
                 <Route
                     path="project/:projectId"
