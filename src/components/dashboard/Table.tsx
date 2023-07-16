@@ -10,7 +10,7 @@ import {
     TableRow,
 } from "@mui/material";
 
-import { useAppSelector, useTable } from "@/hooks";
+import { useAppSelector, useProjects, useTable } from "@/hooks";
 import TableHeader from "./TableHeader";
 import TableToolbar from "./TableToolbar";
 import { ActionToolbar } from "./Toolbars";
@@ -18,13 +18,7 @@ import { shallowEqual } from "react-redux";
 import RenameForm from "./RenameForm";
 
 export default function EnhancedTable() {
-    const { currentProject } = useAppSelector(
-        (state) => ({
-            currentProject: state.project.currentProject,
-        }),
-        shallowEqual
-    );
-
+    const { currentProject } = useProjects();
     const {
         emptyRows,
         order,

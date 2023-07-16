@@ -11,6 +11,7 @@ import {
     deleteDirectoryAsync,
     uploadFileAsync,
 } from "@/stores/directory";
+import { setProject } from "../project";
 
 export const editorAdapter = createEntityAdapter<Editor>();
 
@@ -54,6 +55,10 @@ const editorSlice = createSlice({
                 state.currentEditor = editorIds.at(0)?.toString() ?? null;
             }
         );
+        builder.addCase(setProject, (state) => {
+            state.currentEditor = null;
+            editorAdapter.removeAll(state);
+        });
     },
 });
 

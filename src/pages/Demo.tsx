@@ -1,22 +1,10 @@
-import { useEffect } from "react";
 import { Box, Container, Divider, Stack, Typography } from "@mui/material";
 
 import { Workspace } from "@/components/demo";
 import { Frame } from "@/components/common";
 import { sampleCode } from "@/data";
-import { useAppDispatch, usePath } from "@/hooks";
-import { setProject } from "@/stores/project";
 
 export default function Demo() {
-    const {
-        path: [, , projectId],
-    } = usePath();
-    const dispatch = useAppDispatch();
-
-    useEffect(() => {
-        dispatch(setProject({ id: projectId ?? null, action: "demo" }));
-    }, [projectId]);
-
     return (
         <div>
             <Box>

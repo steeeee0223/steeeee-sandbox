@@ -5,7 +5,12 @@ import { onAuthStateChanged } from "firebase/auth";
 
 import { auth } from "@/config/firebase";
 import store from "@/stores/store";
-import { setUser } from "@/stores/auth";
+import {
+    setUser,
+    signOutAsync,
+    googleSignIn as googleSignInAsync,
+    githubSignIn as githubSignInAsync,
+} from "@/stores/auth";
 import {
     directorySelector,
     getChildren,
@@ -13,6 +18,7 @@ import {
     getItem,
     getRecursiveItemIds,
     getSelectedItem,
+    setLoading,
 } from "@/stores/directory";
 import { getProjectsAsync, projectSelector } from "@/stores/project";
 
@@ -74,6 +80,9 @@ export const useAuth = () => {
         }),
         shallowEqual
     );
+    const googleSignIn = () => dispatch(googleSignInAsync());
+    const githubSignIn = () => dispatch(githubSignInAsync());
+    const signOut = () => dispatch(signOutAsync());
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) =>
@@ -87,34 +96,51 @@ export const useAuth = () => {
         if (user) dispatch(getProjectsAsync(user.uid));
     }, [user]);
 
-    return { user, isLoggedIn };
+    return { user, isLoggedIn, googleSignIn, githubSignIn, signOut };
 };
 
 export const useProjects = () => {
+    const dispatch = useAppDispatch();
     const { user } = useAuth();
-    const { projectState, isLoading } = useAppSelector(
+    const {
+        projectState,
+        currentProject,
+        projectIsLoading,
+        directoryIsLoading,
+    } = useAppSelector(
         (state) => ({
             projectState: state.project,
-            isLoading: state.project.isLoading,
+            currentProject: state.project.currentProject,
+            projectIsLoading: state.project.isLoading,
+            directoryIsLoading: state.directory.isLoading,
         }),
         shallowEqual
     );
     const projects = projectSelector.selectAll(projectState);
     const projectIds = projectSelector.selectIds(projectState) as string[];
-    const isProjectPresent = (projectName: string): boolean => {
-        return !!projects.find(({ name }) => projectName === name);
-    };
-    const isProjectMatch = (projectName: string, id: string): boolean => {
-        return !!projects.find(
+    const isProjectOfUser = (id: string | null | undefined): boolean =>
+        !!id && projectIds.includes(id);
+    const isProjectPresent = (projectName: string): boolean =>
+        !!projects.find(({ name }) => projectName === name);
+    const isProjectMatch = (projectName: string, id: string): boolean =>
+        !!projects.find(
             ({ name, projectId }) => name === projectName && projectId === id
         );
-    };
+
+    useEffect(() => {
+        if (user && currentProject) {
+            dispatch(setLoading());
+        }
+    }, [user, currentProject]);
 
     return {
         user,
+        currentProject,
         projects,
         projectIds,
-        isLoading,
+        projectIsLoading,
+        directoryIsLoading,
+        isProjectOfUser,
         isProjectPresent,
         isProjectMatch,
     };

@@ -4,8 +4,7 @@ import { Button, Container, Stack, Typography } from "@mui/material";
 import GoogleIcon from "@mui/icons-material/Google";
 import GitHubIcon from "@mui/icons-material/GitHub";
 
-import { useAppDispatch, useAuth } from "@/hooks";
-import { githubSignIn, googleSignIn } from "@/stores/auth";
+import { useAuth } from "@/hooks";
 
 const center = {
     alignItems: "center",
@@ -13,9 +12,8 @@ const center = {
 };
 
 export default function Login() {
-    const dispatch = useAppDispatch();
     const navigate = useNavigate();
-    const { user } = useAuth();
+    const { user, googleSignIn, githubSignIn } = useAuth();
 
     useEffect(() => {
         if (user !== null) navigate("/home");
@@ -32,7 +30,7 @@ export default function Login() {
             </Typography>
             <Stack spacing={3} sx={center}>
                 <Button
-                    onClick={() => dispatch(googleSignIn())}
+                    onClick={googleSignIn}
                     startIcon={<GoogleIcon />}
                     variant="contained"
                     color="success"
@@ -41,7 +39,7 @@ export default function Login() {
                     Google
                 </Button>
                 <Button
-                    onClick={() => dispatch(githubSignIn())}
+                    onClick={githubSignIn}
                     startIcon={<GitHubIcon />}
                     variant="contained"
                     color="warning"

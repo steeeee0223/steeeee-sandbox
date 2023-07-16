@@ -5,22 +5,18 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 
 import AppBar from "./AppBar";
 import { useAppContext } from "@/contexts/app";
-import { appBarTitle, pathsWithoutSidebar } from "@/data";
-import { useAppDispatch, useAuth, usePath } from "@/hooks";
-import { signOutAsync } from "@/stores/auth";
+import { appBarTitle } from "@/data";
+import { useAuth, usePath } from "@/hooks";
 
 const Navbar = () => {
-    const dispatch = useAppDispatch();
     const { sidebarOpen, setSidebarOpen } = useAppContext();
-    const { user } = useAuth();
-    const {
-        path: [, path],
-    } = usePath();
+    const { user, signOut } = useAuth();
+    const { isPageWithSidebar, isLoginPage } = usePath();
 
     return (
         <AppBar position="fixed" open={false}>
             <Toolbar>
-                {!pathsWithoutSidebar.includes(path) && (
+                {isPageWithSidebar && (
                     <IconButton
                         color="inherit"
                         aria-label="open drawer"
@@ -39,16 +35,12 @@ const Navbar = () => {
                 >
                     {appBarTitle}
                 </Typography>
-                {path === "" && (
+                {isLoginPage && (
                     <Button component={RouterLink} to="/login">
                         Sign In
                     </Button>
                 )}
-                {user && (
-                    <Button onClick={() => dispatch(signOutAsync())}>
-                        Sign Out
-                    </Button>
-                )}
+                {user && <Button onClick={signOut}>Sign Out</Button>}
             </Toolbar>
         </AppBar>
     );

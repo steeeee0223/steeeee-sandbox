@@ -1,23 +1,15 @@
-import { useEffect } from "react";
 import { Divider, Grid, Typography } from "@mui/material";
 
 import { Frame, Loading, NotFound, TabInfo, Tabs } from "@/components/common";
 import { Editors } from "@/components/project";
 import { sampleCode } from "@/data";
-import { useAppDispatch, usePath, useProjects } from "@/hooks";
-import { setProject } from "@/stores/project";
+import { usePath, useProjects } from "@/hooks";
 
 export default function Project() {
     const {
         path: [, , projectId],
     } = usePath();
-    const { projectIds, isLoading } = useProjects();
-    const dispatch = useAppDispatch();
-
-    useEffect(() => {
-        dispatch(setProject({ id: projectId ?? null, action: "edit" }));
-        console.log(`setting project to: ${projectId}`);
-    }, [projectId]);
+    const { projectIsLoading, isProjectOfUser } = useProjects();
 
     const frames: TabInfo[] = [
         { id: "0", label: "Browser", component: <Frame code={sampleCode} /> },
@@ -28,9 +20,9 @@ export default function Project() {
         },
     ];
 
-    return isLoading ? (
+    return projectIsLoading ? (
         <Loading />
-    ) : projectIds.includes(projectId) ? (
+    ) : isProjectOfUser(projectId) ? (
         <Grid container spacing={0}>
             <Grid item xs={6} sx={{ height: "100%" }}>
                 <Editors />

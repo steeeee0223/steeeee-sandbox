@@ -14,6 +14,7 @@ import {
     updateFileAsync,
     uploadFileAsync,
 } from "./directory.thunk";
+import { setProject } from "../project";
 
 export const directoryAdapter = createEntityAdapter<DirectoryItem>({
     selectId: (item) => item.itemId,
@@ -39,6 +40,9 @@ const directorySlice = createSlice({
     name: "directory",
     initialState,
     reducers: {
+        setLoading: (state) => {
+            state.isLoading = true;
+        },
         selectItem: (state, { payload }: PayloadAction<SelectedItem>) => {
             state.currentItem = payload;
         },
@@ -47,6 +51,10 @@ const directorySlice = createSlice({
         },
     },
     extraReducers(builder) {
+        builder.addCase(setProject, (state) => {
+            directoryAdapter.removeAll(state);
+            state.currentItem = rootItem;
+        });
         builder.addCase(
             createFolderAsync.fulfilled ||
                 createFileAsync.fulfilled ||
@@ -88,5 +96,5 @@ export const directorySelector = directoryAdapter.getSelectors(
     (state: DirectoryState) => state
 );
 
-export const { selectItem, copyItems } = directorySlice.actions;
+export const { setLoading, selectItem, copyItems } = directorySlice.actions;
 export default directorySlice.reducer;

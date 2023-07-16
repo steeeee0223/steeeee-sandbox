@@ -9,7 +9,7 @@ import FilterListIcon from "@mui/icons-material/FilterList";
 import FiberNewIcon from "@mui/icons-material/FiberNew";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-import { useAppDispatch, useAppSelector } from "@/hooks";
+import { useAppDispatch, useAppSelector, useProjects } from "@/hooks";
 import { ProjectAction, setProject } from "@/stores/project";
 import { setDashboardAction } from "@/stores/cursor";
 
@@ -24,12 +24,13 @@ interface ToolbarProps {
 
 export const ActionToolbar = ({ projectName, projectId }: ToolbarProps) => {
     const dispatch = useAppDispatch();
-    const { currentProject } = useAppSelector(
-        (state) => ({
-            currentProject: state.project.currentProject,
-        }),
-        shallowEqual
-    );
+    // const { currentProject } = useAppSelector(
+    //     (state) => ({
+    //         currentProject: state.project.currentProject,
+    //     }),
+    //     shallowEqual
+    // );
+    const { currentProject } = useProjects();
 
     const deleteFormRef = useRef<HTMLFormElement>(null);
 

@@ -1,50 +1,40 @@
 import { useEffect } from "react";
-import { shallowEqual } from "react-redux";
 import { Box, Container, Divider, List } from "@mui/material";
 
 import { Drawer, DrawerHeader, DrawerList } from "@/components/sidebar";
 import { FolderSystem, Toolbar } from "@/components/project";
 import { useAppContext } from "@/contexts/app";
-import { list1, list2, pathsWithoutSidebar } from "@/data";
-import { useAppDispatch, useAppSelector, useAuth, usePath } from "@/hooks";
+import { list1, list2 } from "@/data";
+import { useAppDispatch, usePath, useProjects } from "@/hooks";
 import { getDirectoryAsync } from "@/stores/directory";
 
 export default function BasePage({ children }: { children: React.ReactNode }) {
     const dispatch = useAppDispatch();
     const { sidebarOpen } = useAppContext();
     const {
-        path: [, path],
+        isPageWithSidebar,
+        path: [, path, id],
     } = usePath();
-    const { user } = useAuth();
-    const { isLoading, currentProject } = useAppSelector(
-        (state) => ({
-            isLoading: state.directory.isLoading,
-            currentProject: state.project.currentProject,
-        }),
-        shallowEqual
-    );
-    const isEditPage = currentProject?.action === "edit";
+    const { isProjectOfUser, user, currentProject, directoryIsLoading } =
+        useProjects();
+    const isValidEditPage = user && path === "project" && isProjectOfUser(id);
 
     useEffect(() => {
-        if (isLoading && user && currentProject)
+        if (directoryIsLoading && user && currentProject)
             dispatch(
                 getDirectoryAsync({
                     userId: user.uid,
                     projectId: currentProject.id,
                 })
             );
-    }, [isLoading, user, currentProject]);
+    }, [directoryIsLoading, user, currentProject]);
 
     return (
         <Box sx={{ display: "flex" }}>
-            {!pathsWithoutSidebar.includes(path) && (
-                <Drawer
-                    variant="permanent"
-                    open={sidebarOpen}
-                    aria-label={currentProject?.id ?? undefined}
-                >
+            {isPageWithSidebar && (
+                <Drawer variant="permanent" open={sidebarOpen} aria-label={id}>
                     <DrawerHeader />
-                    {user && isEditPage ? (
+                    {isValidEditPage ? (
                         <>
                             <Toolbar />
                             <Divider />
@@ -61,7 +51,7 @@ export default function BasePage({ children }: { children: React.ReactNode }) {
             )}
             <Box
                 component="main"
-                sx={{ flexGrow: 1, ...(isEditPage && { px: 0 }) }}
+                sx={{ flexGrow: 1, ...(isValidEditPage && { px: 0 }) }}
             >
                 <DrawerHeader />
                 <Container
@@ -71,7 +61,7 @@ export default function BasePage({ children }: { children: React.ReactNode }) {
                         border: 0,
                         flexGrow: 1,
                     }}
-                    disableGutters={isEditPage}
+                    disableGutters={isValidEditPage}
                 >
                     {children}
                 </Container>

@@ -1,15 +1,7 @@
-import { useEffect } from "react";
-
-import { useAppDispatch, useAuth } from "@/hooks";
-import { setProject } from "@/stores/project";
+import { useAuth } from "@/hooks";
 
 export default function Home() {
-    const dispatch = useAppDispatch();
     const { user } = useAuth();
-
-    useEffect(() => {
-        dispatch(setProject(null));
-    }, []);
 
     return (
         <div>
