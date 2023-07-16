@@ -8,6 +8,7 @@ import {
     Login,
     Introduction,
     Playground,
+    Discover,
 } from "@/pages";
 import { Protected, NotFound } from "@/components/common";
 
@@ -34,6 +35,7 @@ export function AppRoutes() {
                     }
                 />
                 <Route path="playground" element={<Playground />} />
+                <Route path="discover" element={<Discover />} />
                 <Route path="demo/:projectId" element={<Demo />} />
                 <Route
                     path="project/:projectId"

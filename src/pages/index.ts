@@ -6,3 +6,4 @@ export { default as Demo } from "./Demo";
 export { default as Project } from "./Project";
 export { default as Login } from "./Login";
 export { default as Playground } from "./Playground";
+export { default as Discover } from "./Discover";
