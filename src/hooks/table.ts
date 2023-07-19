@@ -3,7 +3,7 @@ import { ChangeEvent, MouseEvent, useState } from "react";
 import { getComparator, stableSort } from "@/lib/table";
 import { Project } from "@/stores/project";
 
-import { useProjects } from "./stores";
+import { useProjects } from "./projects";
 
 export function useTable() {
     const { projects } = useProjects();
