@@ -1,28 +1,29 @@
+import { SandpackPredefinedTemplate } from "@codesandbox/sandpack-react";
+
 import { Project } from "@/stores/project";
+
+type Template = {
+    value: SandpackPredefinedTemplate;
+    label: string;
+};
 
 export const tableTitle = "Projects";
 
 function createData(
     projectId: string,
     name: string,
-    tags: string[],
+    template: Template,
     createdBy: string
 ): Project {
     return {
         projectId,
         name,
-        tags,
+        tags: [template.label],
+        template: template.value,
         createdBy: { uid: createdBy, displayName: createdBy, email: "" },
         lastModifiedAt: new Date(),
     };
 }
-
-export const tableRows: Project[] = [
-    createData("1", "Typescript", ["typescript"], "admin"),
-    createData("2", "Node JS", ["nodejs"], "admin"),
-    createData("3", "Python", ["python"], "admin"),
-    // createData("4", "C++", ["c++"], "admin"),
-];
 
 export const headCells: readonly TableHeadCell[] = [
     {
@@ -51,25 +52,27 @@ export const headCells: readonly TableHeadCell[] = [
     },
 ];
 
-export const projectTemplates = [
+export const projectTemplates: Template[] = [
     {
-        value: "React",
+        value: "vite-react",
         label: "React",
     },
     {
-        value: "Python",
-        label: "Python",
+        value: "vite-react-ts",
+        label: "React Typescript",
     },
     {
-        value: "C++",
-        label: "C++",
+        value: "node",
+        label: "NodeJS",
     },
     {
-        value: "NodeJs",
-        label: "NodeJs",
-    },
-    {
-        value: "Blank",
+        value: "static",
         label: "Blank",
     },
+];
+
+export const tableRows: Project[] = [
+    createData("1", "React", projectTemplates[0], "admin"),
+    createData("2", "Node", projectTemplates[2], "admin"),
+    createData("3", "React Typescript", projectTemplates[1], "admin"),
 ];

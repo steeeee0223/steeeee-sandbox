@@ -5,6 +5,7 @@ export type CreatedBy = Pick<User, "uid" | "displayName" | "email">;
 export type Project = {
     projectId: string;
     name: string;
+    template: SandpackPredefinedTemplate;
     tags: string[];
     createdBy: CreatedBy;
     lastModifiedAt: Date;

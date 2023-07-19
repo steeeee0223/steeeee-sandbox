@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { shallowEqual } from "react-redux";
 import { SandpackFiles } from "@codesandbox/sandpack-react/types";
 
-import { AppDispatch, useAppDispatch, useAppSelector } from "@/hooks";
+import { useAppDispatch, useAppSelector } from "@/hooks";
 import {
     CopiedItems,
     DirectoryItem,

@@ -1,9 +1,11 @@
 import { Skeleton } from "@mui/material";
+import { DrawerHeader } from "../sidebar";
 
 const Loading = () => {
     const rows = 5;
     return (
         <>
+            <DrawerHeader />
             {Array(rows)
                 .fill(null)
                 .map((_, index) => (

@@ -15,6 +15,7 @@ import {
     Typography,
 } from "@mui/material";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
+import { SandpackPredefinedTemplate } from "@codesandbox/sandpack-react";
 
 import { projectTemplates } from "@/data";
 import { useAppDispatch, useProjects } from "@/hooks";
@@ -40,7 +41,8 @@ const CreateForm = forwardRef(({}: CreateFormProps, ref) => {
     const { user, isProjectPresent } = useProjects();
 
     const [name, setName] = useState("");
-    const [template, setTemplate] = useState<string>("");
+    const [template, setTemplate] =
+        useState<SandpackPredefinedTemplate>("static");
 
     const handleSubmit: FormEventHandler = (e) => {
         e.preventDefault();
@@ -50,6 +52,7 @@ const CreateForm = forwardRef(({}: CreateFormProps, ref) => {
                 const data = {
                     createdAt: new Date(),
                     lastModifiedAt: new Date(),
+                    template,
                     name,
                     tags: [template],
                 };
@@ -80,7 +83,7 @@ const CreateForm = forwardRef(({}: CreateFormProps, ref) => {
 
     const handleTemplateChange: ChangeEventHandler<HTMLInputElement> = (e) => {
         e.preventDefault();
-        setTemplate(e.target.value);
+        setTemplate(e.target.value as SandpackPredefinedTemplate);
     };
 
     return (

@@ -63,6 +63,7 @@ class ProjectStorage extends IStorage<Project> {
     public unpack(doc: any): Project {
         const {
             name,
+            template,
             tags,
             createdBy,
             lastModifiedAt: { seconds, nanoseconds },
@@ -70,6 +71,7 @@ class ProjectStorage extends IStorage<Project> {
         return {
             projectId: doc.id,
             name,
+            template,
             tags,
             createdBy,
             lastModifiedAt: new Timestamp(seconds, nanoseconds).toDate(),

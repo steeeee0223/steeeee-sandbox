@@ -32,6 +32,7 @@ export const children: File[] = [
     {
         parent: "components",
         itemId: "components-1",
+        path: ["root"],
         isFolder: false,
         name: "App.tsx",
         desc: "Donec placein elit. Pellentesque convallis laoreet laoreet.",
@@ -41,6 +42,7 @@ export const children: File[] = [
     {
         parent: "components",
         itemId: "components-2",
+        path: ["root"],
         isFolder: false,
         name: "Routes.tsx",
         desc: "Donec laoreet.",
@@ -53,6 +55,7 @@ export const accordion: Folder[] = [
     {
         parent: "root",
         itemId: "components",
+        path: ["root"],
         isFolder: true,
         name: "components",
         desc: "Donec placerat, lectus sed mat",
@@ -61,12 +64,14 @@ export const accordion: Folder[] = [
     {
         parent: "root",
         itemId: "assets",
+        path: ["root"],
         isFolder: true,
         name: "assets",
     },
     {
         parent: "root",
         itemId: "pages",
+        path: ["root"],
         isFolder: true,
         name: "pages",
         desc: "Donec placerat, lectus sed .",

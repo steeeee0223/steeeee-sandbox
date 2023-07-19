@@ -1,13 +1,30 @@
 import { useEffect } from "react";
 import { shallowEqual } from "react-redux";
+import { User } from "firebase/auth";
 
 import { setLoading } from "@/stores/directory";
-import { projectSelector } from "@/stores/project";
+import { Project, SelectedProject, projectSelector } from "@/stores/project";
 
 import { useAuth } from "./auth";
 import { useAppDispatch, useAppSelector } from "./stores";
 
-export const useProjects = () => {
+interface ProjectsInfo {
+    user: User | null;
+    currentProject: SelectedProject | null;
+    projects: Project[];
+    projectIds: string[];
+    projectIsLoading: boolean;
+    directoryIsLoading: boolean;
+}
+
+interface ProjectsOperations {
+    isProjectOfUser: (id: string | null | undefined) => boolean;
+    isProjectPresent: (projectName: string) => boolean;
+    isProjectMatch: (projectName: string, id: string) => boolean;
+    getProjectTemplate: (projectId: string) => string;
+}
+
+export const useProjects = (): ProjectsInfo & ProjectsOperations => {
     const dispatch = useAppDispatch();
     const { user } = useAuth();
     const {
@@ -26,11 +43,14 @@ export const useProjects = () => {
     );
     const projects = projectSelector.selectAll(projectState);
     const projectIds = projectSelector.selectIds(projectState) as string[];
-    const isProjectOfUser = (id: string | null | undefined): boolean =>
+    const getProjectTemplate = (projectId: string) =>
+        projectSelector.selectById(projectState, projectId)?.template ??
+        "static";
+    const isProjectOfUser = (id: string | null | undefined) =>
         !!id && projectIds.includes(id);
-    const isProjectPresent = (projectName: string): boolean =>
+    const isProjectPresent = (projectName: string) =>
         !!projects.find(({ name }) => projectName === name);
-    const isProjectMatch = (projectName: string, id: string): boolean =>
+    const isProjectMatch = (projectName: string, id: string) =>
         !!projects.find(
             ({ name, projectId }) => name === projectName && projectId === id
         );
@@ -51,5 +71,6 @@ export const useProjects = () => {
         isProjectOfUser,
         isProjectPresent,
         isProjectMatch,
+        getProjectTemplate,
     };
 };
