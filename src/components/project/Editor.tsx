@@ -68,11 +68,17 @@ export const Editor = ({ itemId }: EditorProps) => {
         >
             <Breadcrumbs path={path} />
             <CodeMirror
-                className="code-mirror-wrapper"
+                autoFocus
+                basicSetup={{ closeBrackets: true, autocompletion: true }}
                 value={inputRef.current}
                 theme={theme}
                 extensions={extensions}
                 onChange={handleChange}
+                style={{
+                    fontSize: "small",
+                    flexGrow: 1,
+                    overflow: "hidden",
+                }}
             />
         </TabPanel>
     );
