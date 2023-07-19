@@ -32,8 +32,7 @@ export default function ContextMenu({ itemId, children }: ContextMenuProps) {
         shallowEqual
     );
     const dispatch = useAppDispatch();
-
-    const { projectId, item, children: childrenItems } = useDirectory(itemId);
+    const { projectId, getItem, getAllChildren } = useDirectory();
 
     const [contextMenu, setContextMenu] = React.useState<{
         mouseX: number;
@@ -44,7 +43,7 @@ export default function ContextMenu({ itemId, children }: ContextMenuProps) {
         event.stopPropagation();
         event.preventDefault();
         // const item = directorySelector.selectById(directoryState, itemId);
-        console.log(`Clicking item: ${item?.name}`);
+        console.log(`Clicking item: ${getItem(itemId).name}`);
         dispatch(setRenameItem(null));
         setContextMenu(
             contextMenu === null
@@ -77,7 +76,7 @@ export default function ContextMenu({ itemId, children }: ContextMenuProps) {
     const handleCopy = () => {
         handleClose();
         console.log(`Copy item: ${itemId}`);
-        dispatch(copyItems({ rootId: itemId, items: childrenItems }));
+        dispatch(copyItems({ rootId: itemId, items: getAllChildren(itemId) }));
     };
 
     const handlePaste = () => {

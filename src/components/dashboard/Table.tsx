@@ -1,3 +1,4 @@
+import { shallowEqual } from "react-redux";
 import {
     Box,
     Checkbox,
@@ -10,11 +11,10 @@ import {
     TableRow,
 } from "@mui/material";
 
-import { useAppSelector, useProjects, useTable } from "@/hooks";
+import { useProjects, useTable } from "@/hooks";
 import TableHeader from "./TableHeader";
 import TableToolbar from "./TableToolbar";
 import { ActionToolbar } from "./Toolbars";
-import { shallowEqual } from "react-redux";
 import RenameForm from "./RenameForm";
 
 export default function EnhancedTable() {

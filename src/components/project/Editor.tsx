@@ -5,6 +5,7 @@ import { Extension } from "@codemirror/state";
 import CodeMirror from "@uiw/react-codemirror";
 import { loadLanguage } from "@uiw/codemirror-extensions-langs";
 import { createTheme } from "@uiw/codemirror-themes";
+import { useSandpack } from "@codesandbox/sandpack-react";
 
 import { useAppDispatch, useDirectory, useKeyPress } from "@/hooks";
 import { File, updateFileAsync } from "@/stores/directory";
@@ -18,13 +19,14 @@ interface EditorProps {
 
 export const Editor = ({ itemId }: EditorProps) => {
     const dispatch = useAppDispatch();
-
     const {
-        projectId,
-        item,
-        path: [path, _],
-    } = useDirectory(itemId);
-    const { content, extension } = item as File;
+        sandpack: { updateFile },
+    } = useSandpack();
+
+    const { projectId, getItem, getPath } = useDirectory();
+    const [path, _] = getPath(itemId);
+    const { content, extension } = getItem(itemId) as File;
+
     const inputRef = useRef<string>(content);
 
     const theme = createTheme(myTheme);
@@ -49,6 +51,8 @@ export const Editor = ({ itemId }: EditorProps) => {
                     content: inputRef.current,
                 })
             );
+            const pathname = path.join("/").slice(4);
+            updateFile(pathname, inputRef.current, true);
         }
     }, []);
 
@@ -60,6 +64,7 @@ export const Editor = ({ itemId }: EditorProps) => {
             onBlur={() => {
                 console.log(`event on blur: ${itemId}`);
             }}
+            sx={{ p: 0 }}
         >
             <Breadcrumbs path={path} />
             <CodeMirror

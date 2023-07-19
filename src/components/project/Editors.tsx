@@ -1,11 +1,10 @@
 import { MouseEvent, useCallback } from "react";
 import { shallowEqual } from "react-redux";
-import { Box, IconButton, SxProps, Tab } from "@mui/material";
+import { Box, IconButton, Tab } from "@mui/material";
 import { TabContext, TabList } from "@mui/lab";
 import CloseIcon from "@mui/icons-material/Close";
 
 import { useAppDispatch, useAppSelector, useDirectory } from "@/hooks";
-import { getItem } from "@/stores/directory";
 import { closeEditors, setEditor } from "@/stores/editor";
 
 import { Editor } from "./Editor";
@@ -19,7 +18,7 @@ export default function Editors() {
         }),
         shallowEqual
     );
-    const { directory } = useDirectory("root");
+    const { getItem } = useDirectory();
     const dispatch = useAppDispatch();
 
     const handleChange = useCallback(
@@ -49,7 +48,7 @@ export default function Editors() {
                             sx={{ fontSize: "small" }}
                         >
                             {editorIds.map((itemId) => {
-                                const { name } = getItem(directory, itemId);
+                                const { name } = getItem(itemId);
                                 return (
                                     <Tab
                                         label={name}

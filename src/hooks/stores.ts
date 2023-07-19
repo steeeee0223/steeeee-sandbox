@@ -11,15 +11,7 @@ import {
     googleSignIn as googleSignInAsync,
     githubSignIn as githubSignInAsync,
 } from "@/stores/auth";
-import {
-    directorySelector,
-    getChildren,
-    getFullPath,
-    getItem,
-    getRecursiveItemIds,
-    getSelectedItem,
-    setLoading,
-} from "@/stores/directory";
+import { setLoading } from "@/stores/directory";
 import { getProjectsAsync, projectSelector } from "@/stores/project";
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
@@ -29,47 +21,6 @@ export type AppDispatch = typeof store.dispatch;
 
 export const useAppDispatch: () => AppDispatch = useDispatch;
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
-
-export const useDirectory = (itemId: string) => {
-    const { directoryState, projectId } = useAppSelector(
-        (state) => ({
-            directoryState: state.directory,
-            projectId: state.project.currentProject?.id,
-        }),
-        shallowEqual
-    );
-    const directory = directorySelector.selectAll(directoryState);
-    const item = getItem(directory, itemId);
-    const firstLayerChildren = getChildren(directory, itemId);
-    const children = getRecursiveItemIds(directory, itemId);
-    const selectedItem = getSelectedItem(directory, itemId);
-    const path = getFullPath(directory, itemId);
-
-    const isFolderPresent = (folderName: string): boolean => {
-        return !!directory.find(
-            ({ isFolder, parent, name }) =>
-                isFolder && parent === itemId && name === folderName
-        );
-    };
-    const isFilePresent = (fileName: string): boolean => {
-        return !!directory.find(
-            ({ isFolder, parent, name }) =>
-                !isFolder && parent === itemId && name === fileName
-        );
-    };
-
-    return {
-        projectId,
-        directory,
-        item,
-        firstLayerChildren,
-        children,
-        selectedItem,
-        path,
-        isFolderPresent,
-        isFilePresent,
-    };
-};
 
 export const useAuth = () => {
     const dispatch = useAppDispatch();

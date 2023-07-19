@@ -11,10 +11,9 @@ interface RenameFormProps {
 }
 
 export default function RenameForm({ itemId, placeholder }: RenameFormProps) {
-    const {
-        item: { isFolder },
-    } = useDirectory(itemId);
     const dispatch = useAppDispatch();
+    const { getItem } = useDirectory();
+    const { isFolder } = getItem(itemId);
 
     const [name, setName] = useState(placeholder ?? "");
     const invalidNames = [placeholder, ""];

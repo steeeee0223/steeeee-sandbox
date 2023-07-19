@@ -19,14 +19,14 @@ export default function CreateFolder() {
         shallowEqual
     );
     const { item, path } = currentItem;
-    const { isFolderPresent } = useDirectory(item.id);
+    const { isFolderPresent } = useDirectory();
     const dispatch = useAppDispatch();
 
     const handleSubmit: FormEventHandler = (e) => {
         e.preventDefault();
         if (projectId) {
             if (folderName) {
-                if (!isFolderPresent(folderName)) {
+                if (!isFolderPresent(item.id, folderName)) {
                     dispatch(setCreation(null));
                     const data = {
                         createdAt: new Date(),

@@ -5,7 +5,6 @@ import FolderIcon from "@mui/icons-material/Folder";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 
 import { useAppDispatch, useAppSelector, useDirectory } from "@/hooks";
-import { selectItem, getSelectedItem } from "@/stores/directory";
 import { openEditor } from "@/stores/editor";
 
 import { Accordion, AccordionDetails, AccordionSummary } from "./Accordion";
@@ -15,15 +14,15 @@ import RenameForm from "./RenameForm";
 export default function FolderSystem({ parent }: { parent: string }) {
     const [toggle, setToggle] = React.useState<Record<string, boolean>>({});
 
-    const { currentItem, renameItem } = useAppSelector(
+    const { renameItem } = useAppSelector(
         (state) => ({
-            currentItem: state.directory.currentItem,
             renameItem: state.cursor.renameItem,
         }),
         shallowEqual
     );
-    const { firstLayerChildren: children, directory } = useDirectory(parent);
     const dispatch = useAppDispatch();
+    const { getFirstLayerChildren, select, isCurrentItem } = useDirectory();
+    const children = getFirstLayerChildren(parent);
 
     const handleToggle = (pathIds: string[]) => {
         const map: Record<string, boolean> = {};
@@ -35,8 +34,7 @@ export default function FolderSystem({ parent }: { parent: string }) {
         (itemId: string, isFolder: boolean) =>
         (event: React.SyntheticEvent, isExpanded: boolean) => {
             const selectedId = isExpanded ? itemId : parent;
-            const item = getSelectedItem(directory, selectedId);
-            dispatch(selectItem(item));
+            const item = select(selectedId);
             handleToggle(item.path.id);
             if (!isFolder) dispatch(openEditor(itemId));
         };
@@ -50,7 +48,7 @@ export default function FolderSystem({ parent }: { parent: string }) {
                         key={itemId}
                         expanded={toggle[itemId]}
                         onChange={handleChange(itemId, isFolder)}
-                        {...(currentItem.item.id === itemId && {
+                        {...(isCurrentItem(itemId) && {
                             sx: { bgcolor: "action.selected" },
                         })}
                     >

@@ -63,7 +63,7 @@ export default function Tabs({ children, defaultValue, onChange }: TabsProps) {
                     </TabList>
                 </Box>
                 {tabs.map(({ component, id }) => (
-                    <TabPanel value={id} key={id}>
+                    <TabPanel value={id} key={id} sx={{ p: 0 }}>
                         {component}
                     </TabPanel>
                 ))}

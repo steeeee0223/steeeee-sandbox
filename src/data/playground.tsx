@@ -1,5 +1,10 @@
 import { SandpackFiles } from "@codesandbox/sandpack-react";
 
+export const sampleTemplate = "react-ts";
+export const sampleSetup = {
+    dependencies: { "react-markdown": "latest" },
+};
+
 export const sampleFiles: SandpackFiles = {
     "/TextArea.tsx": `import {useState, useRef} from 'react'
 import ReactMarkdown from 'react-markdown' 

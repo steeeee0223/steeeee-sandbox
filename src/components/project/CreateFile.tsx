@@ -20,14 +20,14 @@ export default function CreateFile() {
         shallowEqual
     );
     const { item, path } = currentItem;
-    const { isFilePresent } = useDirectory(item.id);
+    const { isFilePresent } = useDirectory();
     const dispatch = useAppDispatch();
 
     const handleSubmit: FormEventHandler = (e) => {
         e.preventDefault();
         if (projectId) {
             if (name) {
-                if (!isFilePresent(name)) {
+                if (!isFilePresent(item.id, name)) {
                     dispatch(setCreation(null));
 
                     const data = {

@@ -10,15 +10,13 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import FolderIcon from "@mui/icons-material/Folder";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 
-import { AppDispatch, useAppDispatch, useDirectory } from "@/hooks";
-import { selectItem, getSelectedItem } from "@/stores/directory";
+import { useDirectory } from "@/hooks";
 import CodeBlock from "./Codeblock";
 
 export default function ControlledAccordion({ parent }: { parent: string }) {
     const [toggle, setToggle] = React.useState<Record<string, boolean>>({});
-
-    const dispatch: AppDispatch = useAppDispatch();
-    const { directory, firstLayerChildren: children } = useDirectory(parent);
+    const { getFirstLayerChildren, select } = useDirectory();
+    const children = getFirstLayerChildren(parent);
 
     const handleToggle = (pathIds: string[]) => {
         const map: Record<string, boolean> = {};
@@ -30,8 +28,7 @@ export default function ControlledAccordion({ parent }: { parent: string }) {
         (itemId: string) =>
         (event: React.SyntheticEvent, isExpanded: boolean) => {
             const selectedId = isExpanded ? itemId : parent;
-            const item = getSelectedItem(directory, selectedId);
-            dispatch(selectItem(item));
+            const item = select(selectedId);
             handleToggle(item.path.id);
         };
 

@@ -1,10 +1,14 @@
 import { Box, Container, Divider, Stack, Typography } from "@mui/material";
+import { SandpackProvider } from "@codesandbox/sandpack-react";
 
 import { Workspace } from "@/components/demo";
-import { Frame } from "@/components/common";
-import { sampleCode } from "@/data";
+import { Preview } from "@/components/common";
+import { sampleSetup, sampleTemplate } from "@/data";
+import { useDirectory } from "@/hooks/directory";
 
 export default function Demo() {
+    const { bundledFiles } = useDirectory();
+
     return (
         <div>
             <Box>
@@ -29,7 +33,13 @@ export default function Demo() {
                             height: "100%",
                         }}
                     >
-                        <Frame code={sampleCode} />
+                        <SandpackProvider
+                            template={sampleTemplate}
+                            customSetup={sampleSetup}
+                            files={bundledFiles}
+                        >
+                            <Preview />
+                        </SandpackProvider>
                     </Box>
                 </Container>
             </Stack>

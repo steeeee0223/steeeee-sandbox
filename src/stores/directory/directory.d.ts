@@ -3,6 +3,7 @@ type BaseItem = {
     itemId: string;
     isFolder: boolean;
     name: string;
+    path: string[];
     desc?: string;
 };
 

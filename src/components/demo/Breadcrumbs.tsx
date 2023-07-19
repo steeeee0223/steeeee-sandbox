@@ -3,7 +3,7 @@ import { shallowEqual } from "react-redux";
 import { Breadcrumbs as MuiBreadcrumbs, Chip } from "@mui/material";
 import { styled, emphasize } from "@mui/material/styles";
 
-import { RootState, useAppSelector } from "@/hooks";
+import { RootState, useAppSelector, useDirectory } from "@/hooks";
 
 function handleClick(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
     event.preventDefault();
@@ -20,14 +20,9 @@ const StyledBreadcrumb = styled(Chip)(({ theme }) => {
 }) as typeof Chip;
 
 export default function Breadcrumbs() {
-    const { currentItem } = useAppSelector(
-        (state: RootState) => ({
-            // user: state.auth.user,
-            currentItem: state.directory.currentItem,
-        }),
-        shallowEqual
-    );
-    const { path, item } = currentItem;
+    const {
+        currentItem: { path, item },
+    } = useDirectory();
 
     return (
         <div role="presentation" onClick={handleClick}>

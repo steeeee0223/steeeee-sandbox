@@ -103,12 +103,13 @@ class FilesStorage extends IStorage<File> {
     }
 
     public unpack(doc: any): File {
-        const { parent, name, extension, content } = doc.data();
+        const { parent, name, extension, content, path } = doc.data();
         return {
             itemId: doc.id,
             isFolder: false,
             name,
             parent,
+            path,
             extension,
             content,
         } as File;
@@ -148,11 +149,12 @@ class FoldersStorage extends IStorage<Folder> {
     }
 
     public unpack(doc: any): Folder {
-        const { projectId, parent, name } = doc.data();
+        const { projectId, parent, name, path } = doc.data();
         return {
             projectId,
             parent,
             name,
+            path,
             itemId: doc.id,
             isFolder: true,
         } as Folder;

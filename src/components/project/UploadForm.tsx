@@ -20,11 +20,11 @@ export default function UploadForm() {
         shallowEqual
     );
     const { item, path } = currentItem;
-    const { isFilePresent } = useDirectory(item.id);
+    const { isFilePresent } = useDirectory();
     const dispatch = useAppDispatch();
 
     const setFilename = (filename: string): string => {
-        if (!isFilePresent(filename)) return filename;
+        if (!isFilePresent(item.id, filename)) return filename;
         const split = filename.split(".");
         if (split.length === 0) {
             return `${filename}-2`;

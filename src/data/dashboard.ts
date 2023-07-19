@@ -21,7 +21,7 @@ export const tableRows: Project[] = [
     createData("1", "Typescript", ["typescript"], "admin"),
     createData("2", "Node JS", ["nodejs"], "admin"),
     createData("3", "Python", ["python"], "admin"),
-    createData("4", "C++", ["c++"], "admin"),
+    // createData("4", "C++", ["c++"], "admin"),
 ];
 
 export const headCells: readonly TableHeadCell[] = [
