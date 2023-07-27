@@ -4,8 +4,7 @@ import { Typography, IconButton, Stack } from "@mui/material";
 import FolderIcon from "@mui/icons-material/Folder";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 
-import { useAppDispatch, useAppSelector, useDirectory } from "@/hooks";
-import { openEditor } from "@/stores/editor";
+import { useAppSelector, useDirectory, useEditors } from "@/hooks";
 
 import { Accordion, AccordionDetails, AccordionSummary } from "./Accordion";
 import ContextMenu from "./ContextMenu";
@@ -15,13 +14,15 @@ export default function FolderSystem({ parent }: { parent: string }) {
     const [toggle, setToggle] = React.useState<Record<string, boolean>>({});
 
     const { renameItem } = useAppSelector(
-        (state) => ({
-            renameItem: state.cursor.renameItem,
-        }),
+        (state) => ({ renameItem: state.cursor.renameItem }),
         shallowEqual
     );
-    const dispatch = useAppDispatch();
-    const { getFirstLayerChildren, select, isCurrentItem } = useDirectory();
+    const { open: openEditor } = useEditors();
+    const {
+        getFirstLayerChildren,
+        select: selectItem,
+        isCurrentItem,
+    } = useDirectory();
     const children = getFirstLayerChildren(parent);
 
     const handleToggle = (pathIds: string[]) => {
@@ -33,10 +34,11 @@ export default function FolderSystem({ parent }: { parent: string }) {
     const handleChange =
         (itemId: string, isFolder: boolean) =>
         (event: React.SyntheticEvent, isExpanded: boolean) => {
+            event.preventDefault();
             const selectedId = isExpanded ? itemId : parent;
-            const item = select(selectedId);
+            const item = selectItem(selectedId);
             handleToggle(item.path.id);
-            if (!isFolder) dispatch(openEditor(itemId));
+            if (!isFolder) openEditor(itemId, true);
         };
 
     return (
