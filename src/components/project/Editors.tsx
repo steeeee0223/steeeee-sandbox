@@ -1,37 +1,73 @@
-import { MouseEvent, useCallback } from "react";
-import { shallowEqual } from "react-redux";
-import { Box, IconButton, Tab } from "@mui/material";
-import { TabContext, TabList } from "@mui/lab";
+import { MouseEvent, useCallback, useMemo } from "react";
+import { Box, Button, IconButton, Tab } from "@mui/material";
+import { TabContext, TabList, TabPanel } from "@mui/lab";
 import CloseIcon from "@mui/icons-material/Close";
+import { ViewUpdate } from "@codemirror/view";
+import CodeMirror from "@uiw/react-codemirror";
+import createTheme from "@uiw/codemirror-themes";
+import { useSandpack } from "@codesandbox/sandpack-react";
 
-import { useAppDispatch, useAppSelector, useDirectory } from "@/hooks";
-import { closeEditors, setEditor } from "@/stores/editor";
-
-import { Editor } from "./Editor";
+import { useEditors, useKeyPress } from "@/hooks";
+import { loadExtensions } from "@/lib/editor";
 import { editorTabHeight, editorTabStyle } from "./styles";
+import { myTheme } from "../common/theme";
 
-export default function Editors() {
-    const { editorIds, currentEditor } = useAppSelector(
-        (state) => ({
-            editorIds: state.editor.ids as string[],
-            currentEditor: state.editor.currentEditor,
-        }),
-        shallowEqual
-    );
-    const { getItem } = useDirectory();
-    const dispatch = useAppDispatch();
+const EditorPanel = ({ editorId }: { editorId: string }) => {
+    const {
+        sandpack: { updateFile },
+    } = useSandpack();
 
-    const handleChange = useCallback(
-        (e: React.SyntheticEvent, editorId: string) => {
-            e.preventDefault();
-            dispatch(setEditor(editorId));
+    const { getInfo, save, currentText, updateText } = useEditors();
+    const { name, extension } = getInfo(editorId);
+
+    const theme = createTheme(myTheme);
+    const extensions = useMemo(() => loadExtensions(extension), [extension]);
+
+    const handleEditorChange = useCallback(
+        (value: string, viewUpdate: ViewUpdate) => {
+            updateText(value);
+            console.log(`[Panel] Changed value for [${editorId}]`);
         },
         []
     );
 
+    const handleSave = () => {
+        console.log(`[Panel] saving text: [${editorId}] => ${currentText}`);
+        save(editorId, updateFile);
+    };
+
+    useKeyPress({ meta: ["s"], ctrl: ["s"] }, handleSave);
+
+    return (
+        <TabPanel value={editorId}>
+            <Button size="small" variant="contained" onClick={handleSave}>
+                Save {name}
+            </Button>
+            <CodeMirror
+                value={currentText}
+                extensions={extensions}
+                autoFocus
+                theme={theme}
+                onChange={handleEditorChange}
+            />
+        </TabPanel>
+    );
+};
+
+export default function Editors() {
+    const { editors, currentEditor, isModified, select, close } = useEditors();
+
+    const handleTabChange = (e: React.SyntheticEvent, editorId: string) => {
+        e.preventDefault();
+        console.log(
+            `[Editors] on tabs change: ${currentEditor} => ${editorId}`
+        );
+        select(editorId);
+    };
+
     const handleCloseEditor = useCallback((e: MouseEvent, editorId: string) => {
         e.stopPropagation();
-        dispatch(closeEditors([editorId]));
+        close([editorId]);
     }, []);
 
     return (
@@ -40,45 +76,44 @@ export default function Editors() {
                 <TabContext value={currentEditor}>
                     <Box sx={editorTabStyle}>
                         <TabList
-                            onChange={handleChange}
+                            onChange={handleTabChange}
                             variant="scrollable"
                             scrollButtons="auto"
                             allowScrollButtonsMobile
                             aria-label="tabs"
                             sx={{ fontSize: "small" }}
                         >
-                            {editorIds.map((itemId) => {
-                                const { name } = getItem(itemId);
-                                return (
-                                    <Tab
-                                        label={name}
-                                        key={itemId}
-                                        value={itemId}
-                                        disableRipple
-                                        iconPosition="end"
-                                        icon={
-                                            <IconButton
-                                                component="span"
-                                                sx={{
-                                                    padding: 0,
-                                                    fontSize: "inherit",
-                                                }}
-                                                onClick={(e) =>
-                                                    handleCloseEditor(e, itemId)
-                                                }
-                                            >
-                                                <CloseIcon fontSize="inherit" />
-                                            </IconButton>
-                                        }
-                                        sx={{ minHeight: editorTabHeight }}
-                                    />
-                                );
-                            })}
+                            {editors.map(({ id, name }) => (
+                                <Tab
+                                    label={
+                                        isModified(id)
+                                            ? `${name} (Modified)`
+                                            : name
+                                    }
+                                    key={id}
+                                    value={id}
+                                    disableRipple
+                                    iconPosition="end"
+                                    icon={
+                                        <IconButton
+                                            component="span"
+                                            sx={{
+                                                padding: 0,
+                                                fontSize: "inherit",
+                                            }}
+                                            onClick={(e) =>
+                                                handleCloseEditor(e, id)
+                                            }
+                                        >
+                                            <CloseIcon fontSize="inherit" />
+                                        </IconButton>
+                                    }
+                                    sx={{ minHeight: editorTabHeight }}
+                                />
+                            ))}
                         </TabList>
                     </Box>
-                    {editorIds.map((itemId) => {
-                        return <Editor key={itemId} itemId={itemId} />;
-                    })}
+                    <EditorPanel editorId={currentEditor} />
                 </TabContext>
             ) : (
                 <Box

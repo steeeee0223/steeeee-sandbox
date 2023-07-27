@@ -6,10 +6,11 @@ export default function Preview() {
 
     useEffect(() => {
         // listens for any message dispatched between sandpack and the bundler
-        const stopListening = listen((msg) => console.log(msg));
+        // const stopListening = listen((msg) => console.log(msg));
+        const stopListening = listen(() => {});
 
         return () => {
-            // unsubscribe
+            /** unsubscribe */
             stopListening();
         };
     }, [listen]);

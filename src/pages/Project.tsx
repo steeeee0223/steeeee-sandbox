@@ -1,7 +1,7 @@
-import { Divider, Grid, Typography } from "@mui/material";
+import { Divider, Grid } from "@mui/material";
 import { SandpackProvider } from "@codesandbox/sandpack-react";
 
-import { Loading, NotFound, Preview } from "@/components/common";
+import { Loading, NotFound } from "@/components/common";
 import { Editors, Viewer } from "@/components/project";
 import { sampleSetup, sampleTemplate } from "@/data";
 import { usePath, useProjects, useDirectory } from "@/hooks";
@@ -27,7 +27,6 @@ export default function Project() {
                 </Grid>
                 <Divider flexItem orientation="vertical" />
                 <Grid item xs={6} sx={{ height: "100vh" }}>
-                    {/* <Tabs children={frames} defaultValue="0" /> */}
                     <Viewer />
                 </Grid>
             </Grid>

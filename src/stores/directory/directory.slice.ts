@@ -35,14 +35,17 @@ const initialState = directoryAdapter.getInitialState<{
     currentItem: rootItem,
     copiedItems: null,
 });
+export type DirectoryState = typeof initialState;
+
+const __setLoading = (state: DirectoryState) => {
+    state.isLoading = true;
+};
 
 const directorySlice = createSlice({
     name: "directory",
     initialState,
     reducers: {
-        setLoading: (state) => {
-            state.isLoading = true;
-        },
+        setLoading: __setLoading,
         selectItem: (state, { payload }: PayloadAction<SelectedItem>) => {
             state.currentItem = payload;
         },
@@ -55,21 +58,13 @@ const directorySlice = createSlice({
             directoryAdapter.removeAll(state);
             state.currentItem = rootItem;
         });
-        builder.addCase(
-            createFolderAsync.fulfilled ||
-                createFileAsync.fulfilled ||
-                uploadFileAsync.fulfilled,
-            directoryAdapter.addOne
-        );
-        builder.addCase(
-            getDirectoryAsync.pending ||
-                createFolderAsync.rejected ||
-                createFileAsync.rejected ||
-                uploadFileAsync.rejected,
-            (state) => {
-                state.isLoading = true;
-            }
-        );
+        builder.addCase(createFolderAsync.fulfilled, directoryAdapter.addOne);
+        builder.addCase(createFolderAsync.rejected, __setLoading);
+        builder.addCase(createFileAsync.fulfilled, directoryAdapter.addOne);
+        builder.addCase(createFileAsync.rejected, __setLoading);
+        builder.addCase(uploadFileAsync.fulfilled, directoryAdapter.addOne);
+        builder.addCase(uploadFileAsync.rejected, __setLoading);
+        builder.addCase(getDirectoryAsync.pending, __setLoading);
         builder.addCase(
             getDirectoryAsync.fulfilled,
             (state, { payload }: PayloadAction<DirectoryItem[]>) => {
@@ -78,20 +73,20 @@ const directorySlice = createSlice({
             }
         );
         builder.addCase(
+            renameDirectoryItemAsync.fulfilled,
+            directoryAdapter.updateOne
+        );
+        builder.addCase(updateFileAsync.fulfilled, directoryAdapter.updateOne);
+        builder.addCase(
             deleteDirectoryAsync.fulfilled,
             (state, { payload }) => {
                 directoryAdapter.removeMany(state, payload);
                 state.currentItem = rootItem;
             }
         );
-        builder.addCase(
-            renameDirectoryItemAsync.fulfilled || updateFileAsync.fulfilled,
-            directoryAdapter.updateOne
-        );
     },
 });
 
-export type DirectoryState = typeof initialState;
 export const directorySelector = directoryAdapter.getSelectors(
     (state: DirectoryState) => state
 );

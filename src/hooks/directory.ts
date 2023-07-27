@@ -17,7 +17,7 @@ import {
     selectItem,
 } from "@/stores/directory";
 
-const _never: never = undefined as never;
+const _never = undefined as never;
 
 interface DirectoryInfo {
     directory: DirectoryItem[];
@@ -25,6 +25,9 @@ interface DirectoryInfo {
     copiedItems: CopiedItems | null;
     projectId: string;
     bundledFiles: SandpackFiles;
+    isCurrentItem: (itemId: string) => boolean;
+    isFolderPresent: (itemId: string, folderName: string) => boolean;
+    isFilePresent: (itemId: string, fileName: string) => boolean;
 }
 
 interface DirectoryOperations {
@@ -38,9 +41,6 @@ interface DirectoryOperations {
         fileIds: string[];
     };
     select: (itemId: string) => SelectedItem;
-    isCurrentItem: (itemId: string) => boolean;
-    isFolderPresent: (itemId: string, folderName: string) => boolean;
-    isFilePresent: (itemId: string, fileName: string) => boolean;
     bundleFiles: () => SandpackFiles;
 }
 
@@ -52,7 +52,7 @@ export function useDirectory(): DirectoryInfo & DirectoryOperations {
                 directoryState: state.directory,
                 currentItem: state.directory.currentItem,
                 copiedItems: state.directory.copiedItems,
-                projectId: state.project.currentProject?.id,
+                projectId: state.project.currentProject?.id ?? _never,
             }),
             shallowEqual
         );
