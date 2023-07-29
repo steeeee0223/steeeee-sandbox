@@ -2,6 +2,7 @@ import { Link as RouterLink } from "react-router-dom";
 import { Toolbar, IconButton, Typography, Button } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import HomeIcon from "@mui/icons-material/Home";
 
 import AppBar from "./AppBar";
 import { useAppContext } from "@/contexts/app";
@@ -40,7 +41,14 @@ const Navbar = () => {
                         Sign In
                     </Button>
                 )}
-                {user && <Button onClick={signOut}>Sign Out</Button>}
+                {user && (
+                    <>
+                        <IconButton component={RouterLink} to="/home">
+                            <HomeIcon />
+                        </IconButton>
+                        <Button onClick={signOut}>Sign Out</Button>
+                    </>
+                )}
             </Toolbar>
         </AppBar>
     );
