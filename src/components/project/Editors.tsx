@@ -1,4 +1,4 @@
-import { MouseEvent, useCallback, useEffect, useMemo } from "react";
+import { MouseEvent, useCallback, useMemo } from "react";
 import { Box, Button, IconButton, Tab } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import CloseIcon from "@mui/icons-material/Close";
@@ -39,13 +39,6 @@ const EditorPanel = ({ editorId }: { editorId: string }) => {
     };
 
     useKeyPress({ meta: ["s"], ctrl: ["s"] }, handleSave);
-
-    useEffect(() => {
-        return () => {
-            console.log(`[Panel] useEffect: update preview`);
-            updatePreview(editorId, updateFile);
-        };
-    }, [name]);
 
     return (
         <TabPanel value={editorId}>
