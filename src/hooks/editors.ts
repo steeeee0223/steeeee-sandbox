@@ -34,6 +34,10 @@ interface EditorsOperations {
     select: (editorId: string) => void;
     open: (editorId: string, autoSelect: boolean) => void;
     close: (editorIds: string[]) => void;
+    updatePreview: (
+        editorId: string,
+        updateSandpackFile: UpdateSandpackFile
+    ) => void;
     save: (editorId: string, updateSandpackFile?: UpdateSandpackFile) => void;
     updateText: (content: string) => void;
 }
@@ -52,11 +56,6 @@ export function useEditors(): EditorsInfo & EditorsOperations {
 
     const editors = editorSelector.selectAll(editorState);
     const editorIds = editorSelector.selectIds(editorState) as string[];
-
-    const updateText = (content: string) => {
-        console.log(`[Hook] update current text`);
-        dispatch(_updateText(content));
-    };
 
     /**
      * @summary Compare the content of editor `editorId` in editor entities with that in directory entities
@@ -98,13 +97,21 @@ export function useEditors(): EditorsInfo & EditorsOperations {
         dispatch(closeEditors(editorIds));
     };
     /**
+     * @summary Update sandpack files
+     */
+    const updatePreview = (
+        editorId: string,
+        updateSandpackFile: UpdateSandpackFile
+    ) => {
+        const [path, _] = getPath(editorId);
+        const pathName = path.join("/").slice(4);
+        updateSandpackFile(pathName, currentText, true);
+    };
+    /**
      * @summary Save the latest content of editor `editorId` (from editor entities)
      * to directory via `directory/updateFileAsync`
      */
-    const save = (
-        editorId: string,
-        updateSandpackFile?: UpdateSandpackFile
-    ) => {
+    const save = (editorId: string) => {
         console.log(`[Hook] save editor ${editorId}: ${isModified(editorId)}`);
         /** Update the content of `currentEditor` */
         dispatch(updateCurrentEditor());
@@ -117,13 +124,13 @@ export function useEditors(): EditorsInfo & EditorsOperations {
                 content: currentText,
             })
         );
-
-        /** Update sandpack file */
-        if (updateSandpackFile) {
-            const [path, _] = getPath(editorId);
-            const pathname = path.join("/").slice(4);
-            updateSandpackFile(pathname, currentText, true);
-        }
+    };
+    /**
+     * @summary Update `currentText` to `content`
+     */
+    const updateText = (content: string) => {
+        console.log(`[Hook] update current text`);
+        dispatch(_updateText(content));
     };
 
     return {
@@ -138,5 +145,6 @@ export function useEditors(): EditorsInfo & EditorsOperations {
         isModified,
         save,
         updateText,
+        updatePreview,
     };
 }

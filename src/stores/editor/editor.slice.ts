@@ -8,6 +8,7 @@ import {
     File,
     createFileAsync,
     deleteDirectoryAsync,
+    renameDirectoryItemAsync,
     updateFileAsync,
     uploadFileAsync,
 } from "@/stores/directory";
@@ -106,6 +107,10 @@ const editorSlice = createSlice({
         builder.addCase(createFileAsync.fulfilled, __openEditor);
         builder.addCase(uploadFileAsync.fulfilled, __openEditor);
         builder.addCase(updateFileAsync.fulfilled, editorAdapter.updateOne);
+        builder.addCase(
+            renameDirectoryItemAsync.fulfilled,
+            editorAdapter.updateOne
+        );
         builder.addCase(deleteDirectoryAsync.fulfilled, (state, action) => {
             __updateCurrentEditor(state);
             __closeEditors(state, action);
