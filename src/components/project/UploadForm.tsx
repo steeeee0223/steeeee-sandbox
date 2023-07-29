@@ -55,13 +55,11 @@ export default function UploadForm() {
                         createdAt: new Date(),
                         updatedAt: new Date(),
                         name: filename,
-                        path: item.id === "root" ? [] : [...path.id, item.id],
+                        path: [...path.id, item.id],
                         parent: item.id,
                         lastAccessed: null,
                         content,
                         extension: getExtension(file.name),
-                        // userId: user.uid,
-                        // createdBy: user.name
                     };
                     dispatch(
                         uploadFileAsync({ projectId, uploadFile: file, data })

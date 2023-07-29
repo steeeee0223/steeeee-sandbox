@@ -34,13 +34,11 @@ export default function CreateFile() {
                         createdAt: new Date(),
                         updatedAt: new Date(),
                         name,
-                        path: item.id === "root" ? [] : [...path.id, item.id],
+                        path: [...path.id, item.id],
                         parent: item.id,
                         lastAccessed: null,
                         content: "",
                         extension: getExtension(name),
-                        // userId: user.uid,
-                        // createdBy: user.name
                     };
                     dispatch(createFileAsync({ projectId, data }));
                 } else {

@@ -32,11 +32,9 @@ export default function CreateFolder() {
                         createdAt: new Date(),
                         updatedAt: new Date(),
                         name: folderName,
-                        path: item.id === "root" ? [] : [...path.id, item.id],
+                        path: [...path.id, item.id],
                         parent: item.id,
                         lastAccessed: null,
-                        // userId: user.uid,
-                        // createdBy: user.name
                     };
                     dispatch(createFolderAsync({ projectId, data }));
                 } else {
