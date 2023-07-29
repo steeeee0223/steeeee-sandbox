@@ -1,5 +1,5 @@
 import { MouseEvent, useCallback, useMemo } from "react";
-import { Box, Button, IconButton, Tab } from "@mui/material";
+import { Box, IconButton, Tab } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import CloseIcon from "@mui/icons-material/Close";
 import { ViewUpdate } from "@codemirror/view";
@@ -19,7 +19,7 @@ const EditorPanel = ({ editorId }: { editorId: string }) => {
 
     const { getInfo, save, currentText, updateText, updatePreview } =
         useEditors();
-    const { name, extension } = getInfo(editorId);
+    const { extension } = getInfo(editorId);
 
     const theme = createTheme(myTheme);
     const extensions = useMemo(() => loadExtensions(extension), [extension]);
@@ -41,16 +41,14 @@ const EditorPanel = ({ editorId }: { editorId: string }) => {
     useKeyPress({ meta: ["s"], ctrl: ["s"] }, handleSave);
 
     return (
-        <TabPanel value={editorId}>
-            <Button size="small" variant="contained" onClick={handleSave}>
-                Save {name}
-            </Button>
+        <TabPanel value={editorId} style={{ padding: 0 }}>
             <CodeMirror
                 value={currentText}
                 extensions={extensions}
                 autoFocus
                 theme={theme}
                 onChange={handleEditorChange}
+                height="100vh"
             />
         </TabPanel>
     );
