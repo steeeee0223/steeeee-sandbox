@@ -53,26 +53,26 @@ export const headCells: readonly TableHeadCell[] = [
 ];
 
 export const projectTemplates: Template[] = [
-    {
-        value: "vite-react",
-        label: "React",
-    },
-    {
-        value: "vite-react-ts",
-        label: "React Typescript",
-    },
-    {
-        value: "node",
-        label: "NodeJS",
-    },
-    {
-        value: "static",
-        label: "Blank",
-    },
+    { value: "static", label: "Blank" },
+    { value: "angular", label: "Angular" },
+    { value: "solid", label: "Solid" },
+    { value: "test-ts", label: "Test Typescript" },
+    { value: "vanilla", label: "Vanilla" },
+    { value: "vanilla-ts", label: "Vanilla Typescript" },
+    { value: "node", label: "NodeJS" },
+    { value: "nextjs", label: "Next.js" },
+    { value: "vite", label: "Vite" },
+    { value: "vite-react", label: "React" },
+    { value: "vite-react-ts", label: "React Typescript" },
+    { value: "vite-vue", label: "Vue" },
+    { value: "vite-vue-ts", label: "Vue Typescript" },
+    { value: "vite-svelte", label: "Svelte" },
+    { value: "vite-svelte-ts", label: "Svelte Typescript" },
+    { value: "astro", label: "Astro" },
 ];
 
 export const tableRows: Project[] = [
-    createData("1", "React", projectTemplates[0], "admin"),
-    createData("2", "Node", projectTemplates[2], "admin"),
-    createData("3", "React Typescript", projectTemplates[1], "admin"),
+    createData("1", "Sample React", projectTemplates[9], "admin"),
+    createData("2", "Sample Node", projectTemplates[6], "admin"),
+    createData("3", "Sample React Typescript", projectTemplates[10], "admin"),
 ];

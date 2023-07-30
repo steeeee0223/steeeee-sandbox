@@ -9,7 +9,11 @@ import {
     Box,
     Button,
     FormControl,
+    InputLabel,
     MenuItem,
+    OutlinedInput,
+    Select,
+    SelectChangeEvent,
     Stack,
     TextField,
     Typography,
@@ -36,6 +40,17 @@ const formStyle = {
 
 interface CreateFormProps {}
 
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+    PaperProps: {
+        style: {
+            maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+            width: 200,
+        },
+    },
+};
+
 const CreateForm = forwardRef(({}: CreateFormProps, ref) => {
     const dispatch = useAppDispatch();
     const { user, isProjectPresent } = useProjects();
@@ -49,12 +64,15 @@ const CreateForm = forwardRef(({}: CreateFormProps, ref) => {
         if (user && name && template) {
             if (!isProjectPresent(name)) {
                 const { uid, displayName, email } = user;
+                const { label } =
+                    projectTemplates.find(({ value }) => value === template) ??
+                    (undefined as never);
                 const data = {
                     createdAt: new Date(),
                     lastModifiedAt: new Date(),
                     template,
                     name,
-                    tags: [template],
+                    tags: [label],
                 };
                 dispatch(
                     createProjectAsync({
@@ -81,8 +99,11 @@ const CreateForm = forwardRef(({}: CreateFormProps, ref) => {
         []
     );
 
-    const handleTemplateChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+    const handleTemplateChange = (
+        e: SelectChangeEvent<SandpackPredefinedTemplate>
+    ) => {
         e.preventDefault();
+        console.log(`[Form] selected project: ${e.target.value}`);
         setTemplate(e.target.value as SandpackPredefinedTemplate);
     };
 
@@ -124,22 +145,30 @@ const CreateForm = forwardRef(({}: CreateFormProps, ref) => {
                 sx={{ alignItems: "center" }}
             >
                 <FormControl size="small">
-                    <TextField
-                        select
-                        id="project-template"
-                        label="Project Template"
+                    <InputLabel id="project-template">
+                        Project Template
+                    </InputLabel>
+                    <Select
+                        labelId="project-template"
+                        id="project-template-select"
                         value={template}
                         onChange={handleTemplateChange}
-                        size="small"
-                        required
-                        sx={{ width: 200 }}
+                        input={
+                            <OutlinedInput
+                                label="Project Template"
+                                size="small"
+                                required
+                                sx={{ width: 200 }}
+                            />
+                        }
+                        MenuProps={MenuProps}
                     >
                         {projectTemplates.map((option) => (
                             <MenuItem key={option.value} value={option.value}>
                                 {option.label}
                             </MenuItem>
                         ))}
-                    </TextField>
+                    </Select>
                 </FormControl>
                 <Button
                     type="submit"
