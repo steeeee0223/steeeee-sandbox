@@ -9,7 +9,6 @@ import {
     googleSignIn as googleSignInAsync,
     githubSignIn as githubSignInAsync,
 } from "@/stores/auth";
-import { getProjectsAsync } from "@/stores/project";
 import { useAppDispatch, useAppSelector } from "./stores";
 
 export const useAuth = () => {
@@ -32,10 +31,6 @@ export const useAuth = () => {
 
         return () => unsubscribe();
     }, []);
-
-    useEffect(() => {
-        if (user) dispatch(getProjectsAsync(user.uid));
-    }, [user]);
 
     return { user, isLoggedIn, googleSignIn, githubSignIn, signOut };
 };

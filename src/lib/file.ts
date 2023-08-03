@@ -1,4 +1,5 @@
-import { UploadFile } from "@/stores/directory";
+import type { File, UploadFile } from "@/stores/directory";
+import type { Project } from "@/stores/project";
 
 /**
  * File extension -> content type
@@ -43,4 +44,29 @@ export function getDefaultFile(filename: string): UploadFile {
         type: typeMapping[extension] || "text/plain",
     };
     return new File([], filename, options);
+}
+
+/**
+ * @summary normalize the path such that it starts with `/`
+ * @argument path an array of item names started from `root`
+ *
+ * @example ['root', 'components', 'Button.tsx']
+ * -> ['components', 'Button.tsx']
+ * -> `/components/Button.tsx`
+ */
+export function normalizePath(path: string[]): string {
+    return `/${path.slice(1).join("/")}`;
+}
+
+/**
+ * @summary Generate the `refId` from the `file` of the `project` in FireStore
+ * @example `<project.name>-<project.id><normalizedPath>/<file.name>`
+ */
+export function getRefId(project: Project, file?: File): string {
+    const prefix = `${project.name}-${project.projectId}`;
+    const refId = file
+        ? `${prefix}${normalizePath(file.path)}/${file.name}`
+        : prefix;
+    console.log(`[Lib] got ref id: ${refId}`);
+    return refId;
 }

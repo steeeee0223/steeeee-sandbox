@@ -41,7 +41,7 @@ const projectSlice = createSlice({
         builder.addCase(
             getProjectsAsync.fulfilled,
             (state, { payload }: PayloadAction<Project[]>) => {
-                projectAdapter.addMany(state, payload);
+                projectAdapter.setAll(state, payload);
                 state.isLoading = false;
             }
         );

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { shallowEqual } from "react-redux";
 import { SandpackFiles } from "@codesandbox/sandpack-react/types";
 
@@ -16,14 +16,17 @@ import {
     getSelectedItem,
     selectItem,
 } from "@/stores/directory";
+import { normalizePath } from "@/lib/file";
+import { Project, projectSelector } from "@/stores/project";
 
 const _never = undefined as never;
+const nullProject = {} as Project;
 
 interface DirectoryInfo {
+    project: Project;
     directory: DirectoryItem[];
     currentItem: SelectedItem;
     copiedItems: CopiedItems | null;
-    projectId: string;
     bundledFiles: SandpackFiles;
     isCurrentItem: (itemId: string) => boolean;
     isFolderPresent: (itemId: string, folderName: string) => boolean;
@@ -46,16 +49,31 @@ interface DirectoryOperations {
 
 export function useDirectory(): DirectoryInfo & DirectoryOperations {
     const dispatch = useAppDispatch();
-    const { directoryState, currentItem, copiedItems, projectId } =
-        useAppSelector(
-            (state) => ({
-                directoryState: state.directory,
-                currentItem: state.directory.currentItem,
-                copiedItems: state.directory.copiedItems,
-                projectId: state.project.currentProject?.id ?? _never,
-            }),
-            shallowEqual
-        );
+    const {
+        directoryState,
+        currentItem,
+        copiedItems,
+        projectState,
+        currentProject,
+    } = useAppSelector(
+        (state) => ({
+            directoryState: state.directory,
+            currentItem: state.directory.currentItem,
+            copiedItems: state.directory.copiedItems,
+            projectState: state.project,
+            currentProject: state.project.currentProject,
+        }),
+        shallowEqual
+    );
+
+    const project = useMemo(
+        () =>
+            currentProject
+                ? projectSelector.selectById(projectState, currentProject.id) ??
+                  _never
+                : nullProject,
+        [projectState]
+    );
 
     const directory = directorySelector.selectAll(directoryState);
     const getFiles = () =>
@@ -93,11 +111,7 @@ export function useDirectory(): DirectoryInfo & DirectoryOperations {
         const bundledFiles: SandpackFiles = {};
         getFiles().forEach(({ itemId, content }) => {
             const [pathName, _] = getPath(itemId);
-            /**
-             * @var path
-             * @example ['root', 'App.tsx'] -> `root/App.tsx` -> `/App.tsx`
-             */
-            const path = pathName.join("/").slice(4);
+            const path = normalizePath(pathName);
             bundledFiles[path] = content;
         });
         return bundledFiles;
@@ -110,7 +124,7 @@ export function useDirectory(): DirectoryInfo & DirectoryOperations {
     }, [directoryState]);
 
     return {
-        projectId,
+        project,
         directory,
         currentItem,
         copiedItems,

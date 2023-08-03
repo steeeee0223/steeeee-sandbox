@@ -3,9 +3,15 @@ import { shallowEqual } from "react-redux";
 import { User } from "firebase/auth";
 
 import { setLoading } from "@/stores/directory";
-import { Project, SelectedProject, projectSelector } from "@/stores/project";
+import {
+    Project,
+    ProjectAction,
+    SelectedProject,
+    getProjectsAsync,
+    projectSelector,
+    setProject,
+} from "@/stores/project";
 
-import { useAuth } from "./auth";
 import { useAppDispatch, useAppSelector } from "./stores";
 
 interface ProjectsInfo {
@@ -21,19 +27,23 @@ interface ProjectsOperations {
     isProjectOfUser: (id: string | null | undefined) => boolean;
     isProjectPresent: (projectName: string) => boolean;
     isProjectMatch: (projectName: string, id: string) => boolean;
+    getProject: (projectId: string) => Project | undefined;
     getProjectTemplate: (projectId: string) => string;
+    selectProject: (id: string, action: ProjectAction) => void;
+    resetProject: () => void;
 }
 
 export const useProjects = (): ProjectsInfo & ProjectsOperations => {
     const dispatch = useAppDispatch();
-    const { user } = useAuth();
     const {
+        user,
         projectState,
         currentProject,
         projectIsLoading,
         directoryIsLoading,
     } = useAppSelector(
         (state) => ({
+            user: state.auth.user,
             projectState: state.project,
             currentProject: state.project.currentProject,
             projectIsLoading: state.project.isLoading,
@@ -43,6 +53,8 @@ export const useProjects = (): ProjectsInfo & ProjectsOperations => {
     );
     const projects = projectSelector.selectAll(projectState);
     const projectIds = projectSelector.selectIds(projectState) as string[];
+    const getProject = (projectId: string) =>
+        projectSelector.selectById(projectState, projectId);
     const getProjectTemplate = (projectId: string) =>
         projectSelector.selectById(projectState, projectId)?.template ??
         "static";
@@ -55,11 +67,24 @@ export const useProjects = (): ProjectsInfo & ProjectsOperations => {
             ({ name, projectId }) => name === projectName && projectId === id
         );
 
+    const selectProject = (id: string, action: ProjectAction) => {
+        console.log(`[useProjects] id ${id} => ${action}`);
+        dispatch(setProject({ id, action }));
+    };
+    const resetProject = () => {
+        console.log(`[useProjects] id  => null`);
+        dispatch(setProject(null));
+    };
+
     useEffect(() => {
         if (user && currentProject) {
             dispatch(setLoading());
         }
     }, [user, currentProject]);
+
+    useEffect(() => {
+        if (user) dispatch(getProjectsAsync(user.uid));
+    }, [user]);
 
     return {
         user,
@@ -71,6 +96,9 @@ export const useProjects = (): ProjectsInfo & ProjectsOperations => {
         isProjectOfUser,
         isProjectPresent,
         isProjectMatch,
+        getProject,
         getProjectTemplate,
+        selectProject,
+        resetProject,
     };
 };

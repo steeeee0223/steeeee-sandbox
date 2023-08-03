@@ -8,6 +8,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import FiberNewIcon from "@mui/icons-material/FiberNew";
 import DeleteIcon from "@mui/icons-material/Delete";
+import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 
 import { useAppDispatch, useAppSelector, useProjects } from "@/hooks";
 import { ProjectAction, setProject } from "@/stores/project";
@@ -16,6 +17,7 @@ import { setDashboardAction } from "@/stores/cursor";
 import { ButtonGroup } from "../common";
 import CreateForm from "./CreateForm";
 import DeleteForm from "./DeleteForm";
+import { downloadDirectoryAsync } from "@/stores/directory";
 
 interface ToolbarProps {
     projectName: string;
@@ -24,13 +26,7 @@ interface ToolbarProps {
 
 export const ActionToolbar = ({ projectName, projectId }: ToolbarProps) => {
     const dispatch = useAppDispatch();
-    // const { currentProject } = useAppSelector(
-    //     (state) => ({
-    //         currentProject: state.project.currentProject,
-    //     }),
-    //     shallowEqual
-    // );
-    const { currentProject } = useProjects();
+    const { currentProject, selectProject, getProject } = useProjects();
 
     const deleteFormRef = useRef<HTMLFormElement>(null);
 
@@ -39,9 +35,19 @@ export const ActionToolbar = ({ projectName, projectId }: ToolbarProps) => {
         action: ProjectAction
     ) => {
         e.stopPropagation();
-        const validActions: (string | null)[] = ["rename", "delete"];
-        if (validActions.includes(action)) {
-            dispatch(setProject({ action, id: projectId }));
+        switch (action) {
+            case "rename":
+                selectProject(projectId, action);
+                break;
+            case "delete":
+                selectProject(projectId, action);
+                break;
+            case "download":
+                const project = getProject(projectId) ?? (undefined as never);
+                dispatch(downloadDirectoryAsync({ project }));
+                break;
+            default:
+                break;
         }
     };
 
@@ -76,6 +82,11 @@ export const ActionToolbar = ({ projectName, projectId }: ToolbarProps) => {
                 <Tooltip title="Rename project">
                     <ToggleButton value="rename" aria-label="rename">
                         <EditIcon fontSize="small" />
+                    </ToggleButton>
+                </Tooltip>
+                <Tooltip title="Download project">
+                    <ToggleButton value="download" aria-label="download">
+                        <CloudDownloadIcon fontSize="small" />
                     </ToggleButton>
                 </Tooltip>
                 <Tooltip title="Delete project">

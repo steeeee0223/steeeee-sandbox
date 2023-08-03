@@ -1,8 +1,8 @@
-import { pathsWithoutSidebar } from "@/data";
-import { Location, useLocation } from "react-router-dom";
-import { useAppDispatch } from "./stores";
 import { useEffect } from "react";
-import { setProject } from "@/stores/project";
+import { Location, useLocation } from "react-router-dom";
+
+import { pathsWithoutSidebar } from "@/data";
+import { useProjects } from "./projects";
 
 type Path = Location & {
     path: string[];
@@ -11,8 +11,8 @@ type Path = Location & {
 };
 
 export default function usePath(): Path {
-    const dispatch = useAppDispatch();
     const location = useLocation();
+    const { selectProject, resetProject } = useProjects();
 
     const path = location.pathname.split("/");
     const [, pathname, id] = path;
@@ -22,13 +22,13 @@ export default function usePath(): Path {
 
     useEffect(() => {
         if (pathname === "project" && id) {
-            dispatch(setProject({ id, action: "edit" }));
             console.log(`setting project to: ${id}`);
+            selectProject(id, "edit");
         } else if (pathname === "demo" && id) {
-            dispatch(setProject({ id, action: "demo" }));
             console.log(`setting project to: ${id}`);
+            selectProject(id, "demo");
         } else {
-            dispatch(setProject(null));
+            resetProject();
         }
     }, [id]);
 

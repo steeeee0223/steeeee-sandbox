@@ -10,7 +10,7 @@ import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import ViewInArIcon from "@mui/icons-material/ViewInAr";
 
-import { useAppDispatch, useAppSelector } from "@/hooks";
+import { useAppDispatch, useAppSelector, useDirectory } from "@/hooks";
 import { setCreation, setFileAction } from "@/stores/cursor";
 import { drawerWidth } from "@/theme";
 import { ButtonGroup } from "@/components/common";
@@ -20,17 +20,15 @@ import CreateFile from "./CreateFile";
 import UploadForm from "./UploadForm";
 
 export default function Toolbar() {
-    const { fileActionType, creationType, currentItem, projectId } =
-        useAppSelector(
-            (state) => ({
-                fileActionType: state.cursor.fileActionType,
-                creationType: state.cursor.creationType,
-                currentItem: state.directory.currentItem,
-                projectId: state.project.currentProject?.id,
-            }),
-            shallowEqual
-        );
+    const { fileActionType, creationType } = useAppSelector(
+        (state) => ({
+            fileActionType: state.cursor.fileActionType,
+            creationType: state.cursor.creationType,
+        }),
+        shallowEqual
+    );
     const dispatch = useAppDispatch();
+    const { currentItem, project } = useDirectory();
 
     const handleCreation = (
         e: MouseEvent<HTMLElement>,
@@ -76,7 +74,7 @@ export default function Toolbar() {
                 <ButtonGroup size="small" exclusive>
                     <ToggleButton
                         component={RouterLink}
-                        to={`/demo/${projectId}`}
+                        to={`/demo/${project.projectId}`}
                         value="demo"
                         aria-label="demo"
                         size="small"

@@ -2,6 +2,7 @@ import { shallowEqual } from "react-redux";
 import { SandpackFiles } from "@codesandbox/sandpack-react";
 
 import { useDirectory } from "./directory";
+import { useProjects } from "./projects";
 import { useAppDispatch, useAppSelector } from "./stores";
 import {
     Editor,
@@ -44,7 +45,8 @@ interface EditorsOperations {
 
 export function useEditors(): EditorsInfo & EditorsOperations {
     const dispatch = useAppDispatch();
-    const { projectId, getItem, getPath } = useDirectory();
+    const { currentProject } = useProjects();
+    const { getItem, getPath } = useDirectory();
     const { editorState, currentEditor, currentText } = useAppSelector(
         (state) => ({
             editorState: state.editor,
@@ -119,8 +121,8 @@ export function useEditors(): EditorsInfo & EditorsOperations {
         /** Save to Firebase & directory entities */
         dispatch(
             updateFileAsync({
-                projectId,
-                itemId: editorId,
+                project: currentProject ?? (undefined as never),
+                file: getItem(editorId) as File,
                 content: currentText,
             })
         );

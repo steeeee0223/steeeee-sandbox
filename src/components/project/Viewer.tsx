@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { SyntheticEvent, useState } from "react";
 import { Box, Tab as MuiTab, Typography } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { useSandpack } from "@codesandbox/sandpack-react";
@@ -9,7 +9,7 @@ export default function Viewer() {
     const [activeTab, setActiveTab] = useState("0");
     const { dispatch } = useSandpack();
 
-    const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+    const handleChange = (event: SyntheticEvent, newValue: string) => {
         setActiveTab(newValue);
         if (newValue === "0") {
             dispatch({ type: "refresh" }); // does not work since sandpack is in idle mode

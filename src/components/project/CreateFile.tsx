@@ -1,9 +1,8 @@
 import { FormEventHandler, useState } from "react";
-import { shallowEqual } from "react-redux";
 import { Divider, IconButton, InputBase, Paper } from "@mui/material";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 
-import { useAppDispatch, useAppSelector, useDirectory } from "@/hooks";
+import { useAppDispatch, useDirectory } from "@/hooks";
 import { setCreation } from "@/stores/cursor";
 import { createFileAsync } from "@/stores/directory";
 import { getExtension } from "@/lib/file";
@@ -11,45 +10,34 @@ import { getExtension } from "@/lib/file";
 export default function CreateFile() {
     const [name, setName] = useState("");
 
-    const { projectId, currentItem } = useAppSelector(
-        (state) => ({
-            // user: state.auth.user,
-            projectId: state.project.currentProject?.id,
-            currentItem: state.directory.currentItem,
-        }),
-        shallowEqual
-    );
-    const { item, path } = currentItem;
-    const { isFilePresent } = useDirectory();
     const dispatch = useAppDispatch();
+    const { isFilePresent, currentItem, project } = useDirectory();
+    const { item, path } = currentItem;
 
     const handleSubmit: FormEventHandler = (e) => {
         e.preventDefault();
-        if (projectId) {
-            if (name) {
-                if (!isFilePresent(item.id, name)) {
-                    dispatch(setCreation(null));
 
-                    const data = {
-                        createdAt: new Date(),
-                        updatedAt: new Date(),
-                        name,
-                        path: [...path.id, item.id],
-                        parent: item.id,
-                        lastAccessed: null,
-                        content: "",
-                        extension: getExtension(name),
-                    };
-                    dispatch(createFileAsync({ projectId, data }));
-                } else {
-                    setName("");
-                    alert(`File ${name} already present!`);
-                }
+        if (name) {
+            if (!isFilePresent(item.id, name)) {
+                dispatch(setCreation(null));
+
+                const data = {
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    name,
+                    path: [...path.name, item.name],
+                    parent: item.id,
+                    lastAccessed: null,
+                    content: "",
+                    extension: getExtension(name),
+                };
+                dispatch(createFileAsync({ project, data }));
             } else {
-                alert(`File name is required!`);
+                setName("");
+                alert(`File ${name} already present!`);
             }
         } else {
-            alert(`NO PROJECT SELECTED!`);
+            alert(`File name is required!`);
         }
     };
 

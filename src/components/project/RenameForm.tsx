@@ -12,8 +12,7 @@ interface RenameFormProps {
 
 export default function RenameForm({ itemId, placeholder }: RenameFormProps) {
     const dispatch = useAppDispatch();
-    const { getItem } = useDirectory();
-    const { isFolder } = getItem(itemId);
+    const { getItem, project } = useDirectory();
 
     const [name, setName] = useState(placeholder ?? "");
     const invalidNames = [placeholder, ""];
@@ -26,7 +25,13 @@ export default function RenameForm({ itemId, placeholder }: RenameFormProps) {
     const handleSubmit: FormEventHandler = (e) => {
         e.preventDefault();
         if (!invalidNames.includes(name))
-            dispatch(renameDirectoryItemAsync({ isFolder, itemId, name }));
+            dispatch(
+                renameDirectoryItemAsync({
+                    project,
+                    item: getItem(itemId),
+                    name,
+                })
+            );
         dispatch(setRenameItem(null));
     };
 

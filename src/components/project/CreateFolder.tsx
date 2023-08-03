@@ -1,51 +1,38 @@
 import { FormEventHandler, useState } from "react";
-import { shallowEqual } from "react-redux";
 import { Divider, IconButton, InputBase, Paper } from "@mui/material";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 
-import { useAppDispatch, useAppSelector, useDirectory } from "@/hooks";
+import { useAppDispatch, useDirectory } from "@/hooks";
 import { setCreation } from "@/stores/cursor";
 import { createFolderAsync } from "@/stores/directory";
 
 export default function CreateFolder() {
     const [folderName, setFolderName] = useState("");
 
-    const { currentItem, projectId } = useAppSelector(
-        (state) => ({
-            // user: state.auth.user,
-            currentItem: state.directory.currentItem,
-            projectId: state.project.currentProject?.id,
-        }),
-        shallowEqual
-    );
-    const { item, path } = currentItem;
-    const { isFolderPresent } = useDirectory();
     const dispatch = useAppDispatch();
+    const { isFolderPresent, currentItem, project } = useDirectory();
+    const { item, path } = currentItem;
 
     const handleSubmit: FormEventHandler = (e) => {
         e.preventDefault();
-        if (projectId) {
-            if (folderName) {
-                if (!isFolderPresent(item.id, folderName)) {
-                    dispatch(setCreation(null));
-                    const data = {
-                        createdAt: new Date(),
-                        updatedAt: new Date(),
-                        name: folderName,
-                        path: [...path.id, item.id],
-                        parent: item.id,
-                        lastAccessed: null,
-                    };
-                    dispatch(createFolderAsync({ projectId, data }));
-                } else {
-                    alert(`Folder ${folderName} already present!`);
-                    setFolderName("");
-                }
+        if (folderName) {
+            if (!isFolderPresent(item.id, folderName)) {
+                dispatch(setCreation(null));
+                const data = {
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    name: folderName,
+                    path: [...path.name, item.name],
+                    parent: item.id,
+                    lastAccessed: null,
+                };
+                dispatch(createFolderAsync({ project, data }));
             } else {
-                alert(`Folder name is required!`);
+                alert(`Folder ${folderName} already present!`);
+                setFolderName("");
             }
         } else {
-            alert(`NO PROJECT SELECTED`);
+            alert(`Folder name is required!`);
         }
     };
 

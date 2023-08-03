@@ -1,8 +1,10 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
+import { ThunkDispatch, createAsyncThunk } from "@reduxjs/toolkit";
 
 import { tableRows as sampleProjects } from "@/data";
-import { filesDB, foldersDB, projectsDB } from "@/lib/storage";
+import { projectsDB } from "@/lib/storage";
 import { CreatedBy } from "./project";
+import { ProjectState, projectSelector } from "./project.slice";
+import { DirectoryState, deleteDirectoryAsync } from "../directory";
 
 export const createProjectAsync = createAsyncThunk(
     "project/createProjectAsync",
@@ -19,26 +21,26 @@ export const getProjectsAsync = createAsyncThunk(
     }
 );
 
-export const deleteProjectsAsync = createAsyncThunk(
-    "project/deleteProjectsAsync",
-    async ({
-        userId,
-        projectIds,
-    }: {
+export const deleteProjectsAsync = createAsyncThunk<
+    string[],
+    {
         userId: string;
         projectIds: string[];
-    }) => {
+    },
+    {
+        state: { project: ProjectState };
+        dispatch: ThunkDispatch<DirectoryState, any, any>;
+    }
+>(
+    "project/deleteProjectsAsync",
+    async ({ projectIds }, { getState, dispatch }) => {
         await projectsDB.delete(projectIds);
-        projectIds.forEach(async (projectId) => {
-            const folderIds = (await foldersDB.get({ userId, projectId })).map(
-                ({ itemId }) => itemId
-            );
-            await foldersDB.delete(folderIds);
-            const fileIds = (await filesDB.get({ userId, projectId })).map(
-                ({ itemId }) => itemId
-            );
-            await filesDB.delete(fileIds);
-        });
+        projectSelector
+            .selectAll(getState().project)
+            .filter(({ projectId }) => projectIds.includes(projectId))
+            .forEach((project) => {
+                dispatch(deleteDirectoryAsync({ project, itemId: "root" }));
+            });
         return projectIds;
     }
 );

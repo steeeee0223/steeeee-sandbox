@@ -1,25 +1,32 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
-import { DirectoryItem } from "./directory";
-import { getRecursiveItemIds } from "./directory.utils";
+import { DirectoryItem, File } from "./directory";
+import { getFilesByIds, getRecursiveItemIds } from "./directory.utils";
 import { DirectoryState, directorySelector } from "./directory.slice";
+import { Project } from "../project";
 import { filesDB, foldersDB, fireStoreDB } from "@/lib/storage";
-import { getDefaultFile } from "@/lib/file";
+import { getDefaultFile, getRefId } from "@/lib/file";
 
-export type UploadFile = File;
+export type UploadFile = globalThis.File;
 
 export const createFolderAsync = createAsyncThunk(
     "directory/createFolderAsync",
-    async ({ projectId, data }: { projectId: string; data: any }) => {
-        return await foldersDB.create({ ...data, projectId });
+    async ({ project, data }: { project: Project; data: any }) => {
+        return await foldersDB.create({
+            ...data,
+            projectId: project.projectId,
+        });
     }
 );
 
 export const createFileAsync = createAsyncThunk(
     "directory/createFileAsync",
-    async ({ projectId, data }: { projectId: string; data: any }) => {
-        const file = await filesDB.create({ ...data, projectId });
-        const refId = `${projectId}/${file.itemId}`;
+    async ({ project, data }: { project: Project; data: any }) => {
+        const file = await filesDB.create({
+            ...data,
+            projectId: project.projectId,
+        });
+        const refId = getRefId(project, file);
         const uploadFile = getDefaultFile(file.name);
         const ref = await fireStoreDB.create({ refId, uploadFile });
         await filesDB.update(file.itemId, { url: await ref.getDownloadURL() });
@@ -30,16 +37,19 @@ export const createFileAsync = createAsyncThunk(
 export const uploadFileAsync = createAsyncThunk(
     "directory/uploadFileAsync",
     async ({
-        projectId,
+        project,
         uploadFile,
         data,
     }: {
-        projectId: string;
+        project: Project;
         uploadFile: UploadFile;
         data: any;
     }) => {
-        const file = await filesDB.create({ ...data, projectId });
-        const refId = `${projectId}/${file.itemId}`;
+        const file = await filesDB.create({
+            ...data,
+            projectId: project.projectId,
+        });
+        const refId = getRefId(project, file);
         const ref = await fireStoreDB.create({ refId, uploadFile });
         await filesDB.update(file.itemId, { url: await ref.getDownloadURL() });
         return file;
@@ -59,7 +69,7 @@ export const getDirectoryAsync = createAsyncThunk(
 export const deleteDirectoryAsync = createAsyncThunk<
     string[],
     {
-        projectId: string;
+        project: Project;
         itemId: string;
     },
     {
@@ -67,13 +77,15 @@ export const deleteDirectoryAsync = createAsyncThunk<
     }
 >(
     "directory/deleteDirectoryAsync",
-    async ({ projectId, itemId }, { getState }) => {
+    async ({ project, itemId }, { getState }) => {
         const directory = directorySelector.selectAll(getState().directory);
         const { folderIds, fileIds } = getRecursiveItemIds(directory, itemId);
         await foldersDB.delete(folderIds);
         await filesDB.delete(fileIds);
 
-        const refIds = fileIds.map((fileId) => `${projectId}/${fileId}`);
+        const refIds = getFilesByIds(directory, fileIds).map((file) =>
+            getRefId(project, file)
+        );
         await fireStoreDB.delete(refIds);
         return folderIds.concat(fileIds);
     }
@@ -82,41 +94,52 @@ export const deleteDirectoryAsync = createAsyncThunk<
 export const renameDirectoryItemAsync = createAsyncThunk(
     "directory/renameDirectoryItemAsync",
     async ({
-        isFolder,
-        itemId,
+        project,
+        item,
         name,
     }: {
-        isFolder: boolean;
-        itemId: string;
+        project: Project;
+        item: DirectoryItem;
         name: string;
     }) => {
-        if (isFolder) {
-            await foldersDB.update(itemId, { name });
+        if (item.isFolder) {
+            await foldersDB.update(item.itemId, { name });
         } else {
-            // TODO reset extension as well
-            await filesDB.update(itemId, { name });
+            /** @todo reset extension as well */
+            await filesDB.update(item.itemId, { name });
+            const refId = getRefId(project, item);
+            await fireStoreDB.rename(refId, name);
         }
-        return { id: itemId, changes: { name } };
+        return { id: item.itemId, changes: { name } };
     }
 );
 
 export const updateFileAsync = createAsyncThunk(
     "directory/updateFileAsync",
     async ({
-        projectId,
-        itemId,
+        project,
+        file,
         content,
     }: {
-        projectId: string;
-        itemId: string;
+        project: Project;
+        file: File;
         content: string;
     }) => {
-        const refId = `${projectId}/${itemId}`;
+        const refId = getRefId(project, file);
         const ref = await fireStoreDB.updateContent(refId, content);
-        await filesDB.update(itemId, {
+        await filesDB.update(file.itemId, {
             content,
             url: await ref.getDownloadURL(),
         });
-        return { id: itemId, changes: { content } };
+        return { id: file.itemId, changes: { content } };
+    }
+);
+
+export const downloadDirectoryAsync = createAsyncThunk(
+    "directory/downloadDirectoryAsync",
+    async ({ project }: { project: Project }) => {
+        const refId = getRefId(project);
+        console.log(`[Thunk] Download ${refId}`);
+        await fireStoreDB.download(refId);
     }
 );

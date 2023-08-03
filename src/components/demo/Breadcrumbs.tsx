@@ -1,9 +1,8 @@
 import * as React from "react";
-import { shallowEqual } from "react-redux";
 import { Breadcrumbs as MuiBreadcrumbs, Chip } from "@mui/material";
 import { styled, emphasize } from "@mui/material/styles";
 
-import { RootState, useAppSelector, useDirectory } from "@/hooks";
+import { useDirectory } from "@/hooks";
 
 function handleClick(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
     event.preventDefault();

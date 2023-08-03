@@ -32,7 +32,7 @@ export default function ContextMenu({ itemId, children }: ContextMenuProps) {
         shallowEqual
     );
     const dispatch = useAppDispatch();
-    const { projectId, getItem, getAllChildren } = useDirectory();
+    const { getItem, getAllChildren, project } = useDirectory();
 
     const [contextMenu, setContextMenu] = React.useState<{
         mouseX: number;
@@ -63,7 +63,7 @@ export default function ContextMenu({ itemId, children }: ContextMenuProps) {
 
     const handleDelete = () => {
         handleClose();
-        if (projectId) dispatch(deleteDirectoryAsync({ projectId, itemId }));
+        dispatch(deleteDirectoryAsync({ project, itemId }));
     };
 
     const handleRename = () => {

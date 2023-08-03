@@ -1,5 +1,5 @@
 {
-  "name": "portal",
+  "name": "code-sandbox",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -21,7 +21,9 @@
     "@uiw/codemirror-theme-vscode": "^4.19.16",
     "@uiw/codemirror-themes": "^4.19.16",
     "@uiw/react-codemirror": "^4.19.16",
+    "file-saver": "^2.0.5",
     "firebase": "^9.20.0",
+    "jszip": "^3.10.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-redux": "^8.0.5",
@@ -34,6 +36,7 @@
   },
   "devDependencies": {
     "@types/codemirror": "^5.60.7",
+    "@types/file-saver": "^2.0.5",
     "@types/react": "^18.0.35",
     "@types/react-dom": "^18.0.11",
     "@types/redux-thunk": "^2.1.0",

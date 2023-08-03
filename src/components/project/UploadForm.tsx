@@ -1,9 +1,8 @@
 import { ChangeEventHandler, FormEventHandler, useState } from "react";
-import { shallowEqual } from "react-redux";
 import { Divider, IconButton, InputBase, Paper } from "@mui/material";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 
-import { useAppDispatch, useAppSelector, useDirectory } from "@/hooks";
+import { useAppDispatch, useDirectory } from "@/hooks";
 import { setCreation } from "@/stores/cursor";
 import { UploadFile, uploadFileAsync } from "@/stores/directory";
 import { getContent, getExtension } from "@/lib/file";
@@ -11,17 +10,9 @@ import { getContent, getExtension } from "@/lib/file";
 export default function UploadForm() {
     const [uploadFiles, setUploadFiles] = useState<UploadFile[]>([]);
 
-    const { projectId, currentItem } = useAppSelector(
-        (state) => ({
-            // user: state.auth.user,
-            projectId: state.project.currentProject?.id,
-            currentItem: state.directory.currentItem,
-        }),
-        shallowEqual
-    );
-    const { item, path } = currentItem;
-    const { isFilePresent } = useDirectory();
     const dispatch = useAppDispatch();
+    const { isFilePresent, currentItem, project } = useDirectory();
+    const { item, path } = currentItem;
 
     const setFilename = (filename: string): string => {
         if (!isFilePresent(item.id, filename)) return filename;
@@ -44,32 +35,26 @@ export default function UploadForm() {
     const handleSubmit: FormEventHandler = (e) => {
         e.preventDefault();
 
-        if (projectId) {
-            if (uploadFiles) {
-                dispatch(setCreation(null));
+        if (uploadFiles) {
+            dispatch(setCreation(null));
 
-                uploadFiles.forEach(async (file) => {
-                    const content = await getContent(file);
-                    const filename = setFilename(file.name);
-                    const data = {
-                        createdAt: new Date(),
-                        updatedAt: new Date(),
-                        name: filename,
-                        path: [...path.id, item.id],
-                        parent: item.id,
-                        lastAccessed: null,
-                        content,
-                        extension: getExtension(file.name),
-                    };
-                    dispatch(
-                        uploadFileAsync({ projectId, uploadFile: file, data })
-                    );
-                });
-            } else {
-                alert(`File name is required!`);
-            }
+            uploadFiles.forEach(async (file) => {
+                const content = await getContent(file);
+                const filename = setFilename(file.name);
+                const data = {
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    name: filename,
+                    path: [...path.name, item.name],
+                    parent: item.id,
+                    lastAccessed: null,
+                    content,
+                    extension: getExtension(file.name),
+                };
+                dispatch(uploadFileAsync({ project, uploadFile: file, data }));
+            });
         } else {
-            alert(`NO PROJECT SELECTED`);
+            alert(`File name is required!`);
         }
     };
 

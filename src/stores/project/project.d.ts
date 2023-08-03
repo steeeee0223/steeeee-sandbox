@@ -11,7 +11,13 @@ export type Project = {
     lastModifiedAt: Date;
 };
 
-export type ProjectAction = "edit" | "demo" | "delete" | "rename" | null;
+export type ProjectAction =
+    | "edit"
+    | "demo"
+    | "delete"
+    | "rename"
+    | "download"
+    | null;
 
 export type SelectedProject = {
     id: string;

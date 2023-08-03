@@ -1,4 +1,4 @@
-import { SelectedItem, DirectoryItem } from "./directory";
+import { SelectedItem, DirectoryItem, File } from "./directory";
 
 const nothing: never = undefined as never;
 
@@ -20,6 +20,13 @@ export function getItem(
 ): DirectoryItem {
     const item = directory.find((item) => itemId === item.itemId);
     return item ?? nothing;
+}
+
+export function getFilesByIds(
+    directory: DirectoryItem[],
+    fileIds: string[]
+): File[] {
+    return directory.filter(({ itemId }) => fileIds.includes(itemId)) as File[];
 }
 
 export function getFullPath(

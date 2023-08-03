@@ -1,9 +1,10 @@
 import { Timestamp } from "firebase/firestore";
-import { Reference } from "@firebase/storage-types";
+import { Reference, UploadTaskSnapshot } from "@firebase/storage-types";
 
 import { db, storage } from "@/config/firebase";
 import { File, Folder, UploadFile } from "@/stores/directory";
 import { Project } from "@/stores/project";
+import { downloadFolderAsZip } from "./zip";
 
 abstract class IStorage<T> {
     public collection!: string;
@@ -117,17 +118,10 @@ class FilesStorage extends IStorage<File> {
         } as File;
     }
 
-    public async get({
-        userId,
-        projectId,
-    }: {
-        userId: string;
-        projectId: string;
-    }): Promise<File[]> {
+    public async get({ projectId }: { projectId: string }): Promise<File[]> {
         try {
             const res = await db
                 .collection(this.collection)
-                // .where("userId", "==", userId)
                 .where("projectId", "==", projectId)
                 .get();
             return res.docs.map(this.unpack);
@@ -162,17 +156,10 @@ class FoldersStorage extends IStorage<Folder> {
         } as Folder;
     }
 
-    public async get({
-        userId,
-        projectId,
-    }: {
-        userId: string;
-        projectId: string;
-    }): Promise<Folder[]> {
+    public async get({ projectId }: { projectId: string }): Promise<Folder[]> {
         try {
             const res = await db
                 .collection(this.collection)
-                // .where("userId", "==", userId)
                 .where("projectId", "==", projectId)
                 .get();
             return res.docs.map(this.unpack);
@@ -183,14 +170,14 @@ class FoldersStorage extends IStorage<Folder> {
     }
 }
 
-const taskSnapshot = (snapshot: any) => {
+const taskSnapshot = (snapshot: UploadTaskSnapshot) => {
     const progress = Math.round(
         (snapshot.bytesTransferred / snapshot.totalBytes) * 100
     );
     console.log(`uploading ${progress}%`);
 };
 class FireStorage extends IStorage<Reference> {
-    public collection = "files";
+    public collection = "firestore";
     public static __instance: FireStorage;
 
     private constructor() {
@@ -211,9 +198,7 @@ class FireStorage extends IStorage<Reference> {
      * @returns
      */
     public get(refIds: string[]): Reference[] {
-        return refIds.map((refId) =>
-            storage.ref(`${this.collection}/${refId}`)
-        );
+        return refIds.map((refId) => storage.ref(refId));
     }
 
     public async create({
@@ -258,10 +243,20 @@ class FireStorage extends IStorage<Reference> {
         return ref;
     }
 
+    public async rename(refId: string, name: string) {
+        /** @todo Add file with new `refId` to FireStore  */
+        /** @todo Delete original `refId` from FireStore */
+        // await ref.delete();
+    }
+
     public async delete(refIds: string[]): Promise<void> {
         for (let ref of this.get(refIds)) {
             await ref.delete();
         }
+    }
+
+    public async download(refId: string) {
+        await downloadFolderAsZip(refId);
     }
 }
 
