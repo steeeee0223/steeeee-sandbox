@@ -65,7 +65,7 @@ export function normalizePath(path: string[]): string {
 export function getRefId(project: Project, file?: File): string {
     const prefix = `${project.name}-${project.projectId}`;
     const refId = file
-        ? `${prefix}${normalizePath(file.path)}/${file.name}`
+        ? `${prefix}${normalizePath([...file.path, file.name])}`
         : prefix;
     console.log(`[Lib] got ref id: ${refId}`);
     return refId;
