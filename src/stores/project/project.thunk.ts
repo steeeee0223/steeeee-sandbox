@@ -1,10 +1,10 @@
-import { ThunkDispatch, createAsyncThunk } from "@reduxjs/toolkit";
+import { createAsyncThunk } from "@reduxjs/toolkit";
 
 import { tableRows as sampleProjects } from "@/data";
-import { projectsDB } from "@/lib/storage";
+import { getRefId } from "@/lib/file";
+import { filesDB, fireStoreDB, foldersDB, projectsDB } from "@/lib/storage";
 import { CreatedBy } from "./project";
 import { ProjectState, projectSelector } from "./project.slice";
-import { DirectoryState, deleteDirectoryAsync } from "../directory";
 
 export const createProjectAsync = createAsyncThunk(
     "project/createProjectAsync",
@@ -29,21 +29,33 @@ export const deleteProjectsAsync = createAsyncThunk<
     },
     {
         state: { project: ProjectState };
-        dispatch: ThunkDispatch<DirectoryState, any, any>;
     }
->(
-    "project/deleteProjectsAsync",
-    async ({ projectIds }, { getState, dispatch }) => {
-        await projectsDB.delete(projectIds);
-        projectSelector
-            .selectAll(getState().project)
-            .filter(({ projectId }) => projectIds.includes(projectId))
-            .forEach((project) => {
-                dispatch(deleteDirectoryAsync({ project, itemId: "root" }));
-            });
-        return projectIds;
-    }
-);
+>("project/deleteProjectsAsync", async ({ projectIds }, { getState }) => {
+    await projectsDB.delete(projectIds);
+    projectSelector
+        .selectAll(getState().project)
+        .filter(({ projectId }) => projectIds.includes(projectId))
+        .forEach(async (project) => {
+            const { projectId } = project;
+
+            /** delete folders from Firebase */
+            const folderIds = (await foldersDB.get({ projectId })).map(
+                ({ itemId }) => itemId
+            );
+            await foldersDB.delete(folderIds);
+
+            /** delete files from Firebase */
+            const files = await filesDB.get({ projectId });
+            const fileIds = files.map(({ itemId }) => itemId);
+            await filesDB.delete(fileIds);
+
+            /** delete files from FireStore */
+            const refIds = files.map((file) => getRefId(project, file));
+            await fireStoreDB.delete(refIds);
+        });
+
+    return projectIds;
+});
 
 export const renameProjectAsync = createAsyncThunk(
     "project/renameProjectAsync",

@@ -2,7 +2,6 @@ import { shallowEqual } from "react-redux";
 import { SandpackFiles } from "@codesandbox/sandpack-react";
 
 import { useDirectory } from "./directory";
-import { useProjects } from "./projects";
 import { useAppDispatch, useAppSelector } from "./stores";
 import {
     Editor,
@@ -14,6 +13,7 @@ import {
     updateCurrentEditor,
 } from "@/stores/editor";
 import { File, updateFileAsync } from "@/stores/directory";
+import { projectSelector } from "@/stores/project";
 
 const nullEditor = {} as Editor;
 
@@ -45,10 +45,17 @@ interface EditorsOperations {
 
 export function useEditors(): EditorsInfo & EditorsOperations {
     const dispatch = useAppDispatch();
-    const { currentProject } = useProjects();
     const { getItem, getPath } = useDirectory();
-    const { editorState, currentEditor, currentText } = useAppSelector(
+    const {
+        projectState,
+        currentProject,
+        editorState,
+        currentEditor,
+        currentText,
+    } = useAppSelector(
         (state) => ({
+            projectState: state.project,
+            currentProject: state.project.currentProject,
             editorState: state.editor,
             currentEditor: state.editor.currentEditor,
             currentText: state.editor.currentText,
@@ -119,9 +126,13 @@ export function useEditors(): EditorsInfo & EditorsOperations {
         dispatch(updateCurrentEditor());
 
         /** Save to Firebase & directory entities */
+        const project =
+            projectSelector.selectById(projectState, currentProject.id) ??
+            (undefined as never);
+        console.log(`[Hook] save to project: ${project.name}`);
         dispatch(
             updateFileAsync({
-                project: currentProject ?? (undefined as never),
+                project,
                 file: getItem(editorId) as File,
                 content: currentText,
             })
