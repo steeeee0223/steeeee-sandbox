@@ -2,7 +2,7 @@ import { ChangeEventHandler, FormEventHandler, useState } from "react";
 import { FormControl, OutlinedInput, Box } from "@mui/material";
 
 import { useAppDispatch, useProjects } from "@/hooks";
-import { renameProjectAsync, setProject } from "@/stores/project";
+import { renameProjectAsync } from "@/stores/project";
 
 interface RenameFormProps {
     projectId: string;
@@ -13,7 +13,7 @@ export default function RenameForm({
     projectId,
     placeholder,
 }: RenameFormProps) {
-    const { isProjectPresent } = useProjects();
+    const { isProjectPresent, resetProject } = useProjects();
     const dispatch = useAppDispatch();
 
     const [name, setName] = useState(placeholder ?? "");
@@ -34,7 +34,7 @@ export default function RenameForm({
                 dispatch(renameProjectAsync({ projectId, name }));
             }
         }
-        dispatch(setProject(null));
+        resetProject();
     };
 
     return (
@@ -51,7 +51,7 @@ export default function RenameForm({
                 <OutlinedInput
                     autoFocus
                     value={name}
-                    onBlur={() => dispatch(setProject(null))}
+                    onBlur={resetProject}
                     onChange={handleChange}
                     sx={{
                         fontSize: "small",

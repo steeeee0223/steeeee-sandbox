@@ -9,7 +9,7 @@ import { Box, Button, FormControl, TextField, Typography } from "@mui/material";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 
 import { useAppDispatch, useProjects } from "@/hooks";
-import { deleteProjectsAsync, setProject } from "@/stores/project";
+import { deleteProjectsAsync } from "@/stores/project";
 
 const formStyle = {
     position: "absolute" as "absolute",
@@ -31,7 +31,7 @@ interface DeleteFormProps {
 const DeleteForm = forwardRef(
     ({ projectName, projectId }: DeleteFormProps, ref) => {
         const dispatch = useAppDispatch();
-        const { user, isProjectMatch } = useProjects();
+        const { user, isProjectMatch, resetProject } = useProjects();
 
         const [name, setName] = useState("");
 
@@ -49,7 +49,7 @@ const DeleteForm = forwardRef(
                         projectIds: [projectId],
                     })
                 );
-                dispatch(setProject(null));
+                resetProject();
             } else {
                 setName("");
                 alert(`Wrong name!`);
@@ -71,7 +71,6 @@ const DeleteForm = forwardRef(
                 ref={ref}
                 component="form"
                 onSubmit={handleSubmit}
-                onBlur={() => dispatch(setProject(null))}
                 noValidate
                 autoComplete="off"
                 sx={formStyle}

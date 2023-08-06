@@ -11,7 +11,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 
 import { useAppDispatch, useAppSelector, useProjects } from "@/hooks";
-import { ProjectAction, setProject } from "@/stores/project";
+import { ProjectAction } from "@/stores/project";
 import { setDashboardAction } from "@/stores/cursor";
 
 import { ButtonGroup } from "../common";
@@ -26,7 +26,8 @@ interface ToolbarProps {
 
 export const ActionToolbar = ({ projectName, projectId }: ToolbarProps) => {
     const dispatch = useAppDispatch();
-    const { currentProject, selectProject, getProject } = useProjects();
+    const { currentProject, selectProject, getProject, resetProject } =
+        useProjects();
 
     const deleteFormRef = useRef<HTMLFormElement>(null);
 
@@ -49,6 +50,11 @@ export const ActionToolbar = ({ projectName, projectId }: ToolbarProps) => {
             default:
                 break;
         }
+    };
+
+    const handleFormClosed = () => {
+        resetProject();
+        dispatch(setDashboardAction(null));
     };
 
     return (
@@ -100,7 +106,7 @@ export const ActionToolbar = ({ projectName, projectId }: ToolbarProps) => {
                     action: "delete",
                     id: projectId,
                 })}
-                onClose={() => dispatch(setDashboardAction(null))}
+                onClose={handleFormClosed}
             >
                 <DeleteForm
                     projectName={projectName}
