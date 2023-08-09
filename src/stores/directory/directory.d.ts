@@ -55,6 +55,8 @@ export type SelectedItem = {
     path: { id: string[]; name: string[] };
 };
 
+export type UpdatePath = Pick<DirectoryItem, "itemId" | "path">;
+
 export type CopiedItems = {
     rootId: string;
     items: {

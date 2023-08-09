@@ -1,9 +1,9 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
+import { createAsyncThunk, Update } from "@reduxjs/toolkit";
 
 import { tableRows as sampleProjects } from "@/data";
 import { getRefId } from "@/lib/file";
 import { filesDB, fireStoreDB, foldersDB, projectsDB } from "@/lib/storage";
-import { CreatedBy } from "./project";
+import { CreatedBy, Project } from "./project";
 import { ProjectState, projectSelector } from "./project.slice";
 
 export const createProjectAsync = createAsyncThunk(
@@ -50,17 +50,29 @@ export const deleteProjectsAsync = createAsyncThunk<
             await filesDB.delete(fileIds);
 
             /** delete files from FireStore */
-            const refIds = files.map((file) => getRefId(project, file));
-            await fireStoreDB.delete(refIds);
+            const refPath = getRefId(project);
+            await fireStoreDB.deleteAll(refPath);
         });
 
     return projectIds;
 });
 
-export const renameProjectAsync = createAsyncThunk(
-    "project/renameProjectAsync",
-    async ({ projectId, name }: { projectId: string; name: string }) => {
-        await projectsDB.update(projectId, { name });
-        return { id: projectId, changes: { name } };
+export const renameProjectAsync = createAsyncThunk<
+    Update<Project>,
+    { projectId: string; name: string },
+    {
+        state: { project: ProjectState };
     }
-);
+>("project/renameProjectAsync", async ({ projectId, name }, { getState }) => {
+    await projectsDB.update(projectId, { name });
+
+    const { name: srcName } =
+        projectSelector.selectById(getState().project, projectId) ??
+        (undefined as never);
+    await fireStoreDB.rename(
+        `${srcName}-${projectId}`,
+        `${name}-${projectId}`,
+        true
+    );
+    return { id: projectId, changes: { name } };
+});

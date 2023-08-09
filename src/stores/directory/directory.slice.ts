@@ -74,7 +74,7 @@ const directorySlice = createSlice({
         );
         builder.addCase(
             renameDirectoryItemAsync.fulfilled,
-            directoryAdapter.updateOne
+            directoryAdapter.updateMany
         );
         builder.addCase(updateFileAsync.fulfilled, directoryAdapter.updateOne);
         builder.addCase(

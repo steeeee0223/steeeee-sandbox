@@ -1,4 +1,4 @@
-import { SelectedItem, DirectoryItem, File } from "./directory";
+import { SelectedItem, DirectoryItem, File, UpdatePath } from "./directory";
 
 const nothing: never = undefined as never;
 
@@ -105,4 +105,27 @@ export function getRecursiveItemIds(
         fileIds.push(itemId);
     }
     return { folderIds, fileIds };
+}
+
+export function updatePaths(
+    directory: DirectoryItem[],
+    folderId: string
+): {
+    folders: UpdatePath[];
+    files: UpdatePath[];
+} {
+    const folders: UpdatePath[] = [];
+    const files: UpdatePath[] = [];
+
+    const { folderIds, fileIds } = getRecursiveItemIds(directory, folderId);
+    folderIds.forEach((folderId) => {
+        const [path] = getFullPath(directory, folderId);
+        folders.push({ itemId: folderId, path });
+    });
+    fileIds.forEach((fileId) => {
+        const [path] = getFullPath(directory, fileId);
+        files.push({ itemId: fileId, path });
+    });
+
+    return { folders, files };
 }
