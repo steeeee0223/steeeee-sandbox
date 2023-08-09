@@ -1,4 +1,4 @@
-import type { File, UploadFile } from "@/stores/directory";
+import type { DirectoryItem, UploadFile } from "@/stores/directory";
 import type { Project } from "@/stores/project";
 
 /**
@@ -59,13 +59,13 @@ export function normalizePath(path: string[]): string {
 }
 
 /**
- * @summary Generate the `refId` from the `file` of the `project` in FireStore
- * @example `<project.name>-<project.id><normalizedPath>/<file.name>`
+ * @summary Generate the `refId` from the `item` of the `project` in FireStore
+ * @example `<project.name>-<project.id><normalizedPath>/<item.name>`
  */
-export function getRefId(project: Project, file?: File): string {
+export function getRefId(project: Project, item?: DirectoryItem): string {
     const prefix = `${project.name}-${project.projectId}`;
-    const refId = file
-        ? `${prefix}${normalizePath([...file.path, file.name])}`
+    const refId = item
+        ? `${prefix}${normalizePath([...item.path, item.name])}`
         : prefix;
     console.log(`[Lib] got ref id: ${refId}`);
     return refId;

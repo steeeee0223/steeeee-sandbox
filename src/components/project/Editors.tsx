@@ -7,10 +7,11 @@ import CodeMirror from "@uiw/react-codemirror";
 import createTheme from "@uiw/codemirror-themes";
 import { useSandpack } from "@codesandbox/sandpack-react";
 
-import { useEditors, useKeyPress } from "@/hooks";
+import { useDirectory, useEditors, useKeyPress } from "@/hooks";
 import { loadExtensions } from "@/lib/editor";
 import { editorTabHeight, editorTabStyle } from "./styles";
 import { myTheme } from "../common/theme";
+import Breadcrumbs from "./Breadcrumbs";
 
 const EditorPanel = ({ editorId }: { editorId: string }) => {
     const {
@@ -20,6 +21,8 @@ const EditorPanel = ({ editorId }: { editorId: string }) => {
     const { getInfo, save, currentText, updateText, updatePreview } =
         useEditors();
     const { extension } = getInfo(editorId);
+    const { getPath } = useDirectory();
+    const [name] = getPath(editorId);
 
     const theme = createTheme(myTheme);
     const extensions = useMemo(() => loadExtensions(extension), [extension]);
@@ -42,6 +45,7 @@ const EditorPanel = ({ editorId }: { editorId: string }) => {
 
     return (
         <TabPanel value={editorId} style={{ padding: 0 }}>
+            <Breadcrumbs path={name} />
             <CodeMirror
                 value={currentText}
                 extensions={extensions}

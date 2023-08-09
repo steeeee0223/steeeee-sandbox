@@ -1,4 +1,4 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
+import { Update, createAsyncThunk } from "@reduxjs/toolkit";
 
 import { DirectoryItem, File } from "./directory";
 import { getFilesByIds, getRecursiveItemIds } from "./directory.utils";
@@ -91,26 +91,40 @@ export const deleteDirectoryAsync = createAsyncThunk<
     }
 );
 
-export const renameDirectoryItemAsync = createAsyncThunk(
-    "directory/renameDirectoryItemAsync",
-    async ({
-        project,
-        item,
-        name,
-    }: {
+export const renameDirectoryItemAsync = createAsyncThunk<
+    Update<DirectoryItem>[],
+    {
         project: Project;
         item: DirectoryItem;
         name: string;
-    }) => {
+    },
+    {
+        state: { directory: DirectoryState };
+    }
+>(
+    "directory/renameDirectoryItemAsync",
+    async ({ project, item, name }, { getState }) => {
+        let updates = new Array<Update<DirectoryItem>>();
+        let newItem = {} as DirectoryItem;
         if (item.isFolder) {
-            await foldersDB.update(item.itemId, { name });
+            newItem = await foldersDB.update(item.itemId, { name });
+
+            /**
+             * @todo update all other folders/files' `path` beyond this folder in Firebase
+             * although current breadcrumbs are still correct
+             * since current breadcrumbs use `getFullPath` instead of the `path` in Firebase
+             */
         } else {
-            /** @todo reset extension as well */
-            await filesDB.update(item.itemId, { name });
-            const refId = getRefId(project, item);
-            await fireStoreDB.rename(refId, name);
+            /** @todo reset extension in Firebase */
+            newItem = await filesDB.update(item.itemId, { name });
         }
-        return { id: item.itemId, changes: { name } };
+
+        /** rename folders/files in FireStore */
+        const srcPath = getRefId(project, item);
+        const destPath = getRefId(project, newItem);
+        await fireStoreDB.rename(srcPath, destPath, item.isFolder);
+        updates.push({ id: item.itemId, changes: { name } });
+        return updates;
     }
 );
 
