@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { shallowEqual } from "react-redux";
 import { User } from "firebase/auth";
+import type { SandpackPredefinedTemplate } from "@codesandbox/sandpack-react";
 
 import { setLoading } from "@/stores/directory";
 import {
@@ -28,7 +29,7 @@ interface ProjectsOperations {
     isProjectPresent: (projectName: string) => boolean;
     isProjectMatch: (projectName: string, id: string) => boolean;
     getProject: (projectId: string) => Project | undefined;
-    getProjectTemplate: (projectId: string) => string;
+    getProjectTemplate: (projectId: string) => SandpackPredefinedTemplate;
     selectProject: (id: string, action: ProjectAction) => void;
     resetProject: () => void;
 }

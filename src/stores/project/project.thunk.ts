@@ -3,6 +3,7 @@ import { SandpackPredefinedTemplate } from "@codesandbox/sandpack-react";
 
 import { tableRows as sampleProjects } from "@/data";
 import { getRefId } from "@/lib/file";
+import { _never } from "@/lib/helper";
 import { filesDB, fireStoreDB, foldersDB, projectsDB } from "@/lib/storage";
 import { CreatedBy, Project } from "./project";
 import { ProjectState, projectSelector } from "./project.slice";
@@ -78,8 +79,7 @@ export const renameProjectAsync = createAsyncThunk<
     await projectsDB.update(projectId, { name });
 
     const { name: srcName } =
-        projectSelector.selectById(getState().project, projectId) ??
-        (undefined as never);
+        projectSelector.selectById(getState().project, projectId) ?? _never;
     await fireStoreDB.rename(
         `${srcName}-${projectId}`,
         `${name}-${projectId}`,
