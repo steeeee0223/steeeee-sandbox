@@ -9,16 +9,14 @@ export default function Project() {
     const {
         path: [, , projectId],
     } = usePath();
-    const { projectIsLoading, isProjectOfUser, getProjectTemplate } =
-        useProjects();
-    const { bundledFiles } = useDirectory();
-    const template = getProjectTemplate(projectId);
+    const { projectIsLoading, isProjectOfUser } = useProjects();
+    const { bundledFiles, project } = useDirectory();
 
     return projectIsLoading ? (
         <Loading />
     ) : isProjectOfUser(projectId) ? (
         <SandpackProvider
-            template={template}
+            template={project.template}
             // customSetup={sampleSetup}
             files={bundledFiles}
         >

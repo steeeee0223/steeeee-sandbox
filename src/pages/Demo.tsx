@@ -3,13 +3,11 @@ import { SandpackProvider } from "@codesandbox/sandpack-react";
 
 import { Workspace } from "@/components/demo";
 import { Preview } from "@/components/common";
-import { useProjects, useDirectory } from "@/hooks";
+import { useDirectory } from "@/hooks";
 import { _never } from "@/lib/helper";
 
 export default function Demo() {
-    const { bundledFiles } = useDirectory();
-    const { getProjectTemplate, currentProject } = useProjects();
-    const template = getProjectTemplate(currentProject?.id ?? _never);
+    const { bundledFiles, project } = useDirectory();
 
     return (
         <div>
@@ -36,7 +34,7 @@ export default function Demo() {
                         }}
                     >
                         <SandpackProvider
-                            template={template}
+                            template={project.template}
                             // customSetup={sampleSetup}
                             files={bundledFiles}
                         >

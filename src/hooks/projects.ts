@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { shallowEqual } from "react-redux";
 import { User } from "firebase/auth";
-import type { SandpackPredefinedTemplate } from "@codesandbox/sandpack-react";
 
 import { setLoading } from "@/stores/directory";
 import {
@@ -29,7 +28,6 @@ interface ProjectsOperations {
     isProjectPresent: (projectName: string) => boolean;
     isProjectMatch: (projectName: string, id: string) => boolean;
     getProject: (projectId: string) => Project | undefined;
-    getProjectTemplate: (projectId: string) => SandpackPredefinedTemplate;
     selectProject: (id: string, action: ProjectAction) => void;
     resetProject: () => void;
 }
@@ -56,9 +54,6 @@ export const useProjects = (): ProjectsInfo & ProjectsOperations => {
     const projectIds = projectSelector.selectIds(projectState) as string[];
     const getProject = (projectId: string) =>
         projectSelector.selectById(projectState, projectId);
-    const getProjectTemplate = (projectId: string) =>
-        projectSelector.selectById(projectState, projectId)?.template ??
-        "static";
     const isProjectOfUser = (id: string | null | undefined) =>
         !!id && projectIds.includes(id);
     const isProjectPresent = (projectName: string) =>
@@ -98,7 +93,6 @@ export const useProjects = (): ProjectsInfo & ProjectsOperations => {
         isProjectPresent,
         isProjectMatch,
         getProject,
-        getProjectTemplate,
         selectProject,
         resetProject,
     };
