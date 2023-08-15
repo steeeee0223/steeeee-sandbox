@@ -22,12 +22,9 @@ export default function CreateFile() {
                 dispatch(setCreation(null));
 
                 const data = {
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
                     name,
                     path: [...path.name, item.name],
                     parent: item.id,
-                    lastAccessed: null,
                     content: "",
                     extension: getExtension(name),
                 };

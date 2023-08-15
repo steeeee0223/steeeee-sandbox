@@ -1,17 +1,28 @@
 import { createAsyncThunk, Update } from "@reduxjs/toolkit";
+import { SandpackPredefinedTemplate } from "@codesandbox/sandpack-react";
 
 import { tableRows as sampleProjects } from "@/data";
 import { getRefId } from "@/lib/file";
 import { filesDB, fireStoreDB, foldersDB, projectsDB } from "@/lib/storage";
 import { CreatedBy, Project } from "./project";
 import { ProjectState, projectSelector } from "./project.slice";
+import { configureTemplateAsync } from "../directory";
 
-export const createProjectAsync = createAsyncThunk(
-    "project/createProjectAsync",
-    async ({ user, data }: { user: CreatedBy; data: any }) => {
-        return await projectsDB.create({ ...data, createdBy: user });
-    }
-);
+export const createProjectAsync = createAsyncThunk<
+    Project,
+    { user: CreatedBy; data: any }
+>("project/createProjectAsync", async ({ user, data }, { dispatch }) => {
+    const project = await projectsDB.create({ ...data, createdBy: user });
+
+    /** Fetch default files from Sandpack templates */
+    const { SANDBOX_TEMPLATES } = await import("@codesandbox/sandpack-react");
+    const { files } =
+        SANDBOX_TEMPLATES[data.template as SandpackPredefinedTemplate];
+
+    /** @ts-ignore */
+    dispatch(configureTemplateAsync({ project, files }));
+    return project;
+});
 
 export const getProjectsAsync = createAsyncThunk(
     "project/getProjectsAsync",

@@ -42,12 +42,9 @@ export default function UploadForm() {
                 const content = await getContent(file);
                 const filename = setFilename(file.name);
                 const data = {
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
                     name: filename,
                     path: [...path.name, item.name],
                     parent: item.id,
-                    lastAccessed: null,
                     content,
                     extension: getExtension(file.name),
                 };
