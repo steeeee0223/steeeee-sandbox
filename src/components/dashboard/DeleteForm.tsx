@@ -1,12 +1,16 @@
+import { forwardRef } from "react";
+import { useForm } from "react-hook-form";
 import {
-    ChangeEventHandler,
-    FormEventHandler,
-    forwardRef,
-    useCallback,
-    useState,
-} from "react";
-import { Box, Button, FormControl, TextField, Typography } from "@mui/material";
-import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
+    Alert,
+    Box,
+    Button,
+    FormControl,
+    Stack,
+    TextField,
+    Typography,
+} from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import BlockIcon from "@mui/icons-material/Block";
 
 import { useAppDispatch, useProjects } from "@/hooks";
 import { deleteProjectsAsync } from "@/stores/project";
@@ -28,21 +32,18 @@ interface DeleteFormProps {
     projectId: string;
 }
 
+type DeleteFormValues = { name: string };
+
 const DeleteForm = forwardRef(
     ({ projectName, projectId }: DeleteFormProps, ref) => {
         const dispatch = useAppDispatch();
         const { user, isProjectMatch, resetProject } = useProjects();
+        const { register, handleSubmit, formState, reset } =
+            useForm<DeleteFormValues>();
+        const { errors } = formState;
 
-        const [name, setName] = useState("");
-
-        const handleSubmit: FormEventHandler = (e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            if (
-                user &&
-                name === projectName &&
-                isProjectMatch(projectName, projectId)
-            ) {
+        const onSubmit = () => {
+            if (user) {
                 dispatch(
                     deleteProjectsAsync({
                         userId: user.uid,
@@ -50,27 +51,16 @@ const DeleteForm = forwardRef(
                     })
                 );
                 resetProject();
-            } else {
-                setName("");
-                alert(`Wrong name!`);
+                reset();
             }
         };
-
-        const handleChange: ChangeEventHandler<HTMLInputElement> = useCallback(
-            (e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                setName(e.currentTarget.value);
-            },
-            []
-        );
 
         return (
             <Box
                 tabIndex={-1} // will cause error if `tabIndex` is not set
                 ref={ref}
                 component="form"
-                onSubmit={handleSubmit}
+                onSubmit={handleSubmit(onSubmit)}
                 noValidate
                 autoComplete="off"
                 sx={formStyle}
@@ -94,27 +84,47 @@ const DeleteForm = forwardRef(
                     </Typography>{" "}
                     to delete
                 </Typography>
-                <FormControl fullWidth size="small">
-                    <TextField
-                        id="project-name"
-                        label="Project Name"
-                        value={name}
-                        onChange={handleChange}
-                        placeholder={projectName}
-                        size="small"
-                        autoFocus
-                        required
-                        sx={{ marginBottom: 2 }}
-                    />
-                </FormControl>
-                <Button
-                    type="submit"
-                    variant="contained"
-                    endIcon={<AutoAwesomeIcon />}
-                    sx={{ height: 40 }}
+                <Stack
+                    direction="row"
+                    spacing={2}
+                    useFlexGap
+                    flexWrap="wrap"
+                    sx={{ alignItems: "center", marginBottom: 2 }}
                 >
-                    Submit
-                </Button>
+                    <FormControl size="small">
+                        <TextField
+                            id="project-name"
+                            label="Project Name"
+                            {...register("name", {
+                                required: "Project name is required",
+                                validate: {
+                                    projectPresent: (value) =>
+                                        (value === projectName &&
+                                            isProjectMatch(value, projectId)) ||
+                                        `Project name not matched: ${value}`,
+                                },
+                            })}
+                            placeholder={projectName}
+                            size="small"
+                            autoFocus
+                            fullWidth
+                            sx={{ width: 220 }}
+                        />
+                    </FormControl>
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        endIcon={<DeleteIcon />}
+                        sx={{ height: 40, width: 100 }}
+                    >
+                        Delete
+                    </Button>
+                </Stack>
+                {errors.name && (
+                    <Alert icon={<BlockIcon />} severity="error">
+                        {errors.name.message}
+                    </Alert>
+                )}
             </Box>
         );
     }
