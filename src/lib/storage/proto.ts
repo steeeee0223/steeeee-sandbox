@@ -9,7 +9,9 @@ export abstract class IStorage<T> {
 
     public async create(data: any): Promise<T> {
         try {
-            const res = await db.collection(this.collection).add(data);
+            const res = await db
+                .collection(this.collection)
+                .add({ ...data, createdAt: new Date(), updatedAt: new Date() });
             const doc = await res.get();
             return this.unpack(doc);
         } catch (error) {

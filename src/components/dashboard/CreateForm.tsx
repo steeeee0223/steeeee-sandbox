@@ -23,6 +23,7 @@ import { SandpackPredefinedTemplate } from "@codesandbox/sandpack-react";
 
 import { projectTemplates } from "@/data";
 import { useAppDispatch, useProjects } from "@/hooks";
+import { _never } from "@/lib/helper";
 import { createProjectAsync } from "@/stores/project";
 import { setDashboardAction } from "@/stores/cursor";
 
@@ -66,7 +67,7 @@ const CreateForm = forwardRef(({}: CreateFormProps, ref) => {
                 const { uid, displayName, email } = user;
                 const { label } =
                     projectTemplates.find(({ value }) => value === template) ??
-                    (undefined as never);
+                    _never;
                 const data = {
                     createdAt: new Date(),
                     lastModifiedAt: new Date(),

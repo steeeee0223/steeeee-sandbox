@@ -3,22 +3,23 @@ import { SandpackProvider } from "@codesandbox/sandpack-react";
 
 import { Loading, NotFound } from "@/components/common";
 import { Editors, Viewer } from "@/components/project";
-import { sampleSetup, sampleTemplate } from "@/data";
 import { usePath, useProjects, useDirectory } from "@/hooks";
 
 export default function Project() {
     const {
         path: [, , projectId],
     } = usePath();
-    const { projectIsLoading, isProjectOfUser } = useProjects();
+    const { projectIsLoading, isProjectOfUser, getProjectTemplate } =
+        useProjects();
     const { bundledFiles } = useDirectory();
+    const template = getProjectTemplate(projectId);
 
     return projectIsLoading ? (
         <Loading />
     ) : isProjectOfUser(projectId) ? (
         <SandpackProvider
-            template={sampleTemplate}
-            customSetup={sampleSetup}
+            template={template}
+            // customSetup={sampleSetup}
             files={bundledFiles}
         >
             <Grid container spacing={0}>

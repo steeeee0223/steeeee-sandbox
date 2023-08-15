@@ -19,12 +19,9 @@ export default function CreateFolder() {
             if (!isFolderPresent(item.id, folderName)) {
                 dispatch(setCreation(null));
                 const data = {
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
                     name: folderName,
                     path: [...path.name, item.name],
                     parent: item.id,
-                    lastAccessed: null,
                 };
                 dispatch(createFolderAsync({ project, data }));
             } else {

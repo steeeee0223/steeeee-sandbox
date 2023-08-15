@@ -1,38 +1,41 @@
 import { Update, createAsyncThunk } from "@reduxjs/toolkit";
 
-import { DirectoryItem, File } from "./directory";
+import { DirectoryItem, File, Folder } from "./directory";
 import { getFilesByIds, getRecursiveItemIds } from "./directory.utils";
 import { DirectoryState, directorySelector } from "./directory.slice";
 import { Project } from "../project";
 import { filesDB, foldersDB, fireStoreDB } from "@/lib/storage";
-import { getDefaultFile, getRefId } from "@/lib/file";
+import { getDefaultFile, getExtension, getRefId } from "@/lib/file";
+import { _never } from "@/lib/helper";
 
 export type UploadFile = globalThis.File;
 
-export const createFolderAsync = createAsyncThunk(
-    "directory/createFolderAsync",
-    async ({ project, data }: { project: Project; data: any }) => {
-        return await foldersDB.create({
-            ...data,
-            projectId: project.projectId,
-        });
-    }
-);
+export const createFolderAsync = createAsyncThunk<
+    Folder,
+    { project: Project; data: any }
+>("directory/createFolderAsync", async ({ project, data }) => {
+    return await foldersDB.create({
+        ...data,
+        projectId: project.projectId,
+    });
+});
 
-export const createFileAsync = createAsyncThunk(
-    "directory/createFileAsync",
-    async ({ project, data }: { project: Project; data: any }) => {
-        const file = await filesDB.create({
-            ...data,
-            projectId: project.projectId,
-        });
-        const refId = getRefId(project, file);
-        const uploadFile = getDefaultFile(file.name);
-        const ref = await fireStoreDB.create({ refId, uploadFile });
-        await filesDB.update(file.itemId, { url: await ref.getDownloadURL() });
-        return file;
-    }
-);
+export const createFileAsync = createAsyncThunk<
+    File,
+    { project: Project; data: any }
+>("directory/createFileAsync", async ({ project, data }) => {
+    const file = await filesDB.create({
+        ...data,
+        projectId: project.projectId,
+    });
+
+    console.log(`[Thunk] created file: ${file.name} => ${file.itemId}`);
+    const refId = getRefId(project, file);
+    const uploadFile = getDefaultFile(file.name, data.content);
+    const ref = await fireStoreDB.create({ refId, uploadFile });
+    await filesDB.update(file.itemId, { url: await ref.getDownloadURL() });
+    return file;
+});
 
 export const uploadFileAsync = createAsyncThunk(
     "directory/uploadFileAsync",
@@ -68,13 +71,8 @@ export const getDirectoryAsync = createAsyncThunk(
 
 export const deleteDirectoryAsync = createAsyncThunk<
     string[],
-    {
-        project: Project;
-        itemId: string;
-    },
-    {
-        state: { directory: DirectoryState };
-    }
+    { project: Project; itemId: string },
+    { state: { directory: DirectoryState } }
 >(
     "directory/deleteDirectoryAsync",
     async ({ project, itemId }, { getState }) => {
@@ -93,14 +91,8 @@ export const deleteDirectoryAsync = createAsyncThunk<
 
 export const renameDirectoryItemAsync = createAsyncThunk<
     Update<DirectoryItem>[],
-    {
-        project: Project;
-        item: DirectoryItem;
-        name: string;
-    },
-    {
-        state: { directory: DirectoryState };
-    }
+    { project: Project; item: DirectoryItem; name: string },
+    { state: { directory: DirectoryState } }
 >(
     "directory/renameDirectoryItemAsync",
     async ({ project, item, name }, { getState }) => {
@@ -155,5 +147,65 @@ export const downloadDirectoryAsync = createAsyncThunk(
         const refId = getRefId(project);
         console.log(`[Thunk] Download ${refId}`);
         await fireStoreDB.download(refId);
+    }
+);
+
+export const createParentFolders = createAsyncThunk<
+    void,
+    { project: Project; path: string[] }
+>("directory/createParentFolders", async ({ project, path }, { dispatch }) => {
+    for await (const [i, folderName] of path.entries()) {
+        const { exist, folderId, parent } = await foldersDB.isPathCreated({
+            projectId: project.projectId,
+            path: path.slice(0, i + 1),
+        });
+        if (exist) {
+            console.log(`[Thunk] Folder exists: ${folderName} => ${folderId}`);
+        } else {
+            console.log(
+                `[Thunk] Folder not exist under ${parent}: ${folderName}`
+            );
+            dispatch(
+                createFolderAsync({
+                    project,
+                    data: {
+                        name: folderName,
+                        path: path.slice(0, i),
+                        parent,
+                    },
+                })
+            );
+        }
+    }
+});
+
+export const configureTemplateAsync = createAsyncThunk<
+    void,
+    { project: Project; files: Record<string, { code: string }> },
+    { state: { directory: DirectoryState } }
+>(
+    "directory/configureTemplateAsync",
+    async ({ project, files }, { dispatch }) => {
+        for await (const [file, { code }] of Object.entries(files)) {
+            console.log(`[Thunk] Configure ${file}`);
+            const fullPath = `root${file}`.split("/");
+            const filePath = fullPath.slice(0, -1);
+            const fileName = fullPath.at(-1) ?? _never;
+
+            /** create folder before create files */
+            await dispatch(createParentFolders({ project, path: filePath }));
+            const { folderId } = await foldersDB.isPathCreated({
+                projectId: project.projectId,
+                path: filePath,
+            });
+            const data = {
+                name: fileName,
+                path: filePath,
+                parent: folderId,
+                content: code,
+                extension: getExtension(fileName),
+            };
+            await dispatch(createFileAsync({ project, data }));
+        }
     }
 );

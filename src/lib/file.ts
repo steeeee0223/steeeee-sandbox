@@ -6,6 +6,8 @@ import type { Project } from "@/stores/project";
  * @doc https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
  */
 const typeMapping: Record<string, string> = {
+    html: "text/html",
+    css: "text/css",
     js: "text/javascript",
     jsx: "text/javascript",
     ts: "text/javascript",
@@ -15,6 +17,7 @@ const typeMapping: Record<string, string> = {
     c: "text/x-c",
     cpp: "text/x-c",
     java: "text/x-java-source",
+    json: "application/json",
 };
 
 export function getExtension(filename: string): string {
@@ -38,12 +41,13 @@ export function getContent(file: UploadFile): Promise<string> {
     });
 }
 
-export function getDefaultFile(filename: string): UploadFile {
+export function getDefaultFile(filename: string, content?: string): UploadFile {
     const extension = getExtension(filename);
     const options: FilePropertyBag = {
         type: typeMapping[extension] || "text/plain",
     };
-    return new File([], filename, options);
+    const blobParts = content ? [content] : [];
+    return new File(blobParts, filename, options);
 }
 
 /**
