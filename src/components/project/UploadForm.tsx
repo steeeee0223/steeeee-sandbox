@@ -6,6 +6,7 @@ import { useAppDispatch, useDirectory } from "@/hooks";
 import { setCreation } from "@/stores/cursor";
 import { UploadFile, uploadFileAsync } from "@/stores/directory";
 import { getContent, getExtension } from "@/lib/file";
+import { _never } from "@/lib/helper";
 
 export default function UploadForm() {
     const [uploadFiles, setUploadFiles] = useState<UploadFile[]>([]);
@@ -20,7 +21,7 @@ export default function UploadForm() {
         if (split.length === 0) {
             return `${filename}-2`;
         }
-        const ext = split.pop() ?? (undefined as never);
+        const ext = split.pop() ?? _never;
         return `${split.join(".")}-2.${ext}`;
     };
 

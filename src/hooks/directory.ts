@@ -17,9 +17,9 @@ import {
     selectItem,
 } from "@/stores/directory";
 import { normalizePath } from "@/lib/file";
+import { _never } from "@/lib/helper";
 import { Project, projectSelector } from "@/stores/project";
 
-const _never = undefined as never;
 const nullProject = {} as Project;
 
 interface DirectoryInfo {

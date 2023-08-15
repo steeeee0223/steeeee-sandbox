@@ -14,6 +14,7 @@ import {
 } from "@/stores/editor";
 import { File, updateFileAsync } from "@/stores/directory";
 import { projectSelector } from "@/stores/project";
+import { _never } from "@/lib/helper";
 
 const nullEditor = {} as Editor;
 
@@ -128,7 +129,7 @@ export function useEditors(): EditorsInfo & EditorsOperations {
         /** Save to Firebase & directory entities */
         const project =
             projectSelector.selectById(projectState, currentProject.id) ??
-            (undefined as never);
+            _never;
         console.log(`[Hook] save to project: ${project.name}`);
         dispatch(
             updateFileAsync({
