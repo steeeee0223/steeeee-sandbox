@@ -9,16 +9,21 @@ import {
     File,
     Folder,
     SelectedItem,
+    UploadFile,
+    createFileAsync,
+    createFolderAsync,
     directorySelector,
     getChildren,
     getFullPath,
     getRecursiveItemIds,
     getSelectedItem,
     selectItem,
+    uploadFileAsync,
 } from "@/stores/directory";
-import { normalizePath } from "@/lib/file";
+import { getContent, getExtension, normalizePath } from "@/lib/file";
 import { _never } from "@/lib/helper";
 import { Project, projectSelector } from "@/stores/project";
+import { CreationType, setCreation } from "@/stores/cursor";
 
 const nullProject = {} as Project;
 
@@ -44,6 +49,11 @@ interface DirectoryOperations {
         fileIds: string[];
     };
     select: (itemId: string) => SelectedItem;
+    createItem: (
+        type: Exclude<CreationType, null>,
+        name: string,
+        file?: UploadFile
+    ) => void;
     bundleFiles: () => SandpackFiles;
 }
 
@@ -107,6 +117,49 @@ export function useDirectory(): DirectoryInfo & DirectoryOperations {
         );
     };
 
+    const setDuplicateFilename = (filename: string): string => {
+        if (!isFilePresent(currentItem.item.id, filename)) return filename;
+        const split = filename.split(".");
+        if (split.length === 0) {
+            return `${filename}-2`;
+        }
+        const ext = split.pop() ?? _never;
+        return `${split.join(".")}-2.${ext}`;
+    };
+
+    const createItem = async (
+        type: Exclude<CreationType, null>,
+        name: string,
+        file?: UploadFile
+    ) => {
+        const { item, path } = currentItem;
+        dispatch(setCreation(null));
+        let data: any = {
+            name,
+            parent: item.id,
+            path: [...path.name, item.name],
+        };
+        switch (type) {
+            case "folder":
+                dispatch(createFolderAsync({ project, data }));
+                break;
+            case "file":
+                data = { ...data, content: "", extension: getExtension(name) };
+                dispatch(createFileAsync({ project, data }));
+                break;
+            case "upload":
+                const uploadFile = file ?? _never;
+                data = {
+                    ...data,
+                    content: await getContent(uploadFile),
+                    name: setDuplicateFilename(uploadFile.name),
+                    extension: getExtension(uploadFile.name),
+                };
+                dispatch(uploadFileAsync({ project, uploadFile, data }));
+                break;
+        }
+    };
+
     const bundleFiles = () => {
         const bundledFiles: SandpackFiles = {};
         getFiles().forEach(({ itemId, content }) => {
@@ -137,6 +190,7 @@ export function useDirectory(): DirectoryInfo & DirectoryOperations {
         getAllChildren,
         getPath,
         select,
+        createItem,
         isCurrentItem,
         isFolderPresent,
         isFilePresent,

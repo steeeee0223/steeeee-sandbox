@@ -1,7 +1,7 @@
 import { MouseEvent } from "react";
 import { shallowEqual } from "react-redux";
 import { Link as RouterLink } from "react-router-dom";
-import { Divider, Paper, ToggleButton } from "@mui/material";
+import { Divider, Paper, ToggleButton, Tooltip } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import DownloadIcon from "@mui/icons-material/Download";
@@ -11,13 +11,11 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import ViewInArIcon from "@mui/icons-material/ViewInAr";
 
 import { useAppDispatch, useAppSelector, useDirectory } from "@/hooks";
-import { setCreation, setFileAction } from "@/stores/cursor";
+import { CreationType, setCreation, setFileAction } from "@/stores/cursor";
 import { drawerWidth } from "@/theme";
 import { ButtonGroup } from "@/components/common";
 
-import CreateFolder from "./CreateFolder";
-import CreateFile from "./CreateFile";
-import UploadForm from "./UploadForm";
+import CreateForm from "./CreateForm";
 
 export default function Toolbar() {
     const { fileActionType, creationType } = useAppSelector(
@@ -32,7 +30,7 @@ export default function Toolbar() {
 
     const handleCreation = (
         e: MouseEvent<HTMLElement>,
-        newCreation: string
+        newCreation: CreationType
     ) => {
         e.preventDefault();
         dispatch(setCreation(newCreation));
@@ -44,19 +42,6 @@ export default function Toolbar() {
     ) => {
         e.preventDefault();
         dispatch(setFileAction(newCreation));
-    };
-
-    const Form = () => {
-        switch (creationType) {
-            case "createFolder":
-                return <CreateFolder />;
-            case "createFile":
-                return <CreateFile />;
-            case "upload":
-                return <UploadForm />;
-            default:
-                return <></>;
-        }
     };
 
     return (
@@ -72,15 +57,17 @@ export default function Toolbar() {
                 }}
             >
                 <ButtonGroup size="small" exclusive>
-                    <ToggleButton
-                        component={RouterLink}
-                        to={`/demo/${project.projectId}`}
-                        value="demo"
-                        aria-label="demo"
-                        size="small"
-                    >
-                        <ViewInArIcon fontSize="small" />
-                    </ToggleButton>
+                    <Tooltip title="Demo project">
+                        <ToggleButton
+                            component={RouterLink}
+                            to={`/demo/${project.projectId}`}
+                            value="demo"
+                            aria-label="demo"
+                            size="small"
+                        >
+                            <ViewInArIcon fontSize="small" />
+                        </ToggleButton>
+                    </Tooltip>
                 </ButtonGroup>
                 <Divider
                     flexItem
@@ -117,20 +104,28 @@ export default function Toolbar() {
                     aria-label="creating"
                     disabled={!currentItem.item.isFolder}
                 >
-                    <ToggleButton
-                        value="createFolder"
-                        aria-label="createFolder"
-                    >
-                        <FolderIcon fontSize="small" />
-                    </ToggleButton>
-                    <ToggleButton value="createFile" aria-label="createFile">
-                        <InsertDriveFileIcon fontSize="small" />
-                    </ToggleButton>
-                    <ToggleButton value="upload" aria-label="upload">
-                        <CloudUploadIcon fontSize="small" />
-                    </ToggleButton>
+                    <Tooltip title="Create folder">
+                        <ToggleButton value="folder" aria-label="folder">
+                            <FolderIcon fontSize="small" />
+                        </ToggleButton>
+                    </Tooltip>
+                    <Tooltip title="Create file">
+                        <ToggleButton value="file" aria-label="file">
+                            <InsertDriveFileIcon fontSize="small" />
+                        </ToggleButton>
+                    </Tooltip>
+                    <Tooltip title="Upload files">
+                        <ToggleButton value="upload" aria-label="upload">
+                            <CloudUploadIcon fontSize="small" />
+                        </ToggleButton>
+                    </Tooltip>
                 </ButtonGroup>
-                <Form />
+                {creationType && (
+                    <CreateForm
+                        itemId={currentItem.item.id}
+                        type={creationType}
+                    />
+                )}
             </Paper>
         </div>
     );

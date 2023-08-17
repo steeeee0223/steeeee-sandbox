@@ -1,7 +1,7 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 import { SelectedItem, selectItem } from "../directory";
-import { CursorState } from "./cursor";
+import { CreationType, CursorState } from "./cursor";
 
 const initialState: CursorState = {
     renameItem: null,
@@ -17,7 +17,7 @@ const cursorSlice = createSlice({
         setRenameItem: (state, { payload }: PayloadAction<string | null>) => {
             state.renameItem = payload;
         },
-        setCreation: (state, { payload }: PayloadAction<string | null>) => {
+        setCreation: (state, { payload }: PayloadAction<CreationType>) => {
             state.creationType = payload;
         },
         setFileAction: (state, { payload }: PayloadAction<string | null>) => {
