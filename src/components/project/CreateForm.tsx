@@ -6,6 +6,7 @@ import {
     InputBase,
     InputBaseProps,
     Paper,
+    capitalize,
 } from "@mui/material";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import BlockIcon from "@mui/icons-material/Block";
@@ -21,32 +22,21 @@ interface CreateFormProps {
 type CreateFormValues = { name: string; files: FileList };
 
 export default function CreateForm({ itemId, type }: CreateFormProps) {
-    const { isFilePresent, isFolderPresent, createItem } = useDirectory();
+    const { isItemPresent, createItem } = useDirectory();
     const { register, handleSubmit, formState } = useForm<CreateFormValues>();
     const { errors } = formState;
-
-    const validations: Record<
-        Exclude<CreationType, null>,
-        Validate<any, CreateFormValues>
-    > = {
-        file: (name: string) =>
-            !isFilePresent(itemId, name.trim()) ||
-            `File ${name.trim()} already present!`,
-        folder: (name: string) =>
-            !isFolderPresent(itemId, name.trim()) ||
-            `Folder ${name.trim()} already present!`,
-        upload: (files: FileList) => files.length > 0 || `No files selected!`,
-    };
+    const title = capitalize(type);
 
     const inputSetups: InputBaseProps =
         type === "upload"
             ? {
                   type: "file",
-                  componentsProps: {
-                      input: { multiple: true },
-                  },
+                  componentsProps: { input: { multiple: true } },
                   ...register("files", {
-                      validate: { emptyList: validations[type] },
+                      validate: {
+                          emptyList: (files: FileList) =>
+                              files.length > 0 || `No files selected!`,
+                      },
                   }),
               }
             : {
@@ -55,7 +45,9 @@ export default function CreateForm({ itemId, type }: CreateFormProps) {
                   ...register("name", {
                       required: `${type} name is required!`,
                       validate: {
-                          itemPresent: validations[type],
+                          itemPresent: (name) =>
+                              !isItemPresent(type, itemId, name) ||
+                              `${title} ${name.trim()} already present`,
                           hasWhiteSpace: (name) =>
                               !!name.trim() || `Invalid ${type} name`,
                       },

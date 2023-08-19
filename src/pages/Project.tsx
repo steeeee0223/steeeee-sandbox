@@ -1,8 +1,9 @@
-import { Divider, Grid } from "@mui/material";
+import { useRef } from "react";
+import { Divider, Grid, Modal } from "@mui/material";
 import { SandpackProvider } from "@codesandbox/sandpack-react";
 
 import { Loading, NotFound } from "@/components/common";
-import { Editors, Viewer } from "@/components/project";
+import { Editors, Viewer, RenameForm } from "@/components/project";
 import { usePath, useProjects, useDirectory } from "@/hooks";
 
 export default function Project() {
@@ -10,7 +11,9 @@ export default function Project() {
         path: [, , projectId],
     } = usePath();
     const { projectIsLoading, isProjectOfUser } = useProjects();
-    const { bundledFiles, project } = useDirectory();
+    const { bundledFiles, project, renameItem, resetRenameItem } =
+        useDirectory();
+    const formRef = useRef();
 
     return projectIsLoading ? (
         <Loading />
@@ -29,6 +32,9 @@ export default function Project() {
                     <Viewer />
                 </Grid>
             </Grid>
+            <Modal open={renameItem !== null} onClose={resetRenameItem}>
+                <RenameForm ref={formRef} />
+            </Modal>
         </SandpackProvider>
     ) : (
         <NotFound message="Project Not Found" />

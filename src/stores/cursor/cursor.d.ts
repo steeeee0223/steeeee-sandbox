@@ -1,4 +1,5 @@
-export type CreationType = "file" | "folder" | "upload" | null;
+export type DirectoryItemType = "file" | "folder";
+export type CreationType = DirectoryItemType | "upload" | null;
 
 export interface CursorState {
     renameItem: string | null;

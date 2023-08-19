@@ -17,17 +17,24 @@ import {
     getFullPath,
     getRecursiveItemIds,
     getSelectedItem,
+    renameDirectoryItemAsync,
     selectItem,
     uploadFileAsync,
 } from "@/stores/directory";
 import { getContent, getExtension, normalizePath } from "@/lib/file";
 import { _never } from "@/lib/helper";
 import { Project, projectSelector } from "@/stores/project";
-import { CreationType, setCreation } from "@/stores/cursor";
+import {
+    CreationType,
+    DirectoryItemType,
+    setCreation,
+    setRenameItem,
+} from "@/stores/cursor";
 
 const nullProject = {} as Project;
 
 interface DirectoryInfo {
+    renameItem: string | null;
     project: Project;
     directory: DirectoryItem[];
     currentItem: SelectedItem;
@@ -36,6 +43,11 @@ interface DirectoryInfo {
     isCurrentItem: (itemId: string) => boolean;
     isFolderPresent: (itemId: string, folderName: string) => boolean;
     isFilePresent: (itemId: string, fileName: string) => boolean;
+    isItemPresent: (
+        type: DirectoryItemType,
+        itemId: string,
+        fileName: string
+    ) => boolean;
 }
 
 interface DirectoryOperations {
@@ -54,12 +66,15 @@ interface DirectoryOperations {
         name: string,
         file?: UploadFile
     ) => void;
+    rename: (type: DirectoryItemType, itemId: string, name: string) => void;
+    resetRenameItem: () => void;
     bundleFiles: () => SandpackFiles;
 }
 
 export function useDirectory(): DirectoryInfo & DirectoryOperations {
     const dispatch = useAppDispatch();
     const {
+        renameItem,
         directoryState,
         currentItem,
         copiedItems,
@@ -67,6 +82,7 @@ export function useDirectory(): DirectoryInfo & DirectoryOperations {
         currentProject,
     } = useAppSelector(
         (state) => ({
+            renameItem: state.cursor.renameItem,
             directoryState: state.directory,
             currentItem: state.directory.currentItem,
             copiedItems: state.directory.copiedItems,
@@ -104,18 +120,28 @@ export function useDirectory(): DirectoryInfo & DirectoryOperations {
     };
     const isCurrentItem = (itemId: string) => currentItem.item.id === itemId;
 
+    /** Is folder present in the 1st layer children of `itemId` */
     const isFolderPresent = (itemId: string, folderName: string): boolean => {
         return !!directory.find(
             ({ isFolder, parent, name }) =>
-                isFolder && parent === itemId && name === folderName
+                isFolder && parent === itemId && name === folderName.trim()
         );
     };
+    /** Is file present in the 1st layer children of `itemId` */
     const isFilePresent = (itemId: string, fileName: string): boolean => {
         return !!directory.find(
             ({ isFolder, parent, name }) =>
-                !isFolder && parent === itemId && name === fileName
+                !isFolder && parent === itemId && name === fileName.trim()
         );
     };
+    const isItemPresent = (
+        type: DirectoryItemType,
+        itemId: string,
+        name: string
+    ): boolean =>
+        type === "folder"
+            ? isFolderPresent(itemId, name)
+            : isFilePresent(itemId, name);
 
     const setDuplicateFilename = (filename: string): string => {
         if (!isFilePresent(currentItem.item.id, filename)) return filename;
@@ -160,6 +186,18 @@ export function useDirectory(): DirectoryInfo & DirectoryOperations {
         }
     };
 
+    const resetRenameItem = () => {
+        dispatch(setRenameItem(null));
+    };
+
+    const rename = (type: DirectoryItemType, itemId: string, name: string) => {
+        console.log(`[renameItem] ${type} => ${itemId}`);
+        dispatch(
+            renameDirectoryItemAsync({ project, item: getItem(itemId), name })
+        );
+        resetRenameItem();
+    };
+
     const bundleFiles = () => {
         const bundledFiles: SandpackFiles = {};
         getFiles().forEach(({ itemId, content }) => {
@@ -180,6 +218,7 @@ export function useDirectory(): DirectoryInfo & DirectoryOperations {
         project,
         directory,
         currentItem,
+        renameItem,
         copiedItems,
         bundledFiles,
         bundleFiles,
@@ -191,8 +230,11 @@ export function useDirectory(): DirectoryInfo & DirectoryOperations {
         getPath,
         select,
         createItem,
+        rename,
+        resetRenameItem,
         isCurrentItem,
         isFolderPresent,
         isFilePresent,
+        isItemPresent,
     };
 }

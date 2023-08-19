@@ -1,65 +1,114 @@
-import { ChangeEventHandler, FormEventHandler, useState } from "react";
-import { FormControl, OutlinedInput, Box } from "@mui/material";
+import { forwardRef } from "react";
+import { useForm } from "react-hook-form";
+import {
+    Alert,
+    Box,
+    Button,
+    FormControl,
+    Stack,
+    TextField,
+    Typography,
+    capitalize,
+} from "@mui/material";
+import BlockIcon from "@mui/icons-material/Block";
+import EditIcon from "@mui/icons-material/Edit";
 
-import { useAppDispatch, useDirectory } from "@/hooks";
-import { setRenameItem } from "@/stores/cursor";
-import { renameDirectoryItemAsync } from "@/stores/directory";
+import { useDirectory } from "@/hooks";
+import { _never } from "@/lib/helper";
 
-interface RenameFormProps {
-    itemId: string;
-    placeholder?: string;
-}
+const formStyle = {
+    position: "absolute" as "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: 400,
+    bgcolor: "background.paper",
+    boxShadow: 24,
+    p: 4,
+    alignContent: "center",
+};
 
-export default function RenameForm({ itemId, placeholder }: RenameFormProps) {
-    const dispatch = useAppDispatch();
-    const { getItem, project } = useDirectory();
+interface RenameFormProps {}
 
-    const [name, setName] = useState(placeholder ?? "");
-    const invalidNames = [placeholder, ""];
+type RenameFormValues = { name: string };
 
-    const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
-        e.stopPropagation();
-        setName(e.currentTarget.value);
-    };
+const RenameForm = forwardRef(({}: RenameFormProps, ref) => {
+    const { rename, getItem, renameItem, isItemPresent } = useDirectory();
+    const { name, isFolder, itemId, parent } = getItem(renameItem ?? _never);
+    const type = isFolder ? "folder" : "file";
+    const title = capitalize(type);
 
-    const handleSubmit: FormEventHandler = (e) => {
-        e.preventDefault();
-        if (!invalidNames.includes(name))
-            dispatch(
-                renameDirectoryItemAsync({
-                    project,
-                    item: getItem(itemId),
-                    name,
-                })
-            );
-        dispatch(setRenameItem(null));
-    };
+    const { register, handleSubmit, formState } = useForm<RenameFormValues>({
+        defaultValues: { name },
+    });
+    const { errors } = formState;
+    const onSubmit = ({ name }: RenameFormValues) => rename(type, itemId, name);
 
     return (
         <Box
+            ref={ref}
             component="form"
-            onSubmit={handleSubmit}
+            onSubmit={handleSubmit(onSubmit)}
             noValidate
             autoComplete="off"
-            autoFocus
-            sx={{
-                alignContent: "center",
-            }}
+            sx={formStyle}
         >
-            <FormControl>
-                <OutlinedInput
-                    value={name}
-                    onBlur={() => dispatch(setRenameItem(null))}
-                    onChange={handleChange}
-                    sx={{
-                        fontSize: 12,
-                        height: "auto",
-                        ".MuiOutlinedInput-input": {
-                            padding: "5px",
-                        },
-                    }}
-                />
-            </FormControl>
+            <Typography
+                id="modal-title"
+                variant="h5"
+                gutterBottom
+                sx={{ fontWeight: "bold", marginBottom: 3 }}
+            >
+                Rename {title}
+            </Typography>
+            {errors.name && (
+                <Alert
+                    icon={<BlockIcon />}
+                    severity="error"
+                    sx={{ marginBottom: 2 }}
+                >
+                    {errors.name.message}
+                </Alert>
+            )}
+            <Stack
+                direction="row"
+                spacing={2}
+                useFlexGap
+                flexWrap="wrap"
+                sx={{ alignItems: "center", marginBottom: 2 }}
+            >
+                <FormControl size="small">
+                    <TextField
+                        id="rename"
+                        label={`${title} Name`}
+                        {...register("name", {
+                            required: `${title} name is required!`,
+                            validate: {
+                                hasWhiteSpace: (name) =>
+                                    !!name.trim() || `Invalid ${type} name`,
+                                itemPresent: (name) =>
+                                    !isItemPresent(type, parent, name) ||
+                                    `${title} ${name.trim()} already present`,
+                            },
+                        })}
+                        size="small"
+                        autoFocus
+                        fullWidth
+                        sx={{ width: 220 }}
+                    />
+                </FormControl>
+                <Button
+                    type="submit"
+                    variant="contained"
+                    endIcon={<EditIcon />}
+                    size="small"
+                    sx={{ height: 40, width: 100 }}
+                >
+                    Submit
+                </Button>
+            </Stack>
         </Box>
     );
-}
+});
+
+export default RenameForm;
