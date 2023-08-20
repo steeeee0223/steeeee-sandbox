@@ -1,4 +1,4 @@
-import { Validate, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import {
     Alert,
     Divider,
@@ -22,7 +22,7 @@ interface CreateFormProps {
 type CreateFormValues = { name: string; files: FileList };
 
 export default function CreateForm({ itemId, type }: CreateFormProps) {
-    const { isItemPresent, createItem } = useDirectory();
+    const { isItemPresent, create } = useDirectory();
     const { register, handleSubmit, formState } = useForm<CreateFormValues>();
     const { errors } = formState;
     const title = capitalize(type);
@@ -58,9 +58,9 @@ export default function CreateForm({ itemId, type }: CreateFormProps) {
         type === "upload"
             ? Object.values(files).forEach((file) => {
                   console.log(file);
-                  createItem("upload", file.name, file);
+                  create("upload", file.name, file);
               })
-            : createItem(type, name.trim());
+            : create(type, name.trim());
 
     return (
         <>

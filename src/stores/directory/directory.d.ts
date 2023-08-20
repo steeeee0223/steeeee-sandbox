@@ -64,3 +64,8 @@ export type CopiedItems = {
         folderIds: string[];
     };
 };
+
+export type DirectoryAction = {
+    rename?: { itemId: string } | null;
+    copy?: CopiedItems | null;
+};

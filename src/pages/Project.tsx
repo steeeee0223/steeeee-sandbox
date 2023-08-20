@@ -11,9 +11,9 @@ export default function Project() {
         path: [, , projectId],
     } = usePath();
     const { projectIsLoading, isProjectOfUser } = useProjects();
-    const { bundledFiles, project, renameItem, resetRenameItem } =
-        useDirectory();
+    const { bundledFiles, project, action, updateAction } = useDirectory();
     const formRef = useRef();
+    const handleFormClose = () => updateAction({ rename: null });
 
     return projectIsLoading ? (
         <Loading />
@@ -32,7 +32,7 @@ export default function Project() {
                     <Viewer />
                 </Grid>
             </Grid>
-            <Modal open={renameItem !== null} onClose={resetRenameItem}>
+            <Modal open={!!action.rename?.itemId} onClose={handleFormClose}>
                 <RenameForm ref={formRef} />
             </Modal>
         </SandpackProvider>

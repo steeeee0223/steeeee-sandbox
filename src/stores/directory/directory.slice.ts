@@ -4,7 +4,7 @@ import {
     createSlice,
 } from "@reduxjs/toolkit";
 
-import { CopiedItems, DirectoryItem, SelectedItem } from "./directory";
+import { DirectoryAction, DirectoryItem, SelectedItem } from "./directory";
 import {
     createFileAsync,
     createFolderAsync,
@@ -29,11 +29,11 @@ const rootItem: SelectedItem = {
 const initialState = directoryAdapter.getInitialState<{
     isLoading: boolean;
     currentItem: SelectedItem;
-    copiedItems: CopiedItems | null;
+    action: DirectoryAction;
 }>({
     isLoading: true,
     currentItem: rootItem,
-    copiedItems: null,
+    action: {},
 });
 export type DirectoryState = typeof initialState;
 
@@ -49,8 +49,8 @@ const directorySlice = createSlice({
         selectItem: (state, { payload }: PayloadAction<SelectedItem>) => {
             state.currentItem = payload;
         },
-        copyItems: (state, { payload }: PayloadAction<CopiedItems | null>) => {
-            state.copiedItems = payload;
+        setAction: (state, { payload }: PayloadAction<DirectoryAction>) => {
+            state.action = { ...state.action, ...payload };
         },
     },
     extraReducers(builder) {
@@ -91,5 +91,5 @@ export const directorySelector = directoryAdapter.getSelectors(
     (state: DirectoryState) => state
 );
 
-export const { setLoading, selectItem, copyItems } = directorySlice.actions;
+export const { setLoading, selectItem, setAction } = directorySlice.actions;
 export default directorySlice.reducer;

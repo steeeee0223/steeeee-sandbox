@@ -33,8 +33,10 @@ interface RenameFormProps {}
 type RenameFormValues = { name: string };
 
 const RenameForm = forwardRef(({}: RenameFormProps, ref) => {
-    const { rename, getItem, renameItem, isItemPresent } = useDirectory();
-    const { name, isFolder, itemId, parent } = getItem(renameItem ?? _never);
+    const { action, rename, getItem, isItemPresent } = useDirectory();
+    const { name, isFolder, itemId, parent } = getItem(
+        action.rename?.itemId ?? _never
+    );
     const type = isFolder ? "folder" : "file";
     const title = capitalize(type);
 
