@@ -1,22 +1,16 @@
 import * as React from "react";
-import { shallowEqual } from "react-redux";
 import { Typography, IconButton, Stack } from "@mui/material";
 import FolderIcon from "@mui/icons-material/Folder";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 
-import { useAppSelector, useDirectory, useEditors } from "@/hooks";
+import { useDirectory, useEditors } from "@/hooks";
 
 import { Accordion, AccordionDetails, AccordionSummary } from "./Accordion";
 import ContextMenu from "./ContextMenu";
-import RenameForm from "./RenameForm";
 
 export default function FolderSystem({ parent }: { parent: string }) {
     const [toggle, setToggle] = React.useState<Record<string, boolean>>({});
 
-    const { renameItem } = useAppSelector(
-        (state) => ({ renameItem: state.cursor.renameItem }),
-        shallowEqual
-    );
     const { open: openEditor } = useEditors();
     const {
         getFirstLayerChildren,
@@ -68,22 +62,15 @@ export default function FolderSystem({ parent }: { parent: string }) {
                                             <InsertDriveFileIcon fontSize="small" />
                                         )}
                                     </IconButton>
-                                    {renameItem === itemId ? (
-                                        <RenameForm
-                                            itemId={itemId}
-                                            placeholder={name}
-                                        />
-                                    ) : (
-                                        <Typography
-                                            sx={{
-                                                width: "70%",
-                                                flexShrink: 0,
-                                                fontSize: 12,
-                                            }}
-                                        >
-                                            {name}
-                                        </Typography>
-                                    )}
+                                    <Typography
+                                        sx={{
+                                            width: "70%",
+                                            flexShrink: 0,
+                                            fontSize: 12,
+                                        }}
+                                    >
+                                        {name}
+                                    </Typography>
                                 </Stack>
                             </AccordionSummary>
                         </ContextMenu>

@@ -4,33 +4,46 @@ import { SandpackFiles } from "@codesandbox/sandpack-react/types";
 
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import {
-    CopiedItems,
+    DirectoryAction,
     DirectoryItem,
     File,
     Folder,
     SelectedItem,
+    UploadFile,
+    createFileAsync,
+    createFolderAsync,
+    deleteDirectoryAsync,
     directorySelector,
     getChildren,
     getFullPath,
     getRecursiveItemIds,
     getSelectedItem,
+    renameDirectoryItemAsync,
     selectItem,
+    setAction,
+    uploadFileAsync,
 } from "@/stores/directory";
-import { normalizePath } from "@/lib/file";
+import { getContent, getExtension, normalizePath } from "@/lib/file";
 import { _never } from "@/lib/helper";
 import { Project, projectSelector } from "@/stores/project";
+import { CreationType, DirectoryItemType, setCreation } from "@/stores/cursor";
 
 const nullProject = {} as Project;
 
 interface DirectoryInfo {
     project: Project;
     directory: DirectoryItem[];
+    action: DirectoryAction;
     currentItem: SelectedItem;
-    copiedItems: CopiedItems | null;
     bundledFiles: SandpackFiles;
     isCurrentItem: (itemId: string) => boolean;
     isFolderPresent: (itemId: string, folderName: string) => boolean;
     isFilePresent: (itemId: string, fileName: string) => boolean;
+    isItemPresent: (
+        type: DirectoryItemType,
+        itemId: string,
+        fileName: string
+    ) => boolean;
 }
 
 interface DirectoryOperations {
@@ -44,6 +57,15 @@ interface DirectoryOperations {
         fileIds: string[];
     };
     select: (itemId: string) => SelectedItem;
+    create: (
+        type: Exclude<CreationType, null>,
+        name: string,
+        file?: UploadFile
+    ) => void;
+    rename: (type: DirectoryItemType, itemId: string, name: string) => void;
+    remove: (itemId: string) => void;
+    copy: (itemId: string) => void;
+    updateAction: (action: DirectoryAction) => void;
     bundleFiles: () => SandpackFiles;
 }
 
@@ -51,15 +73,15 @@ export function useDirectory(): DirectoryInfo & DirectoryOperations {
     const dispatch = useAppDispatch();
     const {
         directoryState,
+        action,
         currentItem,
-        copiedItems,
         projectState,
         currentProject,
     } = useAppSelector(
         (state) => ({
             directoryState: state.directory,
+            action: state.directory.action,
             currentItem: state.directory.currentItem,
-            copiedItems: state.directory.copiedItems,
             projectState: state.project,
             currentProject: state.project.currentProject,
         }),
@@ -83,6 +105,7 @@ export function useDirectory(): DirectoryInfo & DirectoryOperations {
     const getItem = (itemId: string) =>
         directory.find((item) => itemId === item.itemId) ?? _never;
     const getPath = (itemId: string) => getFullPath(directory, itemId);
+
     const getFirstLayerChildren = (itemId: string) =>
         getChildren(directory, itemId);
     const getAllChildren = (itemId: string) =>
@@ -94,18 +117,88 @@ export function useDirectory(): DirectoryInfo & DirectoryOperations {
     };
     const isCurrentItem = (itemId: string) => currentItem.item.id === itemId;
 
+    /** Is folder present in the 1st layer children of `itemId` */
     const isFolderPresent = (itemId: string, folderName: string): boolean => {
         return !!directory.find(
             ({ isFolder, parent, name }) =>
-                isFolder && parent === itemId && name === folderName
+                isFolder && parent === itemId && name === folderName.trim()
         );
     };
+    /** Is file present in the 1st layer children of `itemId` */
     const isFilePresent = (itemId: string, fileName: string): boolean => {
         return !!directory.find(
             ({ isFolder, parent, name }) =>
-                !isFolder && parent === itemId && name === fileName
+                !isFolder && parent === itemId && name === fileName.trim()
         );
     };
+    const isItemPresent = (
+        type: DirectoryItemType,
+        itemId: string,
+        name: string
+    ): boolean =>
+        (type === "folder" ? isFolderPresent : isFilePresent)(itemId, name);
+
+    const setDuplicateFilename = (filename: string): string => {
+        if (!isFilePresent(currentItem.item.id, filename)) return filename;
+        const split = filename.split(".");
+        if (split.length === 0) {
+            return `${filename}-2`;
+        }
+        const ext = split.pop() ?? _never;
+        return `${split.join(".")}-2.${ext}`;
+    };
+
+    const updateAction = (action: DirectoryAction) =>
+        dispatch(setAction(action));
+
+    const create = async (
+        type: Exclude<CreationType, null>,
+        name: string,
+        file?: UploadFile
+    ) => {
+        const { item, path } = currentItem;
+        dispatch(setCreation(null));
+        let data: any = {
+            name,
+            parent: item.id,
+            path: [...path.name, item.name],
+        };
+        switch (type) {
+            case "folder":
+                dispatch(createFolderAsync({ project, data }));
+                break;
+            case "file":
+                data = { ...data, content: "", extension: getExtension(name) };
+                dispatch(createFileAsync({ project, data }));
+                break;
+            case "upload":
+                const uploadFile = file ?? _never;
+                data = {
+                    ...data,
+                    content: await getContent(uploadFile),
+                    name: setDuplicateFilename(uploadFile.name),
+                    extension: getExtension(uploadFile.name),
+                };
+                dispatch(uploadFileAsync({ project, uploadFile, data }));
+                break;
+        }
+    };
+
+    const rename = (type: DirectoryItemType, itemId: string, name: string) => {
+        console.log(`[renameItem] ${type} => ${itemId}`);
+        dispatch(
+            renameDirectoryItemAsync({ project, item: getItem(itemId), name })
+        );
+        updateAction({ rename: null });
+    };
+
+    const remove = (itemId: string) =>
+        dispatch(deleteDirectoryAsync({ project, itemId }));
+
+    const copy = (itemId: string) =>
+        updateAction({
+            copy: { rootId: itemId, items: getAllChildren(itemId) },
+        });
 
     const bundleFiles = () => {
         const bundledFiles: SandpackFiles = {};
@@ -126,8 +219,8 @@ export function useDirectory(): DirectoryInfo & DirectoryOperations {
     return {
         project,
         directory,
+        action,
         currentItem,
-        copiedItems,
         bundledFiles,
         bundleFiles,
         getFiles,
@@ -136,9 +229,15 @@ export function useDirectory(): DirectoryInfo & DirectoryOperations {
         getFirstLayerChildren,
         getAllChildren,
         getPath,
+        updateAction,
         select,
+        create,
+        rename,
+        remove,
+        copy,
         isCurrentItem,
         isFolderPresent,
         isFilePresent,
+        isItemPresent,
     };
 }

@@ -1,10 +1,9 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 import { SelectedItem, selectItem } from "../directory";
-import { CursorState } from "./cursor";
+import { CreationType, CursorState } from "./cursor";
 
 const initialState: CursorState = {
-    renameItem: null,
     creationType: null,
     fileActionType: null,
     dashboardAction: null,
@@ -14,10 +13,7 @@ const cursorSlice = createSlice({
     name: "cursor",
     initialState,
     reducers: {
-        setRenameItem: (state, { payload }: PayloadAction<string | null>) => {
-            state.renameItem = payload;
-        },
-        setCreation: (state, { payload }: PayloadAction<string | null>) => {
+        setCreation: (state, { payload }: PayloadAction<CreationType>) => {
             state.creationType = payload;
         },
         setFileAction: (state, { payload }: PayloadAction<string | null>) => {
@@ -42,6 +38,6 @@ const cursorSlice = createSlice({
     },
 });
 
-export const { setRenameItem, setCreation, setFileAction, setDashboardAction } =
+export const { setCreation, setFileAction, setDashboardAction } =
     cursorSlice.actions;
 export default cursorSlice.reducer;

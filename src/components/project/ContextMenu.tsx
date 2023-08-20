@@ -13,11 +13,8 @@ import {
     ContentPaste,
     DriveFileRenameOutline,
 } from "@mui/icons-material";
-import { shallowEqual } from "react-redux";
 
-import { useAppDispatch, useAppSelector, useDirectory } from "@/hooks";
-import { copyItems, deleteDirectoryAsync } from "@/stores/directory";
-import { setRenameItem } from "@/stores/cursor";
+import { useDirectory } from "@/hooks";
 
 interface ContextMenuProps {
     itemId: string;
@@ -25,14 +22,7 @@ interface ContextMenuProps {
 }
 
 export default function ContextMenu({ itemId, children }: ContextMenuProps) {
-    const { copiedItems } = useAppSelector(
-        (state) => ({
-            copiedItems: state.directory.copiedItems,
-        }),
-        shallowEqual
-    );
-    const dispatch = useAppDispatch();
-    const { getItem, getAllChildren, project } = useDirectory();
+    const { action, getItem, remove, copy, updateAction } = useDirectory();
 
     const [contextMenu, setContextMenu] = React.useState<{
         mouseX: number;
@@ -43,7 +33,7 @@ export default function ContextMenu({ itemId, children }: ContextMenuProps) {
         event.stopPropagation();
         event.preventDefault();
         console.log(`Clicking item: ${getItem(itemId).name}`);
-        dispatch(setRenameItem(null));
+        updateAction({ rename: null });
         setContextMenu(
             contextMenu === null
                 ? {
@@ -63,25 +53,25 @@ export default function ContextMenu({ itemId, children }: ContextMenuProps) {
 
     const handleDelete = () => {
         handleClose();
-        dispatch(deleteDirectoryAsync({ project, itemId }));
+        remove(itemId);
     };
 
     const handleRename = () => {
         handleClose();
-        dispatch(setRenameItem(itemId));
+        updateAction({ rename: { itemId } });
         console.log(`Rename item: ${itemId}`);
     };
 
     const handleCopy = () => {
         handleClose();
         console.log(`Copy item: ${itemId}`);
-        dispatch(copyItems({ rootId: itemId, items: getAllChildren(itemId) }));
+        copy(itemId);
     };
 
     const handlePaste = () => {
         handleClose();
+        console.log(`Copied item:`, action.copy);
         console.log(`Pasting items to: ${itemId}`);
-        console.log(copiedItems);
     };
 
     return (

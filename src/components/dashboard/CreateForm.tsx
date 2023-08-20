@@ -1,31 +1,24 @@
+import { forwardRef } from "react";
+import { useForm } from "react-hook-form";
 import {
-    ChangeEventHandler,
-    FormEventHandler,
-    forwardRef,
-    useCallback,
-    useState,
-} from "react";
-import {
+    Alert,
     Box,
     Button,
     FormControl,
-    InputLabel,
-    MenuItem,
     OutlinedInput,
-    Select,
-    SelectChangeEvent,
     Stack,
     TextField,
     Typography,
 } from "@mui/material";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
-import { SandpackPredefinedTemplate } from "@codesandbox/sandpack-react";
+import BlockIcon from "@mui/icons-material/Block";
 
 import { projectTemplates } from "@/data";
 import { useAppDispatch, useProjects } from "@/hooks";
 import { _never } from "@/lib/helper";
 import { createProjectAsync } from "@/stores/project";
 import { setDashboardAction } from "@/stores/cursor";
+import { FormSelect } from "../common";
 
 const formStyle = {
     position: "absolute" as "absolute",
@@ -41,6 +34,11 @@ const formStyle = {
 
 interface CreateFormProps {}
 
+type CreateFormValues = {
+    name: string;
+    template: string;
+};
+
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
@@ -55,64 +53,42 @@ const MenuProps = {
 const CreateForm = forwardRef(({}: CreateFormProps, ref) => {
     const dispatch = useAppDispatch();
     const { user, isProjectPresent } = useProjects();
+    const { handleSubmit, register, formState, control, reset } =
+        useForm<CreateFormValues>({
+            defaultValues: { name: "", template: "static" },
+        });
+    const { errors } = formState;
 
-    const [name, setName] = useState("");
-    const [template, setTemplate] =
-        useState<SandpackPredefinedTemplate>("static");
-
-    const handleSubmit: FormEventHandler = (e) => {
-        e.preventDefault();
-        if (user && name && template) {
-            if (!isProjectPresent(name)) {
-                const { uid, displayName, email } = user;
-                const { label } =
-                    projectTemplates.find(({ value }) => value === template) ??
-                    _never;
-                const data = {
-                    createdAt: new Date(),
-                    lastModifiedAt: new Date(),
-                    template,
-                    name,
-                    tags: [label],
-                };
-                dispatch(
-                    createProjectAsync({
-                        user: { uid, displayName, email },
-                        data,
-                    })
-                );
-                dispatch(setDashboardAction(null));
-            } else {
-                alert(`Project name already present: ${name}`);
-                setName("");
-            }
-        } else {
-            alert(`All fields are required`);
+    const onSubmit = ({ name, template }: CreateFormValues) => {
+        console.log(`[Form] got data: ${name} => ${template}`);
+        if (user) {
+            const { uid, displayName, email } = user;
+            const { label } =
+                projectTemplates.find(({ value }) => value === template) ??
+                _never;
+            const data = {
+                createdAt: new Date(),
+                lastModifiedAt: new Date(),
+                template,
+                name,
+                tags: [label],
+            };
+            dispatch(
+                createProjectAsync({
+                    user: { uid, displayName, email },
+                    data,
+                })
+            );
+            dispatch(setDashboardAction(null));
+            reset();
         }
-    };
-
-    const handleChange: ChangeEventHandler<HTMLInputElement> = useCallback(
-        (e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            setName(e.currentTarget.value);
-        },
-        []
-    );
-
-    const handleTemplateChange = (
-        e: SelectChangeEvent<SandpackPredefinedTemplate>
-    ) => {
-        e.preventDefault();
-        console.log(`[Form] selected project: ${e.target.value}`);
-        setTemplate(e.target.value as SandpackPredefinedTemplate);
     };
 
     return (
         <Box
             ref={ref}
             component="form"
-            onSubmit={handleSubmit}
+            onSubmit={handleSubmit(onSubmit)}
             noValidate
             autoComplete="off"
             sx={formStyle}
@@ -129,8 +105,14 @@ const CreateForm = forwardRef(({}: CreateFormProps, ref) => {
                 <TextField
                     id="project-name"
                     label="Project Name"
-                    value={name}
-                    onChange={handleChange}
+                    {...register("name", {
+                        required: "Project name is required",
+                        validate: {
+                            projectPresent: (value) =>
+                                !isProjectPresent(value) ||
+                                `Project name already present: ${value}`,
+                        },
+                    })}
                     placeholder="Project name..."
                     size="small"
                     autoFocus
@@ -143,34 +125,26 @@ const CreateForm = forwardRef(({}: CreateFormProps, ref) => {
                 spacing={3}
                 useFlexGap
                 flexWrap="wrap"
-                sx={{ alignItems: "center" }}
+                sx={{ alignItems: "center", marginBottom: 2 }}
             >
-                <FormControl size="small">
-                    <InputLabel id="project-template">
-                        Project Template
-                    </InputLabel>
-                    <Select
-                        labelId="project-template"
-                        id="project-template-select"
-                        value={template}
-                        onChange={handleTemplateChange}
-                        input={
+                <FormSelect
+                    name="template"
+                    control={control}
+                    label="Project Template"
+                    options={projectTemplates}
+                    FormControlProps={{ size: "small" }}
+                    SelectProps={{
+                        input: (
                             <OutlinedInput
                                 label="Project Template"
                                 size="small"
                                 required
                                 sx={{ width: 200 }}
                             />
-                        }
-                        MenuProps={MenuProps}
-                    >
-                        {projectTemplates.map((option) => (
-                            <MenuItem key={option.value} value={option.value}>
-                                {option.label}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
+                        ),
+                        MenuProps,
+                    }}
+                />
                 <Button
                     type="submit"
                     variant="contained"
@@ -180,6 +154,11 @@ const CreateForm = forwardRef(({}: CreateFormProps, ref) => {
                     Submit
                 </Button>
             </Stack>
+            {errors.name && (
+                <Alert icon={<BlockIcon />} severity="error">
+                    {errors.name.message}
+                </Alert>
+            )}
         </Box>
     );
 });

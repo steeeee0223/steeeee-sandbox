@@ -1,4 +1,4 @@
-import { ChangeEventHandler, FormEventHandler, useState } from "react";
+import { useForm } from "react-hook-form";
 import { FormControl, OutlinedInput, Box } from "@mui/material";
 
 import { useAppDispatch, useProjects } from "@/hooks";
@@ -9,30 +9,21 @@ interface RenameFormProps {
     placeholder?: string;
 }
 
+type RenameFormValues = { name: string };
+
 export default function RenameForm({
     projectId,
     placeholder,
 }: RenameFormProps) {
     const { isProjectPresent, resetProject } = useProjects();
     const dispatch = useAppDispatch();
+    const { register, handleSubmit } = useForm<RenameFormValues>({
+        defaultValues: { name: placeholder },
+    });
 
-    const [name, setName] = useState(placeholder ?? "");
-    const invalidNames = [placeholder, ""];
-
-    const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
-        e.stopPropagation();
-        setName(e.currentTarget.value);
-    };
-
-    const handleSubmit: FormEventHandler = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (!invalidNames.includes(name)) {
-            if (isProjectPresent(name)) {
-                alert(`Project name ${name} is already present!`);
-            } else {
-                dispatch(renameProjectAsync({ projectId, name }));
-            }
+    const onSubmit = ({ name }: RenameFormValues) => {
+        if (name !== placeholder) {
+            dispatch(renameProjectAsync({ projectId, name }));
         }
         resetProject();
     };
@@ -40,19 +31,23 @@ export default function RenameForm({
     return (
         <Box
             component="form"
-            onSubmit={handleSubmit}
+            onSubmit={handleSubmit(onSubmit)}
             noValidate
             autoComplete="off"
-            sx={{
-                alignContent: "center",
-            }}
+            sx={{ alignContent: "center" }}
         >
             <FormControl>
                 <OutlinedInput
                     autoFocus
-                    value={name}
-                    onBlur={resetProject}
-                    onChange={handleChange}
+                    {...register("name", {
+                        required: "Project name is required",
+                        validate: {
+                            projectPresent: (value) =>
+                                !isProjectPresent(value) ||
+                                `Project name already present: ${value}`,
+                        },
+                        onBlur: resetProject,
+                    })}
                     sx={{
                         fontSize: "small",
                         height: "auto",

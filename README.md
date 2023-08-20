@@ -4,3 +4,4 @@
 -   UI Library: `@mui/material`, `@mui/lab`, `@uiw/codemirror`
 -   State Management: `redux-thunk`, `react-redux`
 -   Database: `firebase`
+-   Form State Management: `react-hook-form`
