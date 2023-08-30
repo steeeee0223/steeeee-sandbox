@@ -6,7 +6,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 
 import { DrawerItem } from "@/components/sidebar";
 
-export const appBarTitle = "Steeeee";
+export const appBarTitle = "Steeeee Sandbox";
 
 export const pathsWithoutSidebar = ["", "login"];
 

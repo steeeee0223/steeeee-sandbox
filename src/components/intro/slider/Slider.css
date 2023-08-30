@@ -1,0 +1,33 @@
+/************ Slider Css ************/
+.slider {
+    max-width: 100vw;
+    min-width: 100vw;
+    width: 100%;
+    padding: 0 0 50px 0;
+    position: relative;
+}
+
+.slider h2 {
+    font-size: 45px;
+    font-weight: 700;
+}
+.slider p {
+    color: #b8b8b8;
+    font-size: 18px;
+    letter-spacing: 0.8px;
+    line-height: 1.5em;
+    margin: 14px 0 75px 0;
+}
+.slider-carousel {
+    width: 80%;
+    max-width: 100vw;
+    margin: 0 auto;
+    position: relative;
+}
+.slider-bg-images {
+    top: 28%;
+    position: relative;
+    bottom: 0;
+    width: 40%;
+    z-index: -4;
+}

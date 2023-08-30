@@ -57,11 +57,12 @@ export default function BasePage({ children }: { children: React.ReactNode }) {
                 <Container
                     sx={{
                         minHeight: "100vh",
-                        width: "100%",
+                        minWidth: "100vw",
                         border: 0,
                         flexGrow: 1,
+                        marginX: 0,
                     }}
-                    disableGutters={isValidEditPage}
+                    disableGutters={path !== "demo"}
                 >
                     {children}
                 </Container>

@@ -1,10 +1,24 @@
 import { SandpackPredefinedTemplate } from "@codesandbox/sandpack-react";
 
 import { Project } from "@/stores/project";
+import {
+    angular,
+    astro,
+    nextjs,
+    node,
+    reactImage,
+    solid,
+    svelte,
+    typescript,
+    vanillajs,
+    vite,
+    vue,
+} from "@/assets";
 
 type Template = {
     value: SandpackPredefinedTemplate;
     label: string;
+    image?: string;
 };
 
 export const tableTitle = "Projects";
@@ -53,22 +67,22 @@ export const headCells: readonly TableHeadCell[] = [
 ];
 
 export const projectTemplates: Template[] = [
-    { value: "static", label: "Blank" },
-    { value: "angular", label: "Angular" },
-    { value: "solid", label: "Solid" },
-    { value: "test-ts", label: "Test Typescript" },
-    { value: "vanilla", label: "Vanilla" },
-    { value: "vanilla-ts", label: "Vanilla Typescript" },
-    { value: "node", label: "NodeJS" },
-    { value: "nextjs", label: "Next.js" },
-    { value: "vite", label: "Vite" },
-    { value: "vite-react", label: "React" },
-    { value: "vite-react-ts", label: "React Typescript" },
-    { value: "vite-vue", label: "Vue" },
-    { value: "vite-vue-ts", label: "Vue Typescript" },
-    { value: "vite-svelte", label: "Svelte" },
-    { value: "vite-svelte-ts", label: "Svelte Typescript" },
-    { value: "astro", label: "Astro" },
+    { value: "static", label: "Blank", image: vanillajs },
+    { value: "angular", label: "Angular", image: angular },
+    { value: "solid", label: "Solid", image: solid },
+    { value: "test-ts", label: "Test Typescript", image: typescript },
+    { value: "vanilla", label: "Vanilla", image: vanillajs },
+    { value: "vanilla-ts", label: "Vanilla Typescript", image: typescript },
+    { value: "node", label: "NodeJS", image: node },
+    { value: "nextjs", label: "Next.js", image: nextjs },
+    { value: "vite", label: "Vite", image: vite },
+    { value: "vite-react", label: "React", image: reactImage },
+    { value: "vite-react-ts", label: "React Typescript", image: reactImage },
+    { value: "vite-vue", label: "Vue", image: vue },
+    { value: "vite-vue-ts", label: "Vue Typescript", image: vue },
+    { value: "vite-svelte", label: "Svelte", image: svelte },
+    { value: "vite-svelte-ts", label: "Svelte Typescript", image: svelte },
+    { value: "astro", label: "Astro", image: astro },
 ];
 
 export const tableRows: Project[] = [
