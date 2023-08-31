@@ -1,7 +1,5 @@
 /************ Banner Css ************/
 .banner {
-    min-width: 100vw;
-    width: 100%;
     margin-top: 0;
     padding: 260px 0 100px 0;
     background-image: url("./src/assets/img/banner.png");

@@ -35,6 +35,7 @@ export default function Slider() {
             component="section"
             className="slider"
             id="slider"
+            maxWidth="xl"
             disableGutters
         >
             <Grid container spacing={2}>

@@ -54,7 +54,12 @@ export default function Banner() {
     }, [text]);
 
     return (
-        <Container component="section" className="banner" id="home">
+        <Container
+            component="section"
+            maxWidth="xl"
+            className="banner"
+            id="home"
+        >
             <Grid container spacing={2} sx={{ marginX: 5 }}>
                 <Grid item xs={12} md={6} xl={7}>
                     <h1>
@@ -71,7 +76,6 @@ export default function Banner() {
                         component={RouterLink}
                         to="/login"
                         endIcon={<RocketLaunchIcon sx={{ fontSize: "25px" }} />}
-                        onClick={() => console.log(`start!`)}
                         sx={bannerButtonProps}
                     >
                         Get Started
