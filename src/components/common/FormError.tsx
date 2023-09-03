@@ -22,7 +22,7 @@ export default function FormError<T extends FieldValues>({
         <Alert
             icon={<BlockIcon />}
             severity="error"
-            sx={{ background: bgColor ?? "inherit" }}
+            sx={{ background: bgColor ?? "inherit", mb: 2 }}
         >
             {message}
         </Alert>

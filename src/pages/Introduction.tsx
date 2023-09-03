@@ -1,12 +1,14 @@
 import { Container } from "@mui/material";
 
-import { Banner, Slider } from "@/components/intro";
+import { Banner, Contact, Footer, Slider } from "@/components/intro";
 
 export default function Introduction() {
     return (
-        <Container disableGutters sx={{ marginX: 0, minWidth: "100vw" }}>
+        <Container disableGutters maxWidth="xl">
             <Banner />
             <Slider />
+            <Contact />
+            <Footer />
         </Container>
     );
 }

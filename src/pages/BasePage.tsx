@@ -17,7 +17,7 @@ export default function BasePage({ children }: { children: React.ReactNode }) {
     } = usePath();
     const { isProjectOfUser, user, currentProject, directoryIsLoading } =
         useProjects();
-    const isValidEditPage = user && path === "project" && isProjectOfUser(id);
+    const isValidEditPage = !!user && path === "project" && isProjectOfUser(id);
 
     useEffect(() => {
         if (directoryIsLoading && user && currentProject)
@@ -57,12 +57,12 @@ export default function BasePage({ children }: { children: React.ReactNode }) {
                 <Container
                     sx={{
                         minHeight: "100vh",
-                        minWidth: "100vw",
+                        minWidth: "100%",
                         border: 0,
                         flexGrow: 1,
                         marginX: 0,
                     }}
-                    disableGutters={path !== "demo"}
+                    disableGutters={isValidEditPage || path === ""}
                 >
                     {children}
                 </Container>

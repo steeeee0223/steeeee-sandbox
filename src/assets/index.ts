@@ -1,18 +1,13 @@
 export { default as alhzeimer } from "./alzheimer.svg";
-export { default as logo } from "./logo.png";
+export { default as logo } from "./logo.svg";
+export { default as logo2 } from "./logo2.svg";
 
-export { default as arrow1 } from "./img/arrow1.svg";
-export { default as arrow2 } from "./img/arrow2.svg";
 export { default as banner } from "./img/banner.png";
 export { default as colorSharp } from "./img/color-sharp.png";
 export { default as colorSharp2 } from "./img/color-sharp2.png";
 export { default as contact } from "./img/contact.svg";
 export { default as footer } from "./img/footer.png";
 export { default as header } from "./img/header.svg";
-export { default as myLogo } from "./img/logo.svg";
-export { default as nav1 } from "./img/nav1.svg";
-export { default as nav2 } from "./img/nav2.svg";
-export { default as nav3 } from "./img/nav3.svg";
 export { default as project1 } from "./img/project1.png";
 export { default as project2 } from "./img/project2.png";
 export { default as project3 } from "./img/project3.png";
