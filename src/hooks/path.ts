@@ -6,7 +6,7 @@ import { useProjects } from "./projects";
 
 type Path = Location & {
     path: string[];
-    isLoginPage: boolean;
+    isHomePage: boolean;
     isPageWithSidebar: boolean;
 };
 
@@ -18,7 +18,7 @@ export default function usePath(): Path {
     const [, pathname, id] = path;
 
     const isPageWithSidebar = !pathsWithoutSidebar.includes(pathname);
-    const isLoginPage = pathname === "";
+    const isHomePage = pathname === "";
 
     useEffect(() => {
         if (pathname === "project" && id) {
@@ -36,6 +36,6 @@ export default function usePath(): Path {
         ...location,
         path,
         isPageWithSidebar,
-        isLoginPage,
+        isHomePage,
     };
 }

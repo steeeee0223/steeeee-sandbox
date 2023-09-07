@@ -13,6 +13,7 @@ export default function BasePage({ children }: { children: React.ReactNode }) {
     const { sidebarOpen } = useAppContext();
     const {
         isPageWithSidebar,
+        isHomePage,
         path: [, path, id],
     } = usePath();
     const { isProjectOfUser, user, currentProject, directoryIsLoading } =
@@ -62,7 +63,7 @@ export default function BasePage({ children }: { children: React.ReactNode }) {
                         flexGrow: 1,
                         marginX: 0,
                     }}
-                    disableGutters={isValidEditPage || path === ""}
+                    disableGutters={isValidEditPage || isHomePage}
                 >
                     {children}
                 </Container>

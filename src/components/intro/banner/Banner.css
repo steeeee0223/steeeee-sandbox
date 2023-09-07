@@ -12,22 +12,6 @@
     border-right: 0.08em solid #666;
 }
 
-.banner h1 {
-    font-size: 65px;
-    font-weight: 700;
-    letter-spacing: 0.8px;
-    line-height: 1;
-    margin-bottom: 20px;
-    display: block;
-}
-.banner p {
-    color: #b8b8b8;
-    font-size: 18px;
-    letter-spacing: 0.8px;
-    line-height: 1.5em;
-    width: 96%;
-}
-
 .banner-img {
     animation: updown 3s linear infinite;
 }

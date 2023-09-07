@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { Button, Container, Grid } from "@mui/material";
+import { Button, Container, Grid, Typography } from "@mui/material";
 import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
 import Lottie from "lottie-react";
 
 import "./Banner.css";
-import { bannerButtonProps } from "./Banner.styles";
+import {
+    bannerButtonProps,
+    bannerH1Props,
+    bannerH3Props,
+    bannerTextProps,
+} from "./Banner.styles";
 import { coderDesktop } from "@/assets";
 
 export default function Banner() {
@@ -14,7 +19,7 @@ export default function Banner() {
     const [text, setText] = useState("");
     const [delta, setDelta] = useState(300 - Math.random() * 100);
     const [index, setIndex] = useState(1);
-    const toRotate = ["with Steeeee...", "in Sandbox..."];
+    const toRotate = ["with me...", "in Sandbox..."];
     const period = 2000;
 
     const tick = () => {
@@ -63,13 +68,18 @@ export default function Banner() {
         >
             <Grid container spacing={2} sx={{ marginX: 5 }}>
                 <Grid item xs={12} md={6} xl={7}>
-                    <h1>
-                        {`Hi! Let's code`} <span className="wrap">{text}</span>
-                    </h1>
-                    <p>
+                    <Typography component="h3" sx={bannerH3Props}>
+                        Hi! I'm Steeeee.
+                    </Typography>
+                    <Typography component="h1" sx={bannerH1Props}>
+                        {`Let's code`}
+                        <br />
+                        <span className="wrap">{text}</span>
+                    </Typography>
+                    <Typography component="p" sx={bannerTextProps}>
                         CodeSandbox keeps you in flow by giving you cloud
                         development environments that resume in 1 second.
-                    </p>
+                    </Typography>
                     <Button
                         component={RouterLink}
                         to="/login"

@@ -19,3 +19,29 @@ export const bannerButtonProps: SxProps = {
         ":hover": { marginLeft: "25px" },
     },
 };
+
+export const bannerH1Props: SxProps = {
+    fontSize: "92px",
+    fontWeight: "700",
+    letterSpacing: "0.8px",
+    lineHeight: 1,
+    marginBottom: "20px",
+    display: "block",
+};
+
+export const bannerH3Props: SxProps = {
+    fontSize: "48px",
+    fontWeight: "700",
+    letterSpacing: "0.8px",
+    lineHeight: 1,
+    marginY: "20px",
+    display: "block",
+};
+
+export const bannerTextProps: SxProps = {
+    color: "secondary.main",
+    fontSize: "18px",
+    letterSpacing: "0.8px",
+    lineHeight: "1.5em",
+    width: "96%",
+};
