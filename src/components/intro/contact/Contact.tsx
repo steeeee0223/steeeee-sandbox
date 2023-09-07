@@ -21,7 +21,7 @@ export default function Contact() {
                 <Grid item xs={12} md={6}>
                     <img src={contact} alt="contact" width="92%" />
                 </Grid>
-                <Grid item xs={12} md={6} container>
+                <Grid item xs={12} md={6}>
                     <ContactForm />
                 </Grid>
             </Grid>

@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { Button, Container, Grid } from "@mui/material";
 import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
+import Lottie from "lottie-react";
 
 import "./Banner.css";
 import { bannerButtonProps } from "./Banner.styles";
-import { header } from "@/assets";
+import { coderDesktop } from "@/assets";
 
 export default function Banner() {
     const [loopNum, setLoopNum] = useState(0);
@@ -66,11 +67,8 @@ export default function Banner() {
                         {`Hi! Let's code`} <span className="wrap">{text}</span>
                     </h1>
                     <p>
-                        Lorem Ipsum is simply dummy text of the printing and
-                        typesetting industry. Lorem Ipsum has been the
-                        industry's standard dummy text ever since the 1500s,
-                        when an unknown printer took a galley of type and
-                        scrambled it to make a type specimen book.
+                        CodeSandbox keeps you in flow by giving you cloud
+                        development environments that resume in 1 second.
                     </p>
                     <Button
                         component={RouterLink}
@@ -82,7 +80,10 @@ export default function Banner() {
                     </Button>
                 </Grid>
                 <Grid item xs={12} md={6} xl={5}>
-                    <img src={header} alt="header-img" />
+                    <Lottie
+                        animationData={coderDesktop}
+                        className="banner-img"
+                    />
                 </Grid>
             </Grid>
         </Container>

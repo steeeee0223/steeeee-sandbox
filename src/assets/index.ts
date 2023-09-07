@@ -2,6 +2,12 @@ export { default as alhzeimer } from "./alzheimer.svg";
 export { default as logo } from "./logo.svg";
 export { default as logo2 } from "./logo2.svg";
 
+export { default as codeOnline } from "./lottiefiles/code-online.json";
+export { default as coderDesktop } from "./lottiefiles/coder-desktop.json";
+export { default as coderScreen } from "./lottiefiles/coder-screen.json";
+export { default as lifeCycle } from "./lottiefiles/life-cycle.json";
+export { default as workflow } from "./lottiefiles/workflow.json";
+
 export { default as banner } from "./img/banner.png";
 export { default as colorSharp } from "./img/color-sharp.png";
 export { default as colorSharp2 } from "./img/color-sharp2.png";

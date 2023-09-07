@@ -1,11 +1,15 @@
-import { Container, Grid, Paper } from "@mui/material";
+import { Container, Grid, Paper, Typography } from "@mui/material";
 import Carousel from "react-multi-carousel";
 
 import "react-multi-carousel/lib/styles.css";
 import "./Slider.css";
 
-import { sliderBoxProps } from "./Slider.styles";
-import { colorSharp } from "@/assets";
+import {
+    sliderBoxProps,
+    sliderH2Props,
+    sliderProps,
+    sliderTextProps,
+} from "./Slider.styles";
 import { ImageCard } from "@/components/common";
 import { projectTemplates } from "@/data";
 
@@ -33,20 +37,22 @@ export default function Slider() {
     return (
         <Container
             component="section"
-            className="slider"
+            sx={sliderProps}
             id="slider"
             maxWidth="xl"
             disableGutters
         >
-            <Grid container spacing={2}>
+            <Grid container spacing={2} sx={{ padding: "100px 120px" }}>
                 <Grid item xs>
                     <Paper component="div" sx={sliderBoxProps}>
-                        <h2>Project Templates</h2>
-                        <p>
+                        <Typography component="h2" sx={sliderH2Props}>
+                            Project Templates
+                        </Typography>
+                        <Typography component="p" sx={sliderTextProps}>
                             Steeeee Sandbox provides plenty of templates for
                             JavaScript frameworks.<br></br> We are currently
                             working on templates in other programming languages.
-                        </p>
+                        </Typography>
                         <Carousel
                             responsive={responsive}
                             autoPlay
@@ -76,7 +82,6 @@ export default function Slider() {
                     </Paper>
                 </Grid>
             </Grid>
-            <img className="slider-bg-image" src={colorSharp} alt="Image" />
         </Container>
     );
 }

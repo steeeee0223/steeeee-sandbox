@@ -1,7 +1,11 @@
 # My Code Sandbox
 
--   Type Annotations: `typescript`
+### Libraries
+
 -   UI Library: `@mui/material`, `@mui/lab`, `@uiw/codemirror`
--   State Management: `redux-thunk`, `react-redux`
+-   State Management: `@reduxjs/toolkit`, `react-redux`, `react-persist`
 -   Database: `firebase`
 -   Form State Management: `react-hook-form`
+-   Sandbox: `@codesandbox/sandpack-react`
+-   Email Subscription: `react-mailchimp-subscribe`
+-   Icons & Images: `@mui/icons-material`, [LOGO](https://logo.com), [lottie-react](https://lottiefiles.com)
