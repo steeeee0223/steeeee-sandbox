@@ -1,6 +1,13 @@
 import { Container } from "@mui/material";
 
-import { Banner, Contact, Features, Footer, Slider } from "@/components/intro";
+import {
+    Banner,
+    Contact,
+    Features,
+    Footer,
+    ScrollUp,
+    Slider,
+} from "@/components/intro";
 
 export default function Introduction() {
     return (
@@ -10,6 +17,7 @@ export default function Introduction() {
             <Slider />
             <Contact />
             <Footer />
+            <ScrollUp />
         </Container>
     );
 }
