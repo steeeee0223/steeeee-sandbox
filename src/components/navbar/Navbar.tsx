@@ -35,23 +35,25 @@ const Navbar = () => {
                 >
                     {appBarTitle}
                 </Typography>
-                {isHomePage && (
-                    <Stack direction="row" spacing={1}>
-                        <Button href="#features">Features</Button>
-                        <Button href="#contact">Contact</Button>
-                        <Button component={RouterLink} to="/login">
-                            Sign In
-                        </Button>
-                    </Stack>
-                )}
-                {user && (
-                    <Stack direction="row" spacing={1}>
-                        <Button component={RouterLink} to="/home">
-                            Home
-                        </Button>
-                        <Button onClick={signOut}>Sign Out</Button>
-                    </Stack>
-                )}
+                <Stack direction="row" spacing={1}>
+                    {isHomePage && (
+                        <>
+                            <Button href="#features">Features</Button>
+                            <Button href="#contact">Contact</Button>
+                            <Button component={RouterLink} to="/login">
+                                Sign In
+                            </Button>
+                        </>
+                    )}
+                    {user && (
+                        <>
+                            <Button component={RouterLink} to="/home">
+                                Home
+                            </Button>
+                            <Button onClick={signOut}>Sign Out</Button>
+                        </>
+                    )}
+                </Stack>
             </Toolbar>
         </AppBar>
     );

@@ -1,7 +1,9 @@
 import { createTheme } from "@mui/material/styles";
 import { grey } from "@mui/material/colors";
 
+export const navbarHeight = "64px";
 export const drawerWidth = 240;
+export const containerHeight = `calc(100vh - ${navbarHeight})`;
 
 export const theme = createTheme({
     palette: {
