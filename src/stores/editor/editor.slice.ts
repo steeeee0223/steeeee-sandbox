@@ -109,7 +109,7 @@ const editorSlice = createSlice({
         builder.addCase(updateFileAsync.fulfilled, editorAdapter.updateOne);
         builder.addCase(
             renameDirectoryItemAsync.fulfilled,
-            editorAdapter.updateOne
+            editorAdapter.updateMany
         );
         builder.addCase(deleteDirectoryAsync.fulfilled, (state, action) => {
             __updateCurrentEditor(state);
