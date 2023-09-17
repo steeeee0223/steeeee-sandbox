@@ -1,10 +1,12 @@
 import { useRef } from "react";
-import { Divider, Grid, Modal } from "@mui/material";
+import { Modal } from "@mui/material";
 import { SandpackProvider } from "@codesandbox/sandpack-react";
+import { Panel, PanelGroup } from "react-resizable-panels";
 
-import { Loading, NotFound } from "@/components/common";
-import { Editors, Viewer, RenameForm } from "@/components/project";
+import { Loading, NotFound, PanelDivider } from "@/components/common";
+import { Editors, Viewer, RenameForm, Viewer2 } from "@/components/project";
 import { usePath, useProjects, useDirectory } from "@/hooks";
+import { containerHeight } from "@/theme";
 
 export default function Project() {
     const {
@@ -23,15 +25,30 @@ export default function Project() {
             // customSetup={sampleSetup}
             files={bundledFiles}
         >
-            <Grid container spacing={0}>
-                <Grid item xs={6} sx={{ height: "100%" }}>
+            <PanelGroup direction="horizontal" units="percentages">
+                <Panel
+                    // collapsedSize={5}
+                    // collapsible={true}
+                    // minSize={10}
+                    minSize={30}
+                    defaultSize={50}
+                >
                     <Editors />
-                </Grid>
-                <Divider flexItem orientation="vertical" />
-                <Grid item xs={6} sx={{ height: "100vh" }}>
-                    <Viewer />
-                </Grid>
-            </Grid>
+                </Panel>
+                <PanelDivider direction="vertical" />
+                <Panel defaultSize={50} minSize={20}>
+                    <PanelGroup direction="vertical" units="percentages">
+                        <Panel defaultSize={50} minSize={20}>
+                            <Viewer />
+                        </Panel>
+                        <PanelDivider direction="horizontal" />
+                        <Panel defaultSize={50} minSize={20}>
+                            <Viewer2 />
+                        </Panel>
+                    </PanelGroup>
+                </Panel>
+            </PanelGroup>
+
             <Modal open={!!action.rename?.itemId} onClose={handleFormClose}>
                 <RenameForm ref={formRef} />
             </Modal>

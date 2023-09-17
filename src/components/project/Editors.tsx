@@ -1,15 +1,22 @@
 import { MouseEvent, useCallback, useMemo } from "react";
-import { Box, IconButton, Tab } from "@mui/material";
+import { Box, IconButton, Stack, Tab } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import CloseIcon from "@mui/icons-material/Close";
 import { ViewUpdate } from "@codemirror/view";
 import CodeMirror from "@uiw/react-codemirror";
 import createTheme from "@uiw/codemirror-themes";
 import { useSandpack } from "@codesandbox/sandpack-react";
+import SaveIcon from "@mui/icons-material/Save";
 
 import { useDirectory, useEditors, useKeyPress } from "@/hooks";
 import { loadExtensions } from "@/lib/editor";
-import { editorTabHeight, editorTabStyle } from "./styles";
+import { containerHeight, theme } from "@/theme";
+import {
+    editorBoxHeight,
+    editorPanelHeight,
+    editorTabHeight,
+    tabStyle,
+} from "./styles";
 import { myTheme } from "../common/theme";
 import Breadcrumbs from "./Breadcrumbs";
 
@@ -28,7 +35,7 @@ const EditorPanel = ({ editorId }: { editorId: string }) => {
     const extensions = useMemo(() => loadExtensions(extension), [extension]);
 
     const handleEditorChange = useCallback(
-        (value: string, viewUpdate: ViewUpdate) => {
+        (value: string, _viewUpdate: ViewUpdate) => {
             updateText(value);
             console.log(`[Panel] Changed value for [${editorId}]`);
         },
@@ -44,15 +51,24 @@ const EditorPanel = ({ editorId }: { editorId: string }) => {
     useKeyPress({ meta: ["s"], ctrl: ["s"] }, handleSave);
 
     return (
-        <TabPanel value={editorId} style={{ padding: 0 }}>
-            <Breadcrumbs path={name} />
+        <TabPanel value={editorId} sx={{ padding: 0 }}>
+            <Stack maxHeight={editorTabHeight} direction="row">
+                <Breadcrumbs path={name} />
+                <IconButton
+                    onClick={handleSave}
+                    size="small"
+                    sx={{ m: 1, borderRadius: 1 }}
+                >
+                    <SaveIcon fontSize="small" />
+                </IconButton>
+            </Stack>
             <CodeMirror
                 value={currentText}
                 extensions={extensions}
                 autoFocus
                 theme={theme}
                 onChange={handleEditorChange}
-                height="100vh"
+                height={editorPanelHeight}
             />
         </TabPanel>
     );
@@ -75,15 +91,24 @@ export default function Editors() {
     }, []);
 
     return (
-        <Box sx={{ maxWidth: "100%", typography: "body1" }}>
+        <Box
+            sx={{
+                maxHeight: containerHeight,
+                maxWidth: "100%",
+                typography: "body1",
+            }}
+        >
             {currentEditor ? (
                 <TabContext value={currentEditor}>
-                    <Box sx={editorTabStyle}>
+                    <Box sx={tabStyle}>
                         <TabList
                             onChange={handleTabChange}
                             variant="scrollable"
                             scrollButtons="auto"
                             allowScrollButtonsMobile
+                            TabScrollButtonProps={{
+                                sx: { color: theme.palette.secondary.main },
+                            }}
                             aria-label="tabs"
                             sx={{ fontSize: "small" }}
                         >
@@ -120,12 +145,15 @@ export default function Editors() {
                     <EditorPanel editorId={currentEditor} />
                 </TabContext>
             ) : (
-                <Box
-                    sx={{
-                        ...editorTabStyle,
-                        minHeight: editorTabHeight + 1,
-                    }}
-                />
+                <>
+                    <Box
+                        sx={{
+                            ...tabStyle,
+                            minHeight: editorTabHeight + 1,
+                        }}
+                    />
+                    <Box sx={{ height: editorBoxHeight }} />
+                </>
             )}
         </Box>
     );
