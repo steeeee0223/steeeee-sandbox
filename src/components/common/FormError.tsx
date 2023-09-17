@@ -1,15 +1,15 @@
-import { Alert } from "@mui/material";
+import { Alert, SxProps } from "@mui/material";
 import BlockIcon from "@mui/icons-material/Block";
 import { FieldErrors, FieldValues } from "react-hook-form";
 
 interface FormErrorProps<T extends FieldValues> {
     errors: FieldErrors<T>;
-    bgColor?: string;
+    sx?: SxProps;
 }
 
 export default function FormError<T extends FieldValues>({
     errors,
-    bgColor,
+    sx,
 }: FormErrorProps<T>) {
     let message = "";
     Object.entries(errors).forEach(([name, desc]) => {
@@ -22,7 +22,7 @@ export default function FormError<T extends FieldValues>({
         <Alert
             icon={<BlockIcon />}
             severity="error"
-            sx={{ background: bgColor ?? "inherit", mb: 2 }}
+            sx={sx ?? { background: "inherit", mb: 2 }}
         >
             {message}
         </Alert>

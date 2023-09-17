@@ -1,7 +1,6 @@
 import { forwardRef } from "react";
 import { useForm } from "react-hook-form";
 import {
-    Alert,
     Box,
     Button,
     FormControl,
@@ -10,11 +9,11 @@ import {
     Typography,
     capitalize,
 } from "@mui/material";
-import BlockIcon from "@mui/icons-material/Block";
 import EditIcon from "@mui/icons-material/Edit";
 
 import { useDirectory } from "@/hooks";
 import { _never } from "@/lib/helper";
+import { FormError } from "../common";
 
 const formStyle = {
     position: "absolute" as "absolute",
@@ -63,15 +62,7 @@ const RenameForm = forwardRef(({}: RenameFormProps, ref) => {
             >
                 Rename {title}
             </Typography>
-            {errors.name && (
-                <Alert
-                    icon={<BlockIcon />}
-                    severity="error"
-                    sx={{ marginBottom: 2 }}
-                >
-                    {errors.name.message}
-                </Alert>
-            )}
+            <FormError errors={errors} />
             <Stack
                 direction="row"
                 spacing={2}

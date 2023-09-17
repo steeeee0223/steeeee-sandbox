@@ -1,7 +1,6 @@
 import { forwardRef } from "react";
 import { useForm } from "react-hook-form";
 import {
-    Alert,
     Box,
     Button,
     FormControl,
@@ -11,14 +10,13 @@ import {
     Typography,
 } from "@mui/material";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
-import BlockIcon from "@mui/icons-material/Block";
 
 import { projectTemplates } from "@/data";
 import { useAppDispatch, useProjects } from "@/hooks";
 import { _never } from "@/lib/helper";
 import { createProjectAsync } from "@/stores/project";
 import { setDashboardAction } from "@/stores/cursor";
-import { FormSelect } from "../common";
+import { FormError, FormSelect } from "../common";
 
 const formStyle = {
     position: "absolute" as "absolute",
@@ -154,11 +152,7 @@ const CreateForm = forwardRef(({}: CreateFormProps, ref) => {
                     Submit
                 </Button>
             </Stack>
-            {errors.name && (
-                <Alert icon={<BlockIcon />} severity="error">
-                    {errors.name.message}
-                </Alert>
-            )}
+            <FormError errors={errors} sx={{ mb: 0 }} />
         </Box>
     );
 });

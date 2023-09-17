@@ -1,6 +1,5 @@
 import { useForm } from "react-hook-form";
 import {
-    Alert,
     Divider,
     IconButton,
     InputBase,
@@ -9,10 +8,10 @@ import {
     capitalize,
 } from "@mui/material";
 import AddBoxIcon from "@mui/icons-material/AddBox";
-import BlockIcon from "@mui/icons-material/Block";
 
 import { useDirectory } from "@/hooks";
 import { CreationType } from "@/stores/cursor";
+import { FormError } from "../common";
 
 interface CreateFormProps {
     itemId: string;
@@ -91,24 +90,10 @@ export default function CreateForm({ itemId, type }: CreateFormProps) {
                     <AddBoxIcon fontSize="small" />
                 </IconButton>
             </Paper>
-            {errors.name && (
-                <Alert
-                    icon={<BlockIcon />}
-                    severity="error"
-                    sx={{ width: 400, fontSize: 12, alignItems: "center" }}
-                >
-                    {errors.name.message}
-                </Alert>
-            )}
-            {errors.files && (
-                <Alert
-                    icon={<BlockIcon />}
-                    severity="error"
-                    sx={{ width: 400, fontSize: 12, alignItems: "center" }}
-                >
-                    {errors.files.message}
-                </Alert>
-            )}
+            <FormError
+                errors={errors}
+                sx={{ width: "100%", fontSize: 12, alignItems: "center" }}
+            />
         </>
     );
 }

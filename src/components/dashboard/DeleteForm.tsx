@@ -1,7 +1,6 @@
 import { forwardRef } from "react";
 import { useForm } from "react-hook-form";
 import {
-    Alert,
     Box,
     Button,
     FormControl,
@@ -10,10 +9,10 @@ import {
     Typography,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import BlockIcon from "@mui/icons-material/Block";
 
 import { useAppDispatch, useProjects } from "@/hooks";
 import { deleteProjectsAsync } from "@/stores/project";
+import { FormError } from "../common";
 
 const formStyle = {
     position: "absolute" as "absolute",
@@ -120,11 +119,7 @@ const DeleteForm = forwardRef(
                         Delete
                     </Button>
                 </Stack>
-                {errors.name && (
-                    <Alert icon={<BlockIcon />} severity="error">
-                        {errors.name.message}
-                    </Alert>
-                )}
+                <FormError errors={errors} sx={{ mb: 0 }} />
             </Box>
         );
     }
