@@ -4,7 +4,7 @@ import { CSSProperties } from "react";
 export const footerProps: SxProps = {
     margin: 0,
     padding: "0 0 50px 0",
-    backgroundImage: `url("./src/assets/img/footer.png")`,
+    backgroundImage: `url("@/assets/img/footer.png")`,
     backgroundPosition: "center center",
     backgroundSize: "cover",
     backgroundRepeat: "no-repeat",
