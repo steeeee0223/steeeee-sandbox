@@ -1,7 +1,11 @@
 import { useEffect } from "react";
 import { SandpackPreview, useSandpack } from "@codesandbox/sandpack-react";
 
-export default function Preview() {
+interface PreviewProps {
+    height?: string;
+}
+
+export default function Preview({ height }: PreviewProps) {
     const { listen } = useSandpack();
 
     useEffect(() => {
@@ -20,7 +24,7 @@ export default function Preview() {
             showNavigator
             showRefreshButton
             showOpenInCodeSandbox={false}
-            style={{ borderLeft: 1, borderColor: "divider", height: "100vh" }}
+            style={{ borderLeft: 1, borderColor: "divider", height }}
         />
     );
 }

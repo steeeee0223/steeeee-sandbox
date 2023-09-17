@@ -7,6 +7,7 @@ import { useAppContext } from "@/contexts/app";
 import { list1, list2 } from "@/data";
 import { useAppDispatch, usePath, useProjects } from "@/hooks";
 import { getDirectoryAsync } from "@/stores/directory";
+import { containerHeight } from "@/theme";
 
 export default function BasePage({ children }: { children: React.ReactNode }) {
     const dispatch = useAppDispatch();
@@ -57,8 +58,8 @@ export default function BasePage({ children }: { children: React.ReactNode }) {
                 <DrawerHeader />
                 <Container
                     sx={{
-                        minHeight: "100vh",
-                        minWidth: "100%",
+                        maxHeight: containerHeight,
+                        maxWidth: "100%",
                         border: 0,
                         flexGrow: 1,
                         marginX: 0,

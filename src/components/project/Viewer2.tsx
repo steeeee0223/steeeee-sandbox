@@ -1,19 +1,12 @@
 import { SyntheticEvent, useState } from "react";
-import { Box, Tab as MuiTab } from "@mui/material";
+import { Box, Tab as MuiTab, Typography } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
-import { useSandpack } from "@codesandbox/sandpack-react";
-
-import { Preview } from "../common";
-import { previewHeight, tabStyle } from "./styles";
+import { tabStyle } from "./styles";
 
 export default function Viewer() {
     const [activeTab, setActiveTab] = useState("0");
-    const { dispatch } = useSandpack();
 
-    const handleChange = (event: SyntheticEvent, newValue: string) => {
-        setActiveTab(newValue);
-        // dispatch({ type: "refresh" });
-    };
+    const handleChange = () => console.log(`[Tab] Viewer2 tab clicked!`);
 
     return (
         <Box sx={{ maxWidth: "100%", typography: "body1" }}>
@@ -27,11 +20,18 @@ export default function Viewer() {
                         aria-label="tabs"
                         sx={{ fontSize: "small" }}
                     >
-                        <MuiTab label="Browser" value="0" />
+                        <MuiTab label="Terminal" value="0" />
                     </TabList>
                 </Box>
+
                 <TabPanel value="0" sx={{ p: 0 }}>
-                    <Preview height={previewHeight} />
+                    <Typography
+                        sx={{
+                            textAlign: "center",
+                        }}
+                    >
+                        Terminal
+                    </Typography>
                 </TabPanel>
             </TabContext>
         </Box>
