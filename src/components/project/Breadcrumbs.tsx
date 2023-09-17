@@ -2,6 +2,8 @@ import * as React from "react";
 import { Breadcrumbs as MuiBreadcrumbs, Chip } from "@mui/material";
 import { styled, emphasize } from "@mui/material/styles";
 
+import { editorTabHeight } from "./styles";
+
 const StyledBreadcrumb = styled(Chip)(({ theme }) => {
     return {
         height: theme.spacing(3),
@@ -25,21 +27,26 @@ export default function Breadcrumbs({ path }: BreadcrumbsProps) {
     };
 
     return (
-        <div role="presentation" onClick={handleClick}>
-            <MuiBreadcrumbs
-                maxItems={3}
-                aria-label="breadcrumb"
-                sx={{ m: 2, fontSize: "small" }}
-            >
-                {path.map((name, index) => (
-                    <StyledBreadcrumb
-                        key={index}
-                        component="a"
-                        label={name}
-                        href="#"
-                    />
-                ))}
-            </MuiBreadcrumbs>
-        </div>
+        <MuiBreadcrumbs
+            onClick={handleClick}
+            role="presentation"
+            maxItems={3}
+            aria-label="breadcrumb"
+            sx={{
+                m: "12px",
+                fontSize: "small",
+                maxHeight: editorTabHeight / 2,
+                flexGrow: 1,
+            }}
+        >
+            {path.map((name, index) => (
+                <StyledBreadcrumb
+                    key={index}
+                    component="a"
+                    label={name}
+                    href="#"
+                />
+            ))}
+        </MuiBreadcrumbs>
     );
 }
