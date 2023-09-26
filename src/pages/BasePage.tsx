@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Box, Container, Divider, List } from "@mui/material";
+import { Box, Divider, List } from "@mui/material";
 
 import { Drawer, DrawerHeader, DrawerList } from "@/components/sidebar";
 import { FolderSystem, Toolbar } from "@/components/project";
@@ -32,7 +32,7 @@ export default function BasePage({ children }: { children: React.ReactNode }) {
     }, [directoryIsLoading, user, currentProject]);
 
     return (
-        <Box sx={{ display: "flex" }}>
+        <Box sx={{ width: "100%", display: "flex" }}>
             {isPageWithSidebar && (
                 <Drawer variant="permanent" open={sidebarOpen} aria-label={id}>
                     <DrawerHeader />
@@ -53,21 +53,15 @@ export default function BasePage({ children }: { children: React.ReactNode }) {
             )}
             <Box
                 component="main"
-                sx={{ flexGrow: 1, ...(isValidEditPage && { px: 0 }) }}
+                sx={{
+                    flexGrow: 1,
+                    width: "100%",
+                    maxHeight: containerHeight,
+                    px: isValidEditPage || isHomePage ? 0 : 4,
+                }}
             >
                 <DrawerHeader />
-                <Container
-                    sx={{
-                        maxHeight: containerHeight,
-                        maxWidth: "100%",
-                        border: 0,
-                        flexGrow: 1,
-                        marginX: 0,
-                    }}
-                    disableGutters={isValidEditPage || isHomePage}
-                >
-                    {children}
-                </Container>
+                {children}
             </Box>
         </Box>
     );

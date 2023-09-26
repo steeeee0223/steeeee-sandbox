@@ -6,7 +6,6 @@ import { Panel, PanelGroup } from "react-resizable-panels";
 import { Loading, NotFound, PanelDivider } from "@/components/common";
 import { Editors, Viewer, RenameForm, Viewer2 } from "@/components/project";
 import { usePath, useProjects, useDirectory } from "@/hooks";
-import { containerHeight } from "@/theme";
 
 export default function Project() {
     const {

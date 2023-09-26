@@ -6,9 +6,9 @@ export default function Dashboard() {
     const { projectIsLoading } = useProjects();
 
     return (
-        <div>
+        <>
             <h1>Dashboard</h1>
             {projectIsLoading ? <Loading /> : <Table />}
-        </div>
+        </>
     );
 }
