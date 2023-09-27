@@ -14,7 +14,6 @@ import {
 } from "@/stores/editor";
 import { File, updateFileAsync } from "@/stores/directory";
 import { projectSelector } from "@/stores/project";
-import { _never } from "@/lib/helper";
 
 const nullEditor = {} as Editor;
 
@@ -68,6 +67,11 @@ export function useEditors(): EditorsInfo & EditorsOperations {
     const editorIds = editorSelector.selectIds(editorState) as string[];
 
     /**
+     * @summary Fetch the information of the editor `editorId`
+     */
+    const getInfo = (editorId: string) =>
+        editorSelector.selectById(editorState, editorId) ?? nullEditor;
+    /**
      * @summary Compare the content of editor `editorId` in editor entities with that in directory entities
      */
     const isModified = (editorId: string) => {
@@ -76,75 +80,75 @@ export function useEditors(): EditorsInfo & EditorsOperations {
         return content !== newContent;
     };
     /**
-     * @summary Fetch the information of the editor `editorId`
-     */
-    const getInfo = (editorId: string) =>
-        editorSelector.selectById(editorState, editorId) ?? nullEditor;
-    /**
      * @summary Set `currentEditor` to `editorId`
      */
     const select = (editorId: string) => {
         console.log(`[Hook] set editor: ${editorId}`);
         dispatch(setEditor(editorId));
     };
-    /**
-     * @summary Add file `fileId` (from directory state) to editor entities, then select it
-     */
-    const open = (fileId: string, autoSelect: boolean) => {
-        /** Add file `fileId` to editor entities */
-        console.log(`[Hook] open editor: ${fileId}`);
-        const file = getItem(fileId) as File;
-        dispatch(openEditor(file));
 
-        /** Auto select the editor `fileId`  */
-        if (autoSelect) select(fileId);
-    };
-    /**
-     * @summary Remove selected editors `editorIds`
-     */
-    const close = (editorIds: string[]) => {
-        console.log(`[Hook] close editors: ${editorIds}`);
-        dispatch(closeEditors(editorIds));
-    };
-    /**
-     * @summary Update sandpack files
-     */
-    const updatePreview = (
-        editorId: string,
-        updateSandpackFile: UpdateSandpackFile
-    ) => {
-        const [path, _] = getPath(editorId);
-        const pathName = path.join("/").slice(4);
-        updateSandpackFile(pathName, currentText, true);
-    };
-    /**
-     * @summary Save the latest content of editor `editorId` (from editor entities)
-     * to directory via `directory/updateFileAsync`
-     */
-    const save = (editorId: string) => {
-        console.log(`[Hook] save editor ${editorId}: ${isModified(editorId)}`);
-        /** Update the content of `currentEditor` */
-        dispatch(updateCurrentEditor());
+    const operations: EditorsOperations = {
+        getInfo,
+        select,
+        /**
+         * @summary Add file `fileId` (from directory state) to editor entities, then select it
+         */
+        open: (fileId, autoSelect) => {
+            /** Add file `fileId` to editor entities */
+            console.log(`[Hook] open editor: ${fileId}`);
+            const file = getItem(fileId) as File;
+            dispatch(openEditor(file));
 
-        /** Save to Firebase & directory entities */
-        const project =
-            projectSelector.selectById(projectState, currentProject.id) ??
-            _never;
-        console.log(`[Hook] save to project: ${project.name}`);
-        dispatch(
-            updateFileAsync({
-                project,
-                file: getItem(editorId) as File,
-                content: currentText,
-            })
-        );
-    };
-    /**
-     * @summary Update `currentText` to `content`
-     */
-    const updateText = (content: string) => {
-        console.log(`[Hook] update current text`);
-        dispatch(_updateText(content));
+            /** Auto select the editor `fileId`  */
+            if (autoSelect) select(fileId);
+        },
+        /**
+         * @summary Remove selected editors `editorIds`
+         */
+        close: (editorIds) => {
+            console.log(`[Hook] close editors: ${editorIds}`);
+            dispatch(closeEditors(editorIds));
+        },
+        /**
+         * @summary Update sandpack files
+         */
+        updatePreview: (editorId, updateSandpackFile) => {
+            const [path, _] = getPath(editorId);
+            const pathName = path.join("/").slice(4);
+            updateSandpackFile(pathName, currentText, true);
+        },
+        /**
+         * @summary Save the latest content of editor `editorId` (from editor entities)
+         * to directory via `directory/updateFileAsync`
+         */
+        save: (editorId) => {
+            console.log(
+                `[Hook] save editor ${editorId}: ${isModified(editorId)}`
+            );
+            /** Update the content of `currentEditor` */
+            dispatch(updateCurrentEditor());
+
+            /** Save to Firebase & directory entities */
+            const project = projectSelector.selectById(
+                projectState,
+                currentProject.id
+            )!;
+            console.log(`[Hook] save to project: ${project.name}`);
+            dispatch(
+                updateFileAsync({
+                    project,
+                    file: getItem(editorId) as File,
+                    content: currentText,
+                })
+            );
+        },
+        /**
+         * @summary Update `currentText` to `content`
+         */
+        updateText: (content) => {
+            console.log(`[Hook] update current text`);
+            dispatch(_updateText(content));
+        },
     };
 
     return {
@@ -152,13 +156,7 @@ export function useEditors(): EditorsInfo & EditorsOperations {
         editorIds,
         currentEditor,
         currentText,
-        getInfo,
-        select,
-        open,
-        close,
         isModified,
-        save,
-        updateText,
-        updatePreview,
+        ...operations,
     };
 }
