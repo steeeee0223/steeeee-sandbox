@@ -15,6 +15,7 @@ import {
     deleteDirectoryAsync,
     directorySelector,
     getChildren,
+    getDirectoryAsync,
     getFullPath,
     getRecursiveItemIds,
     getSelectedItem,
@@ -24,7 +25,6 @@ import {
     uploadFileAsync,
 } from "@/stores/directory";
 import { getContent, getExtension, normalizePath } from "@/lib/file";
-import { _never } from "@/lib/helper";
 import { Project, projectSelector } from "@/stores/project";
 import { CreationType, DirectoryItemType, setCreation } from "@/stores/cursor";
 
@@ -56,6 +56,7 @@ interface DirectoryOperations {
         folderIds: string[];
         fileIds: string[];
     };
+    reload: (userId: string, projectId: string) => void;
     select: (itemId: string) => SelectedItem;
     create: (
         type: Exclude<CreationType, null>,
@@ -91,52 +92,53 @@ export function useDirectory(): DirectoryInfo & DirectoryOperations {
     const project = useMemo(
         () =>
             currentProject
-                ? projectSelector.selectById(projectState, currentProject.id) ??
-                  _never
+                ? projectSelector.selectById(projectState, currentProject.id)!
                 : nullProject,
         [projectState]
     );
 
     const directory = directorySelector.selectAll(directoryState);
-    const getFiles = () =>
+    const getFiles: DirectoryOperations["getFiles"] = () =>
         directory.filter(({ isFolder }) => !isFolder) as File[];
-    const getFolders = () =>
+    const getFolders: DirectoryOperations["getFolders"] = () =>
         directory.filter(({ isFolder }) => isFolder) as Folder[];
-    const getItem = (itemId: string) =>
-        directory.find((item) => itemId === item.itemId) ?? _never;
-    const getPath = (itemId: string) => getFullPath(directory, itemId);
+    const getItem: DirectoryOperations["getItem"] = (itemId) =>
+        directory.find((item) => itemId === item.itemId)!;
+    const getPath: DirectoryOperations["getPath"] = (itemId) =>
+        getFullPath(directory, itemId);
 
-    const getFirstLayerChildren = (itemId: string) =>
-        getChildren(directory, itemId);
-    const getAllChildren = (itemId: string) =>
+    const getFirstLayerChildren: DirectoryOperations["getFirstLayerChildren"] =
+        (itemId) => getChildren(directory, itemId);
+    const getAllChildren: DirectoryOperations["getAllChildren"] = (itemId) =>
         getRecursiveItemIds(directory, itemId);
-    const select = (itemId: string) => {
+    const select: DirectoryOperations["select"] = (itemId) => {
         const item = getSelectedItem(directory, itemId);
         dispatch(selectItem(item));
         return item;
     };
-    const isCurrentItem = (itemId: string) => currentItem.item.id === itemId;
+    const isCurrentItem: DirectoryInfo["isCurrentItem"] = (itemId) =>
+        currentItem.item.id === itemId;
 
     /** Is folder present in the 1st layer children of `itemId` */
-    const isFolderPresent = (itemId: string, folderName: string): boolean => {
-        return !!directory.find(
+    const isFolderPresent: DirectoryInfo["isFolderPresent"] = (
+        itemId,
+        folderName
+    ) =>
+        !!directory.find(
             ({ isFolder, parent, name }) =>
                 isFolder && parent === itemId && name === folderName.trim()
         );
-    };
     /** Is file present in the 1st layer children of `itemId` */
-    const isFilePresent = (itemId: string, fileName: string): boolean => {
-        return !!directory.find(
+    const isFilePresent: DirectoryInfo["isFilePresent"] = (itemId, fileName) =>
+        !!directory.find(
             ({ isFolder, parent, name }) =>
                 !isFolder && parent === itemId && name === fileName.trim()
         );
-    };
-    const isItemPresent = (
-        type: DirectoryItemType,
-        itemId: string,
-        name: string
-    ): boolean =>
-        (type === "folder" ? isFolderPresent : isFilePresent)(itemId, name);
+    const isItemPresent: DirectoryInfo["isItemPresent"] = (
+        type,
+        itemId,
+        name
+    ) => (type === "folder" ? isFolderPresent : isFilePresent)(itemId, name);
 
     const setDuplicateFilename = (filename: string): string => {
         if (!isFilePresent(currentItem.item.id, filename)) return filename;
@@ -144,18 +146,16 @@ export function useDirectory(): DirectoryInfo & DirectoryOperations {
         if (split.length === 0) {
             return `${filename}-2`;
         }
-        const ext = split.pop() ?? _never;
+        const ext = split.pop()!;
         return `${split.join(".")}-2.${ext}`;
     };
 
     const updateAction = (action: DirectoryAction) =>
         dispatch(setAction(action));
 
-    const create = async (
-        type: Exclude<CreationType, null>,
-        name: string,
-        file?: UploadFile
-    ) => {
+    const reload: DirectoryOperations["reload"] = (userId, projectId) =>
+        dispatch(getDirectoryAsync({ userId, projectId }));
+    const create: DirectoryOperations["create"] = async (type, name, file) => {
         const { item, path } = currentItem;
         dispatch(setCreation(null));
         let data: any = {
@@ -172,7 +172,7 @@ export function useDirectory(): DirectoryInfo & DirectoryOperations {
                 dispatch(createFileAsync({ project, data }));
                 break;
             case "upload":
-                const uploadFile = file ?? _never;
+                const uploadFile = file!;
                 data = {
                     ...data,
                     content: await getContent(uploadFile),
@@ -183,24 +183,20 @@ export function useDirectory(): DirectoryInfo & DirectoryOperations {
                 break;
         }
     };
-
-    const rename = (type: DirectoryItemType, itemId: string, name: string) => {
+    const rename: DirectoryOperations["rename"] = (type, itemId, name) => {
         console.log(`[renameItem] ${type} => ${itemId}`);
         dispatch(
             renameDirectoryItemAsync({ project, item: getItem(itemId), name })
         );
         updateAction({ rename: null });
     };
-
-    const remove = (itemId: string) =>
+    const remove: DirectoryOperations["remove"] = (itemId) =>
         dispatch(deleteDirectoryAsync({ project, itemId }));
-
-    const copy = (itemId: string) =>
+    const copy: DirectoryOperations["copy"] = (itemId) =>
         updateAction({
             copy: { rootId: itemId, items: getAllChildren(itemId) },
         });
-
-    const bundleFiles = () => {
+    const bundleFiles: DirectoryOperations["bundleFiles"] = () => {
         const bundledFiles: SandpackFiles = {};
         getFiles().forEach(({ itemId, content }) => {
             const [pathName, _] = getPath(itemId);
@@ -230,6 +226,7 @@ export function useDirectory(): DirectoryInfo & DirectoryOperations {
         getAllChildren,
         getPath,
         updateAction,
+        reload,
         select,
         create,
         rename,

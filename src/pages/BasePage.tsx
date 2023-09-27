@@ -5,8 +5,7 @@ import { Drawer, DrawerHeader, DrawerList } from "@/components/sidebar";
 import { FolderSystem, Toolbar } from "@/components/project";
 import { useAppContext } from "@/contexts/app";
 import { list1, list2 } from "@/data";
-import { useAppDispatch, usePath, useProjects } from "@/hooks";
-import { getDirectoryAsync } from "@/stores/directory";
+import { useAppDispatch, useDirectory, usePath, useProjects } from "@/hooks";
 import { containerHeight } from "@/theme";
 
 export default function BasePage({ children }: { children: React.ReactNode }) {
@@ -19,16 +18,12 @@ export default function BasePage({ children }: { children: React.ReactNode }) {
     } = usePath();
     const { isProjectOfUser, user, currentProject, directoryIsLoading } =
         useProjects();
+    const { reload } = useDirectory();
     const isValidEditPage = !!user && path === "project" && isProjectOfUser(id);
 
     useEffect(() => {
         if (directoryIsLoading && user && currentProject)
-            dispatch(
-                getDirectoryAsync({
-                    userId: user.uid,
-                    projectId: currentProject.id,
-                })
-            );
+            reload(user.uid, currentProject.id);
     }, [directoryIsLoading, user, currentProject]);
 
     return (
