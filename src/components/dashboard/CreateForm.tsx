@@ -12,10 +12,7 @@ import {
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 
 import { projectTemplates } from "@/data";
-import { useAppDispatch, useProjects } from "@/hooks";
-import { _never } from "@/lib/helper";
-import { createProjectAsync } from "@/stores/project";
-import { setDashboardAction } from "@/stores/cursor";
+import { useProjects } from "@/hooks";
 import { FormError, FormSelect } from "../common";
 
 const formStyle = {
@@ -49,8 +46,7 @@ const MenuProps = {
 };
 
 const CreateForm = forwardRef(({}: CreateFormProps, ref) => {
-    const dispatch = useAppDispatch();
-    const { user, isProjectPresent } = useProjects();
+    const { isProjectPresent, create } = useProjects();
     const { handleSubmit, register, formState, control, reset } =
         useForm<CreateFormValues>({
             defaultValues: { name: "", template: "static" },
@@ -59,27 +55,7 @@ const CreateForm = forwardRef(({}: CreateFormProps, ref) => {
 
     const onSubmit = ({ name, template }: CreateFormValues) => {
         console.log(`[Form] got data: ${name} => ${template}`);
-        if (user) {
-            const { uid, displayName, email } = user;
-            const { label } =
-                projectTemplates.find(({ value }) => value === template) ??
-                _never;
-            const data = {
-                createdAt: new Date(),
-                lastModifiedAt: new Date(),
-                template,
-                name,
-                tags: [label],
-            };
-            dispatch(
-                createProjectAsync({
-                    user: { uid, displayName, email },
-                    data,
-                })
-            );
-            dispatch(setDashboardAction(null));
-            reset();
-        }
+        create(name, template, reset);
     };
 
     return (

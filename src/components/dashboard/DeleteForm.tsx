@@ -10,8 +10,7 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-import { useAppDispatch, useProjects } from "@/hooks";
-import { deleteProjectsAsync } from "@/stores/project";
+import { useProjects } from "@/hooks";
 import { FormError } from "../common";
 
 const formStyle = {
@@ -35,23 +34,13 @@ type DeleteFormValues = { name: string };
 
 const DeleteForm = forwardRef(
     ({ projectName, projectId }: DeleteFormProps, ref) => {
-        const dispatch = useAppDispatch();
-        const { user, isProjectMatch, resetProject } = useProjects();
+        const { isProjectMatch, deleteMany } = useProjects();
         const { register, handleSubmit, formState, reset } =
             useForm<DeleteFormValues>();
         const { errors } = formState;
 
         const onSubmit = () => {
-            if (user) {
-                dispatch(
-                    deleteProjectsAsync({
-                        userId: user.uid,
-                        projectIds: [projectId],
-                    })
-                );
-                resetProject();
-                reset();
-            }
+            deleteMany([projectId], reset);
         };
 
         return (

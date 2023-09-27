@@ -12,7 +12,6 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 
 import { useDirectory } from "@/hooks";
-import { _never } from "@/lib/helper";
 import { FormError } from "../common";
 
 const formStyle = {
@@ -33,9 +32,7 @@ type RenameFormValues = { name: string };
 
 const RenameForm = forwardRef(({}: RenameFormProps, ref) => {
     const { action, rename, getItem, isItemPresent } = useDirectory();
-    const { name, isFolder, itemId, parent } = getItem(
-        action.rename?.itemId ?? _never
-    );
+    const { name, isFolder, itemId, parent } = getItem(action.rename?.itemId!);
     const type = isFolder ? "folder" : "file";
     const title = capitalize(type);
 

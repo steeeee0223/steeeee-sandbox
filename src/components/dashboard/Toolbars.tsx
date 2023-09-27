@@ -17,7 +17,6 @@ import { setDashboardAction } from "@/stores/cursor";
 import { ButtonGroup } from "../common";
 import CreateForm from "./CreateForm";
 import DeleteForm from "./DeleteForm";
-import { downloadDirectoryAsync } from "@/stores/directory";
 
 interface ToolbarProps {
     projectName: string;
@@ -26,8 +25,7 @@ interface ToolbarProps {
 
 export const ActionToolbar = ({ projectName, projectId }: ToolbarProps) => {
     const dispatch = useAppDispatch();
-    const { currentProject, selectProject, getProject, resetProject } =
-        useProjects();
+    const { currentProject, select, reset, download } = useProjects();
 
     const deleteFormRef = useRef<HTMLFormElement>(null);
 
@@ -38,14 +36,13 @@ export const ActionToolbar = ({ projectName, projectId }: ToolbarProps) => {
         e.stopPropagation();
         switch (action) {
             case "rename":
-                selectProject(projectId, action);
+                select(projectId, action);
                 break;
             case "delete":
-                selectProject(projectId, action);
+                select(projectId, action);
                 break;
             case "download":
-                const project = getProject(projectId) ?? (undefined as never);
-                dispatch(downloadDirectoryAsync({ project }));
+                download(projectId);
                 break;
             default:
                 break;
@@ -53,7 +50,7 @@ export const ActionToolbar = ({ projectName, projectId }: ToolbarProps) => {
     };
 
     const handleFormClosed = () => {
-        resetProject();
+        reset();
         dispatch(setDashboardAction(null));
     };
 
