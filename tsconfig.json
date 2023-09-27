@@ -18,8 +18,8 @@
         "paths": {
             "@/*": ["./src/*"]
         },
-        "types": ["vite-plugin-svgr/client"]
+        "types": ["vite-plugin-svgr/client", "vitest/globals"]
     },
-    "include": ["src"],
+    "include": ["src", "test"],
     "references": [{ "path": "./tsconfig.node.json" }]
 }

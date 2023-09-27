@@ -1,6 +1,8 @@
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
+import { configureStore } from "@reduxjs/toolkit";
 
 import store from "@/stores/store";
+export type AppStore = ReturnType<typeof configureStore>;
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
 export type RootState = ReturnType<typeof store.getState>;

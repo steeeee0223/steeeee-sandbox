@@ -19,13 +19,14 @@ const rootPersistConfig = {
     whitelist: ["auth"],
 };
 
-export const rootReducer = combineReducers({
+export const reducers = {
     auth: authReducer,
     cursor: cursorReducer,
     directory: directoryReducer,
     editor: editorReducer,
     project: projectReducer,
-});
+};
+export const rootReducer = combineReducers(reducers);
 
 const store = configureStore({
     reducer: persistReducer(rootPersistConfig, rootReducer),
