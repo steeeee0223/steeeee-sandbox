@@ -12,7 +12,7 @@ type Path = Location & {
 
 export default function usePath(): Path {
     const location = useLocation();
-    const { selectProject, resetProject } = useProjects();
+    const { select, reset } = useProjects();
 
     const path = location.pathname.split("/");
     const [, pathname, id] = path;
@@ -23,12 +23,12 @@ export default function usePath(): Path {
     useEffect(() => {
         if (pathname === "project" && id) {
             console.log(`setting project to: ${id}`);
-            selectProject(id, "edit");
+            select(id, "edit");
         } else if (pathname === "demo" && id) {
             console.log(`setting project to: ${id}`);
-            selectProject(id, "demo");
+            select(id, "demo");
         } else {
-            resetProject();
+            reset();
         }
     }, [id]);
 

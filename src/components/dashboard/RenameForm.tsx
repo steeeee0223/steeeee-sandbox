@@ -1,8 +1,7 @@
 import { useForm } from "react-hook-form";
 import { FormControl, OutlinedInput, Box } from "@mui/material";
 
-import { useAppDispatch, useProjects } from "@/hooks";
-import { renameProjectAsync } from "@/stores/project";
+import { useProjects } from "@/hooks";
 
 interface RenameFormProps {
     projectId: string;
@@ -15,17 +14,14 @@ export default function RenameForm({
     projectId,
     placeholder,
 }: RenameFormProps) {
-    const { isProjectPresent, resetProject } = useProjects();
-    const dispatch = useAppDispatch();
+    const { isProjectPresent, rename, reset } = useProjects();
     const { register, handleSubmit } = useForm<RenameFormValues>({
         defaultValues: { name: placeholder },
     });
 
     const onSubmit = ({ name }: RenameFormValues) => {
-        if (name !== placeholder) {
-            dispatch(renameProjectAsync({ projectId, name }));
-        }
-        resetProject();
+        if (name !== placeholder) rename(projectId, name);
+        reset();
     };
 
     return (
@@ -46,7 +42,7 @@ export default function RenameForm({
                                 !isProjectPresent(value) ||
                                 `Project name already present: ${value}`,
                         },
-                        onBlur: resetProject,
+                        onBlur: reset,
                     })}
                     sx={{
                         fontSize: "small",
