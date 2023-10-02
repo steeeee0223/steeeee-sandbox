@@ -2,7 +2,9 @@
 import firebase from "firebase/compat/app";
 import "firebase/compat/firestore";
 import "firebase/compat/storage";
-import "firebase/compat/auth";
+// import "firebase/compat/auth";
+
+import { getAuth } from "firebase/auth";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -27,4 +29,7 @@ export const db = app.firestore();
 export const storage = app.storage();
 
 // Authentication
-export const auth = app.auth();
+// export const auth = app.auth()
+import { initializeApp } from "firebase/app";
+const $app = initializeApp(firebaseConfig);
+export const auth = getAuth($app);

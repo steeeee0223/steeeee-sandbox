@@ -1,14 +1,13 @@
 import React, { PropsWithChildren } from "react";
-import { render, renderHook } from "@testing-library/react";
-import type { RenderOptions } from "@testing-library/react";
-import { configureStore } from "@reduxjs/toolkit";
-import type { PreloadedState } from "@reduxjs/toolkit";
+import { render, renderHook, RenderOptions } from "@testing-library/react";
+import { configureStore, PreloadedState } from "@reduxjs/toolkit";
 import { Provider } from "react-redux";
-
-import type { AppStore, RootState } from "@/hooks/stores";
-import { $preloadedState, $reducers } from "./_redux";
+import { PersistGate } from "redux-persist/integration/react";
 
 // As a basic setup, import your same slice reducers
+import type { AppStore, RootState } from "@/hooks/stores";
+import { persistor } from "@/stores/store";
+import { $preloadedState, $reducers } from "./_redux";
 
 // This type interface extends the default options for render from RTL, as well
 // as allows the user to specify other things such as initialState, store.
@@ -16,6 +15,11 @@ interface ExtendedRenderOptions extends Omit<RenderOptions, "queries"> {
     preloadedState?: PreloadedState<RootState>;
     store?: AppStore;
 }
+
+export const $store: AppStore = configureStore({
+    reducer: $reducers,
+    preloadedState: $preloadedState,
+});
 
 export function renderWithProviders(
     ui: React.ReactElement,
@@ -29,8 +33,14 @@ export function renderWithProviders(
         ...renderOptions
     }: ExtendedRenderOptions = {}
 ) {
-    function Wrapper({ children }: PropsWithChildren<{}>): JSX.Element {
-        return <Provider store={store}>{children}</Provider>;
+    function Wrapper({ children }: PropsWithChildren<unknown>): JSX.Element {
+        return (
+            <Provider store={store}>
+                <PersistGate loading={null} persistor={persistor}>
+                    {children}
+                </PersistGate>
+            </Provider>
+        );
     }
 
     // Return an object with the store and all of RTL's query functions
@@ -49,8 +59,14 @@ export function renderHookWithProviders<HookProps, HookResults>(
         ...renderOptions
     }: ExtendedRenderOptions = {}
 ) {
-    function Wrapper({ children }: PropsWithChildren<{}>): JSX.Element {
-        return <Provider store={store}>{children}</Provider>;
+    function Wrapper({ children }: PropsWithChildren<unknown>): JSX.Element {
+        return (
+            <Provider store={store}>
+                <PersistGate loading={null} persistor={persistor}>
+                    {children}
+                </PersistGate>
+            </Provider>
+        );
     }
 
     // Return an object with the store and all of RTL's query functions

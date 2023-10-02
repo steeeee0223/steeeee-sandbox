@@ -10,7 +10,7 @@ import {
 import { auth } from "@/config/firebase";
 import { AuthState } from "./auth";
 
-const initialState: AuthState = {
+export const initialState: AuthState = {
     user: null,
     isLoggedIn: false,
 };

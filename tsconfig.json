@@ -3,18 +3,25 @@
         "target": "ESNext",
         "useDefineForClassFields": true,
         "lib": ["DOM", "DOM.Iterable", "ESNext"],
-        "allowJs": false,
+        "module": "ESNext",
         "skipLibCheck": true,
         "esModuleInterop": false,
-        "allowSyntheticDefaultImports": true,
-        "strict": true,
-        "forceConsistentCasingInFileNames": true,
-        "module": "ESNext",
+
+        /* Bundler mode */
         "moduleResolution": "Node",
+        "allowSyntheticDefaultImports": true,
         "resolveJsonModule": true,
         "isolatedModules": true,
         "noEmit": true,
         "jsx": "react-jsx",
+        "allowJs": false,
+        "forceConsistentCasingInFileNames": true,
+
+        /* Linting */
+        "strict": true,
+        "noUnusedLocals": true,
+
+        /* Other */
         "paths": {
             "@/*": ["./src/*"]
         },

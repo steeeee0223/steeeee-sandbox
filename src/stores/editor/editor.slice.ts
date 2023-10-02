@@ -17,7 +17,7 @@ import { setProject } from "../project";
 
 export const editorAdapter = createEntityAdapter<Editor>();
 
-const initialState = editorAdapter.getInitialState<{
+export const initialState = editorAdapter.getInitialState<{
     currentEditor: string | null;
     currentText: string;
 }>({

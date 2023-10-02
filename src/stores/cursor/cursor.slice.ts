@@ -3,7 +3,7 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { SelectedItem, selectItem } from "../directory";
 import { CreationType, CursorState } from "./cursor";
 
-const initialState: CursorState = {
+export const initialState: CursorState = {
     creationType: null,
     fileActionType: null,
     dashboardAction: null,

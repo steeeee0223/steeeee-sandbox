@@ -26,7 +26,7 @@ const rootItem: SelectedItem = {
     path: { id: [], name: [] },
 };
 
-const initialState = directoryAdapter.getInitialState<{
+export const initialState = directoryAdapter.getInitialState<{
     isLoading: boolean;
     currentItem: SelectedItem;
     action: DirectoryAction;

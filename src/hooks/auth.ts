@@ -23,12 +23,11 @@ export const useAuth = () => {
     const googleSignIn = () => dispatch(googleSignInAsync());
     const githubSignIn = () => dispatch(githubSignInAsync());
     const signOut = () => dispatch(signOutAsync());
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) =>
+        dispatch(setUser(currentUser))
+    );
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (currentUser) =>
-            dispatch(setUser(currentUser))
-        );
-
         return () => unsubscribe();
     }, []);
 

@@ -17,7 +17,7 @@ export const projectAdapter = createEntityAdapter<Project>({
     sortComparer: (a, b) => a.name.localeCompare(b.name),
 });
 
-const initialState = projectAdapter.getInitialState<{
+export const initialState = projectAdapter.getInitialState<{
     isLoading: boolean;
     currentProject: SelectedProject | null;
 }>({
