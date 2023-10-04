@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { shallowEqual } from "react-redux";
 import { User } from "firebase/auth";
 
+import { setDashboardAction } from "@/stores/cursor";
 import { downloadDirectoryAsync, setLoading } from "@/stores/directory";
 import {
     Project,
@@ -17,7 +18,6 @@ import {
 
 import { useAppDispatch, useAppSelector } from "./stores";
 import { projectTemplates } from "@/data";
-import { setDashboardAction } from "@/stores/cursor";
 
 interface ProjectsInfo {
     user: User | null;
@@ -26,12 +26,13 @@ interface ProjectsInfo {
     projectIds: string[];
     projectIsLoading: boolean;
     directoryIsLoading: boolean;
-}
-
-interface ProjectsOperations {
     isProjectOfUser: (id: string | null | undefined) => boolean;
     isProjectPresent: (projectName: string) => boolean;
     isProjectMatch: (projectName: string, id: string) => boolean;
+}
+
+interface ProjectsOperations {
+    getAll: () => void;
     getById: (projectId: string) => Project | undefined;
     create: (name: string, template: string, onSuccess?: Function) => void;
     rename: (projectId: string, name: string) => void;
@@ -59,37 +60,48 @@ export const useProjects = (): ProjectsInfo & ProjectsOperations => {
         }),
         shallowEqual
     );
-    const projects = projectSelector.selectAll(projectState);
+    /** Info */
+    const projects: Project[] = projectSelector.selectAll(projectState);
     const projectIds = projectSelector.selectIds(projectState) as string[];
+    const info: ProjectsInfo = {
+        user,
+        projects,
+        projectIds,
+        currentProject,
+        projectIsLoading,
+        directoryIsLoading,
+        isProjectOfUser: (id) => !!id && projectIds.includes(id),
+        isProjectPresent: (projectName) =>
+            !!projects.find(({ name }) => projectName === name),
+        isProjectMatch: (projectName, id) =>
+            !!projects.find(
+                ({ name, projectId }) =>
+                    name === projectName && projectId === id
+            ),
+    };
+
+    /** Operations */
+    const getAll: ProjectsOperations["getAll"] = () => {
+        if (user) dispatch(getProjectsAsync(user.uid));
+    };
     const getById: ProjectsOperations["getById"] = (projectId) =>
         projectSelector.selectById(projectState, projectId);
-    const isProjectOfUser: ProjectsOperations["isProjectOfUser"] = (id) =>
-        !!id && projectIds.includes(id);
-    const isProjectPresent: ProjectsOperations["isProjectPresent"] = (
-        projectName
-    ) => !!projects.find(({ name }) => projectName === name);
-    const isProjectMatch: ProjectsOperations["isProjectMatch"] = (
-        projectName,
-        id
-    ) =>
-        !!projects.find(
-            ({ name, projectId }) => name === projectName && projectId === id
-        );
 
-    const select: ProjectsOperations["select"] = (id, action) => {
-        console.log(`[useProjects] id ${id} => ${action}`);
-        dispatch(setProject({ id, action }));
-    };
-    const reset: ProjectsOperations["reset"] = () => {
+    const reset = () => {
         console.log(`[useProjects] id  => null`);
         dispatch(setProject(null));
     };
-    const create: ProjectsOperations["create"] = (
-        name,
-        template,
-        onSuccess
-    ) => {
-        if (user) {
+
+    const operations: ProjectsOperations = {
+        getAll,
+        getById,
+        select: (id, action) => {
+            console.log(`[useProjects] id ${id} => ${action}`);
+            dispatch(setProject({ id, action }));
+        },
+        reset,
+        create: (name, template, onSuccess) => {
+            if (!user) return;
             const { uid, displayName, email } = user;
             const { label } = projectTemplates.find(
                 ({ value }) => value === template
@@ -109,23 +121,20 @@ export const useProjects = (): ProjectsInfo & ProjectsOperations => {
             );
             dispatch(setDashboardAction(null));
             if (onSuccess) onSuccess();
-        }
-    };
-    const rename: ProjectsOperations["rename"] = (projectId, name) =>
-        dispatch(renameProjectAsync({ projectId, name }));
-    const deleteMany: ProjectsOperations["deleteMany"] = (
-        projectIds,
-        onSuccess
-    ) => {
-        if (user) {
+        },
+        rename: (projectId, name) =>
+            dispatch(renameProjectAsync({ projectId, name })),
+        deleteMany: (projectIds, onSuccess) => {
+            if (!user) return;
             dispatch(deleteProjectsAsync({ userId: user.uid, projectIds }));
             reset();
             if (onSuccess) onSuccess();
-        }
-    };
-    const download: ProjectsOperations["download"] = (projectId) => {
-        const project = getById(projectId);
-        if (project) dispatch(downloadDirectoryAsync({ project }));
+        },
+        download: (projectId) => {
+            if (!user) return;
+            const project = getById(projectId);
+            if (project) dispatch(downloadDirectoryAsync({ project }));
+        },
     };
 
     useEffect(() => {
@@ -135,25 +144,8 @@ export const useProjects = (): ProjectsInfo & ProjectsOperations => {
     }, [user, currentProject]);
 
     useEffect(() => {
-        if (user) dispatch(getProjectsAsync(user.uid));
+        getAll();
     }, [user]);
 
-    return {
-        user,
-        currentProject,
-        projects,
-        projectIds,
-        projectIsLoading,
-        directoryIsLoading,
-        isProjectOfUser,
-        isProjectPresent,
-        isProjectMatch,
-        getById,
-        create,
-        rename,
-        deleteMany,
-        select,
-        reset,
-        download,
-    };
+    return { ...info, ...operations };
 };

@@ -5,11 +5,10 @@ import { Drawer, DrawerHeader, DrawerList } from "@/components/sidebar";
 import { FolderSystem, Toolbar } from "@/components/project";
 import { useAppContext } from "@/contexts/app";
 import { list1, list2 } from "@/data";
-import { useAppDispatch, useDirectory, usePath, useProjects } from "@/hooks";
+import { useDirectory, usePath, useProjects } from "@/hooks";
 import { containerHeight } from "@/theme";
 
 export default function BasePage({ children }: { children: React.ReactNode }) {
-    const dispatch = useAppDispatch();
     const { sidebarOpen } = useAppContext();
     const {
         isPageWithSidebar,

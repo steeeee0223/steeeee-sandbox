@@ -33,7 +33,7 @@ function createData(
         tags: [template.label],
         template: template.value,
         createdBy: sampleUser,
-        lastModifiedAt: new Date(),
+        lastModifiedAt: new Date().toString(),
     };
 }
 

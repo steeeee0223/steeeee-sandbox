@@ -1,11 +1,8 @@
 import { createAsyncThunk, Update } from "@reduxjs/toolkit";
-import { SandpackPredefinedTemplate } from "@codesandbox/sandpack-react";
 
-import { tableRows as sampleProjects } from "@/data";
 import { getRefId } from "@/lib/file";
-import { _never } from "@/lib/helper";
-import { filesDB, fireStoreDB, foldersDB, projectsDB } from "@/lib/storage";
-import { CreatedBy, Project } from "./project";
+import { filesDB, foldersDB, projectsDB, storageDB } from "@/lib/storage";
+import { CreatedBy, PredefinedTemplate, Project } from "./project";
 import { ProjectState, projectSelector } from "./project.slice";
 import { configureTemplateAsync } from "../directory";
 
@@ -17,8 +14,7 @@ export const createProjectAsync = createAsyncThunk<
 
     /** Fetch default files from Sandpack templates */
     const { SANDBOX_TEMPLATES } = await import("@codesandbox/sandpack-react");
-    const { files } =
-        SANDBOX_TEMPLATES[data.template as SandpackPredefinedTemplate];
+    const { files } = SANDBOX_TEMPLATES[data.template as PredefinedTemplate];
 
     /** @ts-ignore */
     dispatch(configureTemplateAsync({ project, files }));
@@ -27,10 +23,7 @@ export const createProjectAsync = createAsyncThunk<
 
 export const getProjectsAsync = createAsyncThunk(
     "project/getProjectsAsync",
-    async (userId: string) => {
-        const projects = await projectsDB.get(userId);
-        return projects.concat(sampleProjects);
-    }
+    async (userId: string) => await projectsDB.getAll(userId)
 );
 
 export const deleteProjectsAsync = createAsyncThunk<
@@ -51,19 +44,19 @@ export const deleteProjectsAsync = createAsyncThunk<
             const { projectId } = project;
 
             /** delete folders from Firebase */
-            const folderIds = (await foldersDB.get({ projectId })).map(
+            const folderIds = (await foldersDB.getAll(projectId)).map(
                 ({ itemId }) => itemId
             );
             await foldersDB.delete(folderIds);
 
             /** delete files from Firebase */
-            const files = await filesDB.get({ projectId });
+            const files = await filesDB.getAll(projectId);
             const fileIds = files.map(({ itemId }) => itemId);
             await filesDB.delete(fileIds);
 
             /** delete files from FireStore */
             const refPath = getRefId(project);
-            await fireStoreDB.deleteAll(refPath);
+            await storageDB.delete([refPath]);
         });
 
     return projectIds;
@@ -78,9 +71,11 @@ export const renameProjectAsync = createAsyncThunk<
 >("project/renameProjectAsync", async ({ projectId, name }, { getState }) => {
     await projectsDB.update(projectId, { name });
 
-    const { name: srcName } =
-        projectSelector.selectById(getState().project, projectId) ?? _never;
-    await fireStoreDB.rename(
+    const { name: srcName } = projectSelector.selectById(
+        getState().project,
+        projectId
+    )!;
+    await storageDB.rename(
         `${srcName}-${projectId}`,
         `${name}-${projectId}`,
         true

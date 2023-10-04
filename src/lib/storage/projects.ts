@@ -31,8 +31,9 @@ const unpackProject: UnpackFunction<Project> = (doc) => {
         template,
         tags,
         createdBy,
-        lastModifiedAt: new Timestamp(seconds, nanoseconds).toString(),
-        // .toDate(),
+        lastModifiedAt: new Timestamp(seconds, nanoseconds)
+            .toDate()
+            .toUTCString(),
     };
     return project;
 };
