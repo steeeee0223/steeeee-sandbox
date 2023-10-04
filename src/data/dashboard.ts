@@ -1,6 +1,4 @@
-import { SandpackPredefinedTemplate } from "@codesandbox/sandpack-react";
-
-import { Project } from "@/stores/project";
+import type { Project, PredefinedTemplate } from "@/stores/project";
 import {
     angular,
     astro,
@@ -14,9 +12,10 @@ import {
     vite,
     vue,
 } from "@/assets";
+import { sampleUser } from "./user";
 
 type Template = {
-    value: SandpackPredefinedTemplate;
+    value: PredefinedTemplate;
     label: string;
     image?: string;
 };
@@ -26,15 +25,14 @@ export const tableTitle = "Projects";
 function createData(
     projectId: string,
     name: string,
-    template: Template,
-    createdBy: string
+    template: Template
 ): Project {
     return {
         projectId,
         name,
         tags: [template.label],
         template: template.value,
-        createdBy: { uid: createdBy, displayName: createdBy, email: "" },
+        createdBy: sampleUser,
         lastModifiedAt: new Date(),
     };
 }
@@ -85,8 +83,8 @@ export const projectTemplates: Template[] = [
     { value: "astro", label: "Astro", image: astro },
 ];
 
-export const tableRows: Project[] = [
-    createData("1", "Sample React", projectTemplates[9], "admin"),
-    createData("2", "Sample Node", projectTemplates[6], "admin"),
-    createData("3", "Sample React Typescript", projectTemplates[10], "admin"),
+export const sampleProjects: Project[] = [
+    createData("1", "Sample React", projectTemplates[9]),
+    createData("2", "Sample Node", projectTemplates[6]),
+    createData("3", "Sample React Typescript", projectTemplates[10]),
 ];

@@ -1,210 +1,117 @@
-import JSZip from "jszip";
-import { saveAs } from "file-saver";
-import { getBlob } from "firebase/storage";
-import { Reference, UploadTaskSnapshot } from "@firebase/storage-types";
+import {
+    Query,
+    doc,
+    collection as getCollection,
+    query,
+    getDoc,
+    setDoc,
+    updateDoc,
+    deleteDoc,
+    where,
+    getDocs,
+    DocumentData,
+    DocumentSnapshot,
+} from "firebase/firestore";
+import { v4 } from "uuid";
 
-import { storage } from "@/config/firebase";
-import { UploadFile } from "@/stores/directory";
-import { addFilesToZip } from "../zip";
-import { IStorage } from "./proto";
+import { db } from "@/config/firebase";
 
-type Payload = Record<string, any> & {
-    srcPath: string;
-    destPath?: string;
-};
+export interface BaseDBModel {
+    createdAt: Date;
+    updatedAt: Date;
+}
 
-const taskSnapshot = (snapshot: UploadTaskSnapshot) => {
-    const progress = Math.round(
-        (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-    );
-    console.log(`uploading ${progress}%`);
-};
+export type UnpackFunction<T> = (doc: DocumentSnapshot) => T;
 
-export class FireStorage extends IStorage<Reference> {
-    public collection = "firestore";
-    public static __instance: FireStorage;
-
-    private constructor() {
-        super();
-    }
-
-    public static getStorage(): FireStorage {
-        return this.__instance ?? new FireStorage();
-    }
-
-    public unpack(doc: any): Reference {
-        throw new Error("Method not implemented.");
-    }
-
-    /**
-     *
-     * @param refIds list of refId: `${projectId}/${fileId}`
-     * @returns
-     */
-    public get(refIds: string[]): Reference[] {
-        return refIds.map((refId) => storage.ref(refId));
-    }
-
-    public async create({
-        refId,
-        uploadFile,
-    }: {
-        refId: string;
-        uploadFile: UploadFile;
-    }): Promise<Reference> {
-        const [ref] = this.get([refId]);
-        ref.put(uploadFile).on(
-            "state_changed",
-            taskSnapshot,
-            (error) => console.log(error),
-            async () => {
-                const url = await ref.getDownloadURL();
-                console.log(`Upload completed: ${url}`);
-            }
-        );
-        return ref;
-    }
-
-    public async updateContent(
-        refId: string,
-        content: string
-    ): Promise<Reference> {
-        const [ref] = this.get([refId]);
-        const metadata = (await ref.getMetadata()) || {
-            contentType: "text",
-        };
-        console.log(metadata);
-        ref.putString(content, "raw", metadata).on(
-            "state_changed",
-            taskSnapshot,
-            (error) => console.log(error),
-            async () => {
-                const url = await ref.getDownloadURL();
-                console.log(`Content update complete!`);
-                console.log(`New url: ${url}`);
-            }
-        );
-        return ref;
-    }
-
-    private async execute(
-        payload: Payload,
-        action: (payload: Payload) => (file: Reference) => void
-    ): Promise<void> {
-        const { srcPath, destPath } = payload;
-        console.log(`[execute] path: ${srcPath}`);
-        const children = await storage.ref(srcPath).listAll();
-        children.items.forEach(action(payload));
-        children.prefixes.forEach(async (folder) => {
-            await this.execute(
-                {
-                    ...payload,
-                    srcPath: folder.fullPath,
-                    destPath: destPath
-                        ? `${destPath}/${folder.name}`
-                        : undefined,
-                },
-                action
+export async function get<T, DBModel extends DocumentData & BaseDBModel>(
+    collection: string,
+    unpack: UnpackFunction<T>,
+    filter?: Partial<DBModel> | Record<string, string>
+): Promise<T[]> {
+    const results: T[] = [];
+    try {
+        let ref: Query = getCollection(db, collection);
+        if (filter) {
+            const contraints = Object.entries(filter).map(([k, v]) =>
+                where(k, "==", v)
             );
-        });
-    }
-
-    public async deleteAll(path: string): Promise<void> {
-        await this.execute(
-            { srcPath: path },
-            () => async (file) => await file.delete()
-        );
-    }
-
-    /**
-     *
-     * @param srcId the original `refId`
-     * @param destId the destination `refId`
-     * @returns the destination ref
-     */
-    private async cp(srcId: string, destId: string): Promise<void> {
-        const [srcRef, destRef] = this.get([srcId, destId]);
-        const metadata = (await srcRef.getMetadata()) || {
-            contentType: "text",
-        };
-        const blob = await getBlob(srcRef);
-        destRef.put(blob, metadata).on(
-            "state_changed",
-            taskSnapshot,
-            (error) => console.log(error),
-            async () => {
-                const url = await destRef.getDownloadURL();
-                console.log(`Upload completed: ${url}`);
-            }
-        );
-    }
-
-    public async copy(srcPath: string, destPath: string, isFolder: boolean) {
-        if (isFolder) {
-            await this.execute(
-                { srcPath, destPath },
-                ({ destPath }) =>
-                    async (file) => {
-                        console.log(
-                            `[copy] ${file.fullPath} => ${destPath}/${file.name}`
-                        );
-                        await this.cp(
-                            file.fullPath,
-                            `${destPath}/${file.name}`
-                        );
-                    }
-            );
-        } else {
-            await this.cp(srcPath, destPath);
+            ref = query(ref, ...contraints);
         }
-    }
-
-    public async rename(
-        srcPath: string,
-        destPath: string,
-        isFolder: boolean
-    ): Promise<void> {
-        if (isFolder) {
-            await this.execute(
-                { srcPath, destPath },
-                ({ destPath }) =>
-                    async (file) => {
-                        console.log(
-                            `[rename] ${file.fullPath} => ${destPath}/${file.name}`
-                        );
-                        await this.cp(
-                            file.fullPath,
-                            `${destPath}/${file.name}`
-                        );
-                        await file.delete();
-                    }
-            );
-        } else {
-            await this.cp(srcPath, destPath);
-            await this.delete([srcPath]);
-        }
-    }
-
-    public async delete(refIds: string[]): Promise<void> {
-        for (let ref of this.get(refIds)) {
-            await ref.delete();
-        }
-    }
-
-    public async download(srcPath: string) {
-        const zip = new JSZip();
-
-        /** @TODO replace `addFilesToZip` with the scripts below */
-        await addFilesToZip(srcPath, zip);
-        /** @TODO this zip file will be empty, but reason unknown */
-        // await this.execute({ srcPath, zip }, ({ zip }) => async (file) => {
-        //     console.log(`[download] add to zip: ${file.fullPath}`);
-        //     const fileBlob = await getBlob(file);
-        //     zip.file(file.fullPath, fileBlob);
+        const docs = await getDocs(ref);
+        docs.forEach((doc) => results.push(unpack(doc)));
+        // onSnapshot(ref, (snapshot: QuerySnapshot) => {
+        //     snapshot.forEach((doc) => {
+        //         results.push(unpack(doc));
+        //     });
         // });
+    } catch (error) {
+        console.log(error);
+    }
+    return results;
+}
 
-        const blob = await zip.generateAsync({ type: "blob" });
-        const name = srcPath.split("/").pop();
-        saveAs(blob, name);
+export async function getById<T>(
+    collection: string,
+    id: string,
+    unpack: UnpackFunction<T>
+): Promise<T | undefined> {
+    try {
+        const ref = getCollection(db, collection, id);
+        const data = await getDoc(doc(ref));
+        return unpack(data);
+    } catch (error) {
+        console.log(error);
+        return undefined;
+    }
+}
+
+export async function create<T, DBModel extends DocumentData & BaseDBModel>(
+    collection: string,
+    data: Partial<DBModel>,
+    unpack: UnpackFunction<T>
+): Promise<T> {
+    try {
+        const _data = {
+            ...data,
+            id: v4(),
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        };
+        const ref = getCollection(db, collection);
+        await setDoc(doc(ref, _data.id), _data);
+        const res = await getDoc(doc(ref, _data.id));
+        return unpack(res);
+    } catch (error) {
+        console.log(error);
+        return {} as T;
+    }
+}
+
+export async function update<T, DBModel extends DocumentData & BaseDBModel>(
+    collection: string,
+    id: string,
+    updateData: Partial<DBModel>,
+    unpack: UnpackFunction<T>
+): Promise<T> {
+    try {
+        const data = { ...updateData, updatedAt: new Date() };
+        const ref = getCollection(db, collection);
+        await updateDoc(doc(ref, id), data);
+        const res = await getDoc(doc(ref, id));
+        return unpack(res);
+    } catch (error) {
+        console.log(error);
+        return {} as T;
+    }
+}
+
+export async function del(collection: string, ids: string[]): Promise<void> {
+    try {
+        ids.forEach(async (id) => {
+            const ref = getCollection(db, collection);
+            await deleteDoc(doc(ref, id));
+        });
+    } catch (error) {
+        console.log(error);
     }
 }

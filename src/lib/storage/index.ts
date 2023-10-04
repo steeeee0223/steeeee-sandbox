@@ -1,9 +1,9 @@
-import { ProjectStorage } from "./projects";
-import { FilesStorage } from "./files";
-import { FoldersStorage } from "./folders";
-import { FireStorage } from "./fireStore";
+export { default as filesDB } from "./files";
+export { default as foldersDB } from "./folders";
+export { default as projectsDB } from "./projects";
+export { default as storageDB } from "./storage";
 
-export const projectsDB = ProjectStorage.getStorage();
-export const foldersDB = FoldersStorage.getStorage();
-export const filesDB = FilesStorage.getStorage();
-export const fireStoreDB = FireStorage.getStorage();
+export * from "./files";
+export * from "./folders";
+export * from "./projects";
+export * from "./storage";

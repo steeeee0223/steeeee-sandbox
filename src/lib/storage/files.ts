@@ -1,42 +1,53 @@
-import { db } from "@/config/firebase";
 import { File } from "@/stores/directory";
-import { IStorage } from "./proto";
+import {
+    BaseDBModel,
+    UnpackFunction,
+    create,
+    del,
+    get,
+    update,
+} from "./fireStore";
 
-export class FilesStorage extends IStorage<File> {
-    public static __instance: FilesStorage;
-    public collection = "files";
-
-    private constructor() {
-        super();
-    }
-
-    public static getStorage(): FilesStorage {
-        return this.__instance ?? new FilesStorage();
-    }
-
-    public unpack(doc: any): File {
-        const { parent, name, extension, content, path } = doc.data();
-        return {
-            itemId: doc.id,
-            isFolder: false,
-            name,
-            parent,
-            path,
-            extension,
-            content,
-        } as File;
-    }
-
-    public async get({ projectId }: { projectId: string }): Promise<File[]> {
-        try {
-            const res = await db
-                .collection(this.collection)
-                .where("projectId", "==", projectId)
-                .get();
-            return res.docs.map(this.unpack);
-        } catch (error) {
-            console.log(error);
-            return [];
-        }
-    }
+export interface FileModel extends BaseDBModel {
+    projectId: string;
+    name: string;
+    path: string[];
+    parent: string;
+    extension: string;
+    content: string;
+    url: string;
 }
+
+const $filesCollection = "files";
+const unpackFile: UnpackFunction<File> = (doc) => {
+    const { parent, name, path, extension, content } = doc.data()!;
+    const file: File = {
+        parent,
+        name,
+        path,
+        itemId: doc.id,
+        isFolder: false,
+        extension,
+        content,
+    };
+    return file;
+};
+
+export const getFiles = async (projectId: string) =>
+    await get<File, FileModel>($filesCollection, unpackFile, { projectId });
+
+export const createFile = async (data: Partial<FileModel>) =>
+    await create<File, FileModel>($filesCollection, data, unpackFile);
+
+export const updateFile = async (id: string, data: Partial<FileModel>) =>
+    await update<File, FileModel>($filesCollection, id, data, unpackFile);
+
+export const deleteFiles = async (ids: string[]) =>
+    await del($filesCollection, ids);
+
+export default {
+    getAll: getFiles,
+    create: createFile,
+    update: updateFile,
+    delete: deleteFiles,
+};

@@ -23,7 +23,8 @@
 
         /* Other */
         "paths": {
-            "@/*": ["./src/*"]
+            "@/*": ["./src/*"],
+            "#/*": ["./test/*"]
         },
         "types": ["vite-plugin-svgr/client", "vitest/globals"]
     },

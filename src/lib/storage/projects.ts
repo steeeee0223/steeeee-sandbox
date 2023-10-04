@@ -1,48 +1,68 @@
+import { CreatedBy, Project } from "@/stores/project";
+import {
+    BaseDBModel,
+    UnpackFunction,
+    create,
+    del,
+    get,
+    update,
+} from "./fireStore";
 import { Timestamp } from "firebase/firestore";
-import { db } from "@/config/firebase";
-import { Project } from "@/stores/project";
-import { IStorage } from "./proto";
 
-export class ProjectStorage extends IStorage<Project> {
-    public static __instance: ProjectStorage;
-    public collection = "projects";
-
-    private constructor() {
-        super();
-    }
-
-    public static getStorage(): ProjectStorage {
-        return this.__instance ?? new ProjectStorage();
-    }
-
-    public unpack(doc: any): Project {
-        const {
-            name,
-            template,
-            tags,
-            createdBy,
-            lastModifiedAt: { seconds, nanoseconds },
-        } = doc.data();
-        return {
-            projectId: doc.id,
-            name,
-            template,
-            tags,
-            createdBy,
-            lastModifiedAt: new Timestamp(seconds, nanoseconds).toDate(),
-        };
-    }
-
-    public async get(userId: string): Promise<Project[]> {
-        try {
-            const res = await db
-                .collection(this.collection)
-                .where("createdBy.uid", "==", userId)
-                .get();
-            return res.docs.map(this.unpack);
-        } catch (error) {
-            console.log(error);
-            return [];
-        }
-    }
+export interface ProjectModel extends BaseDBModel {
+    name: string;
+    template: string;
+    tags: string[];
+    createdBy: CreatedBy;
 }
+
+const $projectsCollection = "projects";
+const unpackProject: UnpackFunction<Project> = (doc) => {
+    const {
+        name,
+        template,
+        tags,
+        createdBy,
+        updatedAt: { seconds, nanoseconds },
+    } = doc.data()!;
+    const project: Project = {
+        projectId: doc.id,
+        name,
+        template,
+        tags,
+        createdBy,
+        lastModifiedAt: new Timestamp(seconds, nanoseconds).toString(),
+        // .toDate(),
+    };
+    return project;
+};
+
+export const getProjects = async (userId: string) =>
+    await get<Project, ProjectModel>($projectsCollection, unpackProject, {
+        "createdBy.uid": userId,
+    });
+
+export const createProject = async (data: Partial<ProjectModel>) =>
+    await create<Project, ProjectModel>(
+        $projectsCollection,
+        data,
+        unpackProject
+    );
+
+export const updateProject = async (id: string, data: Partial<ProjectModel>) =>
+    await update<Project, ProjectModel>(
+        $projectsCollection,
+        id,
+        data,
+        unpackProject
+    );
+
+export const deleteProjects = async (ids: string[]) =>
+    await del($projectsCollection, ids);
+
+export default {
+    getAll: getProjects,
+    create: createProject,
+    update: updateProject,
+    delete: deleteProjects,
+};

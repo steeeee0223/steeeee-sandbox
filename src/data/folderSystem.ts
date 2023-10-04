@@ -28,7 +28,7 @@ const App = () => {
     <Component className="app" count={count} />
   </div>
 }`;
-export const children: File[] = [
+export const sampleFiles: File[] = [
     {
         parent: "components",
         itemId: "components-1",
@@ -51,7 +51,7 @@ export const children: File[] = [
     },
 ];
 
-export const accordion: Folder[] = [
+export const sampleFolders: Folder[] = [
     {
         parent: "root",
         itemId: "components",
@@ -59,7 +59,7 @@ export const accordion: Folder[] = [
         isFolder: true,
         name: "components",
         desc: "Donec placerat, lectus sed mat",
-        children: children,
+        children: sampleFiles,
     },
     {
         parent: "root",

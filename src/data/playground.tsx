@@ -5,7 +5,7 @@ export const sampleSetup = {
     dependencies: { "react-markdown": "latest" },
 };
 
-export const sampleFiles: SandpackFiles = {
+export const sampleBundledFiles: SandpackFiles = {
     "/TextArea.tsx": `import {useState, useRef} from 'react'
 import ReactMarkdown from 'react-markdown' 
 
