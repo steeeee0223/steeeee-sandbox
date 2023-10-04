@@ -8,10 +8,18 @@ import {
     signOutAsync,
     googleSignIn as googleSignInAsync,
     githubSignIn as githubSignInAsync,
+    AuthState,
 } from "@/stores/auth";
 import { useAppDispatch, useAppSelector } from "./stores";
 
-export const useAuth = () => {
+type AuthInfo = AuthState;
+interface AuthOperations {
+    googleSignIn: () => void;
+    githubSignIn: () => void;
+    signOut: () => void;
+}
+
+export const useAuth = (): AuthInfo & AuthOperations => {
     const dispatch = useAppDispatch();
     const { user, isLoggedIn } = useAppSelector(
         (state) => ({

@@ -1,9 +1,9 @@
 import { UserCredential } from "firebase/auth";
 import { act } from "react-dom/test-utils";
 
-import { $store, renderHookWithProviders } from "../../test/utils";
-import { useAuth } from "./auth";
+import { $store, renderHookWithProviders } from "#/utils";
 import { setUser } from "@/stores/auth";
+import { useAuth } from "./auth";
 
 describe(useAuth, () => {
     beforeEach(() => {
