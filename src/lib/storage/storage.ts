@@ -16,6 +16,7 @@ import { saveAs } from "file-saver";
 
 import { storage } from "@/config/firebase";
 import { UploadFile } from "@/types";
+import { addFilesToZip } from "../zip";
 
 const taskSnapshot = (snapshot: UploadTaskSnapshot) => {
     const progress = Math.round(
@@ -59,14 +60,14 @@ export const updateRefContent = async (
     return result.ref;
 };
 
-type Payload = Record<string, unknown> & {
+type Payload = {
     srcPath: string;
     destPath?: string;
 };
 
-const $execute = async (
-    payload: Payload,
-    action: (payload: Payload) => (file: StorageReference) => void
+const $execute = async <T extends Payload>(
+    payload: T,
+    action: (payload: T) => (file: StorageReference) => void
 ) => {
     const { srcPath, destPath } = payload;
     console.log(`[execute] path: ${srcPath}`);
@@ -144,12 +145,14 @@ export const renameRef = async (
 
 export const downloadRef = async (srcPath: string) => {
     const zip = new JSZip();
+    await addFilesToZip(srcPath, zip);
 
-    await $execute({ srcPath }, () => async (file) => {
-        console.log(`[download] add to zip: ${file.fullPath}`);
-        const fileBlob = await getBlob(file);
-        zip.file(file.fullPath, fileBlob);
-    });
+    /** @todo check what is wrong with this part */
+    // await $execute({ srcPath, zip }, ({ zip }) => async (file) => {
+    //     console.log(`[download] add to zip: ${file.fullPath}`);
+    //     const fileBlob = await getBlob(file);
+    //     zip.file(file.fullPath, fileBlob, { createFolders: true });
+    // });
 
     const blob = await zip.generateAsync({ type: "blob" });
     const name = srcPath.split("/").pop();
