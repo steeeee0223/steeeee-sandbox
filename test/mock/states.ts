@@ -5,7 +5,7 @@ import { initialState as directoryState } from "@/stores/directory";
 import { initialState as editorState } from "@/stores/editor";
 import { initialState as projectState } from "@/stores/project";
 import { sampleUser } from "@/data";
-import { $projectId, $projects } from ".";
+import { $projectId, $projects } from "./db";
 
 export const $preloadedState = {
     auth: authState,

@@ -11,8 +11,9 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import ViewInArIcon from "@mui/icons-material/ViewInAr";
 
 import { useAppDispatch, useAppSelector, useDirectory } from "@/hooks";
-import { CreationType, setCreation, setFileAction } from "@/stores/cursor";
+import { setCreation, setFileAction } from "@/stores/cursor";
 import { drawerWidth } from "@/theme";
+import { CreationType } from "@/types";
 import { ButtonGroup } from "@/components/common";
 
 import CreateForm from "./CreateForm";

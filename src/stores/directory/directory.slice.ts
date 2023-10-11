@@ -4,7 +4,7 @@ import {
     createSlice,
 } from "@reduxjs/toolkit";
 
-import { DirectoryAction, DirectoryItem, SelectedItem } from "./directory";
+import { DirectoryAction, DirectoryItem, SelectedItem } from "@/types";
 import {
     createFileAsync,
     createFolderAsync,

@@ -2,12 +2,10 @@ import { useEffect } from "react";
 import { shallowEqual } from "react-redux";
 import { User } from "firebase/auth";
 
+import { projectTemplates } from "@/data";
 import { setDashboardAction } from "@/stores/cursor";
 import { downloadDirectoryAsync, setLoading } from "@/stores/directory";
 import {
-    Project,
-    ProjectAction,
-    SelectedProject,
     createProjectAsync,
     deleteProjectsAsync,
     getProjectsAsync,
@@ -15,9 +13,8 @@ import {
     renameProjectAsync,
     setProject,
 } from "@/stores/project";
-
+import { Project, ProjectAction, SelectedProject } from "@/types";
 import { useAppDispatch, useAppSelector } from "./stores";
-import { projectTemplates } from "@/data";
 
 interface ProjectsInfo {
     user: User | null;

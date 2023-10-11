@@ -1,7 +1,7 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
-import { SelectedItem, selectItem } from "../directory";
-import { CreationType, CursorState } from "./cursor";
+import { CreationType, CursorState, SelectedItem } from "@/types";
+import { selectItem } from "../directory";
 
 export const initialState: CursorState = {
     creationType: null,

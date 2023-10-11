@@ -2,7 +2,7 @@ import { createAsyncThunk, Update } from "@reduxjs/toolkit";
 
 import { getRefId } from "@/lib/file";
 import { filesDB, foldersDB, projectsDB, storageDB } from "@/lib/storage";
-import { CreatedBy, PredefinedTemplate, Project } from "./project";
+import { CreatedBy, PredefinedTemplate, Project } from "@/types";
 import { ProjectState, projectSelector } from "./project.slice";
 import { configureTemplateAsync } from "../directory";
 

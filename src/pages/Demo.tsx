@@ -4,7 +4,6 @@ import { SandpackProvider } from "@codesandbox/sandpack-react";
 import { Workspace } from "@/components/demo";
 import { Preview } from "@/components/common";
 import { useDirectory } from "@/hooks";
-import { _never } from "@/lib/helper";
 
 export default function Demo() {
     const { bundledFiles, project } = useDirectory();

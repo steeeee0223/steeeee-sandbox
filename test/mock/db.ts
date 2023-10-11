@@ -9,8 +9,7 @@ import {
     sampleUser,
 } from "@/data";
 import type { FileModel, FolderModel, ProjectModel } from "@/lib/storage";
-import type { File, Folder } from "@/stores/directory";
-import type { Project } from "@/stores/project";
+import type { File, Folder, Project } from "@/types";
 
 export const $user: UserCredential = {
     user: sampleUser,

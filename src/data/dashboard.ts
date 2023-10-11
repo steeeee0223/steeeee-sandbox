@@ -1,4 +1,3 @@
-import type { Project, PredefinedTemplate } from "@/stores/project";
 import {
     angular,
     astro,
@@ -12,6 +11,7 @@ import {
     vite,
     vue,
 } from "@/assets";
+import type { Project, PredefinedTemplate } from "@/types";
 import { sampleUser } from "./user";
 
 type Template = {

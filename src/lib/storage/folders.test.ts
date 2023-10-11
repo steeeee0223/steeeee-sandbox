@@ -7,7 +7,7 @@ import firestore, {
     updateDoc,
 } from "firebase/firestore";
 
-import { mockedFolders, mockedProjectId } from "#/mock";
+import { $folders, $projectId } from "#/mock";
 import {
     createFolder,
     deleteFolders,
@@ -39,14 +39,14 @@ describe("Folders Storage", () => {
     });
 
     it("getFolders should resolve promise", async () => {
-        const mock = vi.mocked(getDocs).mockResolvedValue(mockedFolders.docs);
-        const results = await getFolders(mockedProjectId);
+        const mock = vi.mocked(getDocs).mockResolvedValue($folders.docs);
+        const results = await getFolders($projectId);
         expect(mock).toHaveBeenCalled();
-        expect(results.length).toBe(mockedFolders.model.length);
+        expect(results.length).toBe($folders.model.length);
     });
 
     it("createFolder should resolve promise", async () => {
-        const folder = mockedFolders.one;
+        const folder = $folders.one;
         const { name, parent, path } = folder.model;
         const mock = vi.mocked(getDoc).mockResolvedValue(folder.doc);
 
@@ -58,7 +58,7 @@ describe("Folders Storage", () => {
     });
 
     it("updateFolder should resolve promise", async () => {
-        const folder = mockedFolders.one;
+        const folder = $folders.one;
         const mockInput = { name: `${folder.model.name}-2` };
         const mock = vi.mocked(getDoc).mockResolvedValue({
             ...folder.doc,

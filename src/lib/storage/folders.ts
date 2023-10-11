@@ -1,4 +1,5 @@
-import { Folder, getChildren } from "@/stores/directory";
+import { getChildren } from "@/stores/directory";
+import { Folder } from "@/types";
 import {
     BaseDBModel,
     UnpackFunction,

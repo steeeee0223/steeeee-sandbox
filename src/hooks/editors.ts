@@ -4,7 +4,6 @@ import { SandpackFiles } from "@codesandbox/sandpack-react";
 import { useDirectory } from "./directory";
 import { useAppDispatch, useAppSelector } from "./stores";
 import {
-    Editor,
     closeEditors,
     editorSelector,
     openEditor,
@@ -12,8 +11,9 @@ import {
     updateText as _updateText,
     updateCurrentEditor,
 } from "@/stores/editor";
-import { File, updateFileAsync } from "@/stores/directory";
+import { updateFileAsync } from "@/stores/directory";
 import { projectSelector } from "@/stores/project";
+import { Editor, File } from "@/types";
 
 const nullEditor = {} as Editor;
 

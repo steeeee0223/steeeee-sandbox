@@ -1,4 +1,4 @@
-import { File, Folder } from "@/stores/directory";
+import { File, Folder } from "@/types";
 
 export const sampleCode = `import * as React, { useState } from "react"
 const a = 1

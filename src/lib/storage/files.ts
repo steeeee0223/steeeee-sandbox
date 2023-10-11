@@ -1,4 +1,4 @@
-import { File } from "@/stores/directory";
+import { File } from "@/types";
 import {
     BaseDBModel,
     UnpackFunction,

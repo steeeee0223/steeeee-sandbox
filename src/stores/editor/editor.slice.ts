@@ -5,14 +5,13 @@ import {
 } from "@reduxjs/toolkit";
 
 import {
-    File,
     createFileAsync,
     deleteDirectoryAsync,
     renameDirectoryItemAsync,
     updateFileAsync,
     uploadFileAsync,
 } from "@/stores/directory";
-import { Editor } from "./editor";
+import { Editor, File } from "@/types";
 import { setProject } from "../project";
 
 export const editorAdapter = createEntityAdapter<Editor>();

@@ -15,7 +15,7 @@ import JSZip from "jszip";
 import { saveAs } from "file-saver";
 
 import { storage } from "@/config/firebase";
-import { UploadFile } from "@/stores/directory";
+import { UploadFile } from "@/types";
 
 const taskSnapshot = (snapshot: UploadTaskSnapshot) => {
     const progress = Math.round(

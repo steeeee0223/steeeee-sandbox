@@ -1,4 +1,4 @@
-import { CreatedBy, Project } from "@/stores/project";
+import { CreatedBy, Project } from "@/types";
 import {
     BaseDBModel,
     UnpackFunction,

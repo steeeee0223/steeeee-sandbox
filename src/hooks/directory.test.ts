@@ -12,14 +12,14 @@ import {
 } from "#/mock";
 import { getDefaultFile } from "@/lib/file";
 import { filesDB, foldersDB, storageDB } from "@/lib/storage";
-import { DirectoryItemType } from "@/stores/cursor";
 import {
     DirectoryAction,
     DirectoryItem,
+    DirectoryItemType,
     File,
     Folder,
     UploadFile,
-} from "@/stores/directory";
+} from "@/types";
 import { useDirectory } from "./directory";
 
 const options: ExtendedRenderOptions = {

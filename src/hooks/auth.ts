@@ -8,8 +8,8 @@ import {
     signOutAsync,
     googleSignIn as googleSignInAsync,
     githubSignIn as githubSignInAsync,
-    AuthState,
 } from "@/stores/auth";
+import { AuthState } from "@/types";
 import { useAppDispatch, useAppSelector } from "./stores";
 
 type AuthInfo = AuthState;

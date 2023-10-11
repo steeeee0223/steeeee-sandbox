@@ -4,12 +4,6 @@ import { SandpackFiles } from "@codesandbox/sandpack-react/types";
 
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import {
-    DirectoryAction,
-    DirectoryItem,
-    File,
-    Folder,
-    SelectedItem,
-    UploadFile,
     createFileAsync,
     createFolderAsync,
     deleteDirectoryAsync,
@@ -25,8 +19,19 @@ import {
     uploadFileAsync,
 } from "@/stores/directory";
 import { getContent, getExtension, normalizePath } from "@/lib/file";
-import { Project, projectSelector } from "@/stores/project";
-import { CreationType, DirectoryItemType, setCreation } from "@/stores/cursor";
+import { projectSelector } from "@/stores/project";
+import { setCreation } from "@/stores/cursor";
+import {
+    CreationType,
+    DirectoryAction,
+    DirectoryItem,
+    DirectoryItemType,
+    File,
+    Folder,
+    Project,
+    SelectedItem,
+    UploadFile,
+} from "@/types";
 
 const nullProject = {} as Project;
 

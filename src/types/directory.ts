@@ -70,3 +70,6 @@ export type DirectoryAction = {
     rename?: { itemId: string } | null;
     copy?: CopiedItems | null;
 };
+
+export type DirectoryItemType = "file" | "folder";
+export type CreationType = DirectoryItemType | "upload" | null;

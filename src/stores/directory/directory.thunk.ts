@@ -1,14 +1,11 @@
 import { Update, createAsyncThunk } from "@reduxjs/toolkit";
 import { getDownloadURL } from "firebase/storage";
 
-import { DirectoryItem, File, Folder } from "./directory";
 import { getFilesByIds, getRecursiveItemIds } from "./directory.utils";
 import { DirectoryState, directorySelector } from "./directory.slice";
-import { Project } from "../project";
 import { filesDB, foldersDB, storageDB } from "@/lib/storage";
 import { getDefaultFile, getExtension, getRefId } from "@/lib/file";
-
-export type UploadFile = globalThis.File;
+import { DirectoryItem, File, Folder, Project, UploadFile } from "@/types";
 
 export const createFolderAsync = createAsyncThunk<
     Folder,

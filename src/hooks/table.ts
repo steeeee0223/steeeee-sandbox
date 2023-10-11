@@ -1,7 +1,7 @@
 import { ChangeEvent, MouseEvent, useState } from "react";
 
 import { getComparator, stableSort } from "@/lib/table";
-import { Project } from "@/stores/project";
+import { Project } from "@/types";
 
 import { useProjects } from "./projects";
 

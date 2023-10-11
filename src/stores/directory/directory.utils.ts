@@ -1,5 +1,4 @@
-import { _never } from "@/lib/helper";
-import { SelectedItem, DirectoryItem, File, UpdatePath } from "./directory";
+import { SelectedItem, DirectoryItem, File, UpdatePath } from "@/types";
 
 export function getChildren(
     directory: DirectoryItem[],
@@ -17,8 +16,7 @@ export function getItem(
     directory: DirectoryItem[],
     itemId: string
 ): DirectoryItem {
-    const item = directory.find((item) => itemId === item.itemId);
-    return item ?? _never;
+    return directory.find((item) => itemId === item.itemId)!;
 }
 
 export function getFilesByIds(
@@ -56,8 +54,8 @@ export function getSelectedItem(
     }
     const item = {
         isFolder,
-        name: name.pop() ?? _never,
-        id: id.pop() ?? _never,
+        name: name.pop()!,
+        id: id.pop()!,
     };
     return { item, path: { name, id } };
 }

@@ -7,7 +7,7 @@ import firestore, {
     updateDoc,
 } from "firebase/firestore";
 
-import { mockedFiles, mockedProjectId } from "#/mock";
+import { $files, $projectId } from "#/mock";
 import { createFile, deleteFiles, getFiles, updateFile } from "./files";
 
 describe("Files Storage", () => {
@@ -34,14 +34,14 @@ describe("Files Storage", () => {
     });
 
     it("getFiles should resolve promise", async () => {
-        const mock = vi.mocked(getDocs).mockResolvedValue(mockedFiles.docs);
-        const results = await getFiles(mockedProjectId);
+        const mock = vi.mocked(getDocs).mockResolvedValue($files.docs);
+        const results = await getFiles($projectId);
         expect(mock).toHaveBeenCalled();
-        expect(results.length).toBe(mockedFiles.model.length);
+        expect(results.length).toBe($files.model.length);
     });
 
     it("createFile should resolve promise", async () => {
-        const file = mockedFiles.one;
+        const file = $files.one;
         const { name, parent, path, content, extension } = file.model;
         const mock = vi.mocked(getDoc).mockResolvedValue(file.doc);
 
@@ -59,7 +59,7 @@ describe("Files Storage", () => {
     });
 
     it("updateFile should resolve promise", async () => {
-        const file = mockedFiles.one;
+        const file = $files.one;
         const mockInput = { name: `${file.model.name}-2` };
         const mock = vi.mocked(getDoc).mockResolvedValue({
             ...file.doc,

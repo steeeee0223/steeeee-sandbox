@@ -1,4 +1,4 @@
-import { CreatedBy } from "@/stores/project";
+import { CreatedBy } from "@/types";
 
 export const sampleUser: CreatedBy = {
     uid: "admin",

@@ -7,7 +7,7 @@ import firestore, {
     updateDoc,
 } from "firebase/firestore";
 
-import { mockedProjects, mockedUser } from "#/mock";
+import { $projects, $user } from "#/mock";
 import {
     createProject,
     deleteProjects,
@@ -39,15 +39,15 @@ describe("Projects Storage", () => {
     });
 
     it("getProjects should resolve promise", async () => {
-        const mock = vi.mocked(getDocs).mockResolvedValue(mockedProjects.docs);
+        const mock = vi.mocked(getDocs).mockResolvedValue($projects.docs);
 
-        const results = await getProjects(mockedUser.user.uid);
+        const results = await getProjects($user.user.uid);
         expect(mock).toHaveBeenCalled();
-        expect(results.length).toBe(mockedProjects.model.length);
+        expect(results.length).toBe($projects.model.length);
     });
 
     it("createProject should resolve promise", async () => {
-        const project = mockedProjects.one;
+        const project = $projects.one;
         const { name, template, createdBy, tags } = project.model;
         const mock = vi.mocked(getDoc).mockResolvedValue(project.doc);
 
@@ -60,7 +60,7 @@ describe("Projects Storage", () => {
     });
 
     it("updateProject should resolve promise", async () => {
-        const project = mockedProjects.one;
+        const project = $projects.one;
         const mockInput = { name: `${project.model.name}-2` };
         const mock = vi.mocked(getDoc).mockResolvedValue({
             ...project.doc,

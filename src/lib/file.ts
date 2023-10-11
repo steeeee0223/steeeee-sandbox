@@ -1,5 +1,4 @@
-import type { DirectoryItem, UploadFile } from "@/stores/directory";
-import type { Project } from "@/stores/project";
+import type { DirectoryItem, Project, UploadFile } from "@/types";
 
 /**
  * File extension -> content type

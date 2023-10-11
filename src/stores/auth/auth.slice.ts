@@ -8,7 +8,7 @@ import {
 } from "firebase/auth";
 
 import { auth } from "@/config/firebase";
-import { AuthState } from "./auth";
+import { AuthState } from "@/types";
 
 export const initialState: AuthState = {
     user: null,
