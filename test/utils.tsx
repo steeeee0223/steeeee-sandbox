@@ -12,7 +12,7 @@ import { PersistGate } from "redux-persist/integration/react";
 // As a basic setup, import your same slice reducers
 import type { AppStore, RootState } from "@/hooks/stores";
 import { persistor } from "@/stores/store";
-import { $preloadedState, $reducers } from "./_redux";
+import { $preloadedState, $reducers } from "./mock";
 
 // This type interface extends the default options for render from RTL, as well
 // as allows the user to specify other things such as initialState, store.

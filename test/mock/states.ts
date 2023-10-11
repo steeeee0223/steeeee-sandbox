@@ -5,7 +5,7 @@ import { initialState as directoryState } from "@/stores/directory";
 import { initialState as editorState } from "@/stores/editor";
 import { initialState as projectState } from "@/stores/project";
 import { sampleUser } from "@/data";
-import { mockedProjectId, mockedProjects } from "./mock";
+import { $projectId, $projects } from ".";
 
 export const $preloadedState = {
     auth: authState,
@@ -21,12 +21,12 @@ export const $loggedInState = {
 };
 const $projectState: typeof projectState = {
     isLoading: false,
-    currentProject: { id: mockedProjectId, action: "edit" },
-    ids: [mockedProjectId],
+    currentProject: { id: $projectId, action: "edit" },
+    ids: [$projectId],
     entities: {
-        [mockedProjectId]: {
-            ...mockedProjects.one.state,
-            projectId: mockedProjectId,
+        [$projectId]: {
+            ...$projects.one.state,
+            projectId: $projectId,
         },
     },
 };

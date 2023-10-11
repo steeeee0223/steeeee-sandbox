@@ -18,6 +18,7 @@ type BaseItem = {
     name: string;
     /**
      * @field an array of names from its parent to `root`
+     * @description this field will be used in `firebase/storage` operations
      * @example ["root", ..., <parentName>]
      */
     path: string[];

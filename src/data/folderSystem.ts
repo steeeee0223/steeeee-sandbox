@@ -32,7 +32,7 @@ export const sampleFiles: File[] = [
     {
         parent: "components",
         itemId: "components-1",
-        path: ["root"],
+        path: ["root", "components"],
         isFolder: false,
         name: "App.tsx",
         desc: "Donec placein elit. Pellentesque convallis laoreet laoreet.",
@@ -42,7 +42,7 @@ export const sampleFiles: File[] = [
     {
         parent: "components",
         itemId: "components-2",
-        path: ["root"],
+        path: ["root", "components"],
         isFolder: false,
         name: "Routes.tsx",
         desc: "Donec laoreet.",

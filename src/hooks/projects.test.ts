@@ -1,8 +1,7 @@
 import { act } from "react-dom/test-utils";
 
 import { renderHookWithProviders, ExtendedRenderOptions } from "#/utils";
-import { mockedProjects } from "#/mock";
-import { $loggedInState } from "#/_redux";
+import { $projects, $loggedInState } from "#/mock";
 import { projectsDB, storageDB } from "@/lib/storage";
 import { useProjects } from "./projects";
 
@@ -51,9 +50,7 @@ describe(useProjects, () => {
     ])(
         "[isProjectOfUser] Project $projectId belongs to the user: $expected",
         async ({ projectId, expected }) => {
-            vi.mocked(projectsDB.getAll).mockResolvedValue(
-                mockedProjects.state
-            );
+            vi.mocked(projectsDB.getAll).mockResolvedValue($projects.state);
             const { result } = renderHookWithProviders(useProjects, options);
             /** Load all projects */
             await act(result.current.getAll);
@@ -71,9 +68,7 @@ describe(useProjects, () => {
     ])(
         "[isProjectPresent] Project $name already exists: $expected",
         async ({ name, expected }) => {
-            vi.mocked(projectsDB.getAll).mockResolvedValue(
-                mockedProjects.state
-            );
+            vi.mocked(projectsDB.getAll).mockResolvedValue($projects.state);
             const { result } = renderHookWithProviders(
                 useProjects,
 
@@ -96,9 +91,7 @@ describe(useProjects, () => {
     ])(
         "[isProjectMatch] Project $name with id $projectId belongs to the user: $expected",
         async ({ projectId, name, expected }) => {
-            vi.mocked(projectsDB.getAll).mockResolvedValue(
-                mockedProjects.state
-            );
+            vi.mocked(projectsDB.getAll).mockResolvedValue($projects.state);
             const { result } = renderHookWithProviders(useProjects, options);
             /** Load all projects */
             await act(result.current.getAll);
@@ -111,16 +104,14 @@ describe(useProjects, () => {
     );
 
     it("[getAll] should get sample projects", async () => {
-        vi.mocked(projectsDB.getAll).mockResolvedValue(mockedProjects.state);
+        vi.mocked(projectsDB.getAll).mockResolvedValue($projects.state);
         const { result } = renderHookWithProviders(useProjects, options);
         await act(result.current.getAll);
-        expect(result.current.projects.length).toBe(
-            mockedProjects.state.length
-        );
+        expect(result.current.projects.length).toBe($projects.state.length);
     });
 
     it("[getById] should get correct project by ID or return undefined", async () => {
-        const projects = mockedProjects.state;
+        const projects = $projects.state;
         vi.mocked(projectsDB.getAll).mockResolvedValue(projects);
         const { result } = renderHookWithProviders(useProjects, options);
         /** Load all projects */
@@ -136,7 +127,7 @@ describe(useProjects, () => {
     });
 
     it("[select/reset] should act on `currentProject` correctly", async () => {
-        vi.mocked(projectsDB.getAll).mockResolvedValue(mockedProjects.state);
+        vi.mocked(projectsDB.getAll).mockResolvedValue($projects.state);
         const { result } = renderHookWithProviders(useProjects, options);
         /** Get all projects */
         await act(result.current.getAll);
@@ -151,7 +142,7 @@ describe(useProjects, () => {
     });
 
     it("[create/rename] should create a new project, then rename it correctly", async () => {
-        const project1 = mockedProjects.one.state;
+        const project1 = $projects.one.state;
         const project2 = { ...project1, name: `${project1.name}-rename` };
         vi.mocked(projectsDB.getAll).mockResolvedValue([]);
         vi.mocked(projectsDB.create).mockResolvedValue(project1);
@@ -178,7 +169,7 @@ describe(useProjects, () => {
     });
 
     it("[deleteMany] should delete projects by IDs", async () => {
-        vi.mocked(projectsDB.getAll).mockResolvedValue(mockedProjects.state);
+        vi.mocked(projectsDB.getAll).mockResolvedValue($projects.state);
         const { result } = renderHookWithProviders(useProjects, options);
         /** Get all (3) projects */
         await act(result.current.getAll);
@@ -191,12 +182,12 @@ describe(useProjects, () => {
 
     /** @todo */
     it("[download] should download the entire project by ID", async () => {
-        vi.mocked(projectsDB.getAll).mockResolvedValue(mockedProjects.state);
+        vi.mocked(projectsDB.getAll).mockResolvedValue($projects.state);
         const { result } = renderHookWithProviders(useProjects, options);
         /** Get all projects */
         await act(result.current.getAll);
         /** Download a project */
-        const { projectId, name } = mockedProjects.one.state;
+        const { projectId, name } = $projects.one.state;
         await act(() => result.current.download(projectId));
         expect(storageDB.download).toHaveBeenCalledTimes(1);
         expect(storageDB.download).toHaveBeenCalledWith(`${name}-${projectId}`);

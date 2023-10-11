@@ -2,6 +2,7 @@ import { UserCredential } from "firebase/auth";
 import { act } from "react-dom/test-utils";
 
 import { $store, renderHookWithProviders } from "#/utils";
+import { $loggedInState } from "#/mock";
 import { setUser } from "@/stores/auth";
 import { useAuth } from "./auth";
 
@@ -60,11 +61,9 @@ describe(useAuth, () => {
     });
 
     it("should sign out successfully", async () => {
-        const { result } = renderHookWithProviders(
-            useAuth,
-            {},
-            { preloadedState: { auth: { isLoggedIn: true } } }
-        );
+        const { result } = renderHookWithProviders(useAuth, {
+            preloadedState: $loggedInState,
+        });
 
         expect(result.current.isLoggedIn).toBeTruthy();
         await act(result.current.signOut);

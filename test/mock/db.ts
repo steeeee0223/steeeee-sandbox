@@ -1,16 +1,22 @@
 import type { UserCredential } from "firebase/auth";
 import { DocumentSnapshot, QuerySnapshot } from "firebase/firestore";
 
-import { sampleFiles, sampleFolders, sampleProjects, sampleUser } from "@/data";
+import {
+    sampleCode,
+    sampleFiles,
+    sampleFolders,
+    sampleProjects,
+    sampleUser,
+} from "@/data";
 import type { FileModel, FolderModel, ProjectModel } from "@/lib/storage";
 import type { File, Folder } from "@/stores/directory";
 import type { Project } from "@/stores/project";
 
-export const mockedUser: UserCredential = {
+export const $user: UserCredential = {
     user: sampleUser,
     providerId: "google.com",
 } as UserCredential;
-export const mockedProjectId = "test-project-id";
+export const $projectId = "test-project-id";
 
 interface MockData<S, M> {
     state: S[];
@@ -30,7 +36,7 @@ const getSnapshot = <T = unknown, Snapshot = unknown>(id: string, payload: T) =>
         data: vi.fn().mockReturnValue(payload),
     } as unknown as Snapshot);
 
-export const mockedProjects: MockData<Project, ProjectModel> = {
+export const $projects: MockData<Project, ProjectModel> = {
     state: sampleProjects,
     model: sampleProjects.map(({ name, template, tags }) => ({
         name,
@@ -61,7 +67,7 @@ export const mockedProjects: MockData<Project, ProjectModel> = {
     },
 };
 
-export const mockedFiles: MockData<File, FileModel> = {
+export const $files: MockData<File, FileModel> = {
     state: sampleFiles,
     model: sampleFiles.map(({ parent, name, path, extension, content }) => ({
         parent,
@@ -69,7 +75,7 @@ export const mockedFiles: MockData<File, FileModel> = {
         path,
         extension,
         content,
-        projectId: mockedProjectId,
+        projectId: $projectId,
         url: "URL",
         ...getDate(),
     })),
@@ -81,31 +87,31 @@ export const mockedFiles: MockData<File, FileModel> = {
                 path,
                 extension,
                 content,
-                projectId: mockedProjectId,
+                projectId: $projectId,
             })
     ) as unknown as QuerySnapshot,
     one: {
         state: sampleFiles[0],
         model: {
             ...sampleFiles[0],
-            projectId: mockedProjectId,
+            projectId: $projectId,
             url: "URL",
             ...getDate(),
         },
         doc: getSnapshot<unknown, DocumentSnapshot>(sampleFiles[0].itemId, {
             ...sampleFiles[0],
-            projectId: mockedProjectId,
+            projectId: $projectId,
         }),
     },
 };
 
-export const mockedFolders: MockData<Folder, FolderModel> = {
+export const $folders: MockData<Folder, FolderModel> = {
     state: sampleFolders,
     model: sampleFolders.map(({ parent, name, path }) => ({
         parent,
         name,
         path,
-        projectId: mockedProjectId,
+        projectId: $projectId,
         ...getDate(),
     })),
     docs: sampleFolders.map(({ parent, name, path, itemId }) =>
@@ -113,19 +119,24 @@ export const mockedFolders: MockData<Folder, FolderModel> = {
             parent,
             name,
             path,
-            projectId: mockedProjectId,
+            projectId: $projectId,
         })
     ) as unknown as QuerySnapshot,
     one: {
         state: sampleFolders[0],
         model: {
             ...sampleFolders[0],
-            projectId: mockedProjectId,
+            projectId: $projectId,
             ...getDate(),
         },
         doc: getSnapshot<unknown, DocumentSnapshot>(sampleFolders[0].itemId, {
             ...sampleFolders[0],
-            projectId: mockedProjectId,
+            projectId: $projectId,
         }),
     },
+};
+
+export const $bundledFiles = {
+    "/components/App.tsx": sampleCode,
+    "/components/Routes.tsx": "",
 };
