@@ -47,7 +47,7 @@ export const sampleFiles: File[] = [
         name: "Routes.tsx",
         desc: "Donec laoreet.",
         extension: "ts",
-        content: "",
+        content: "console.log(`hello world!`)",
     },
 ];
 

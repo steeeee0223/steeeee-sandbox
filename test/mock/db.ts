@@ -1,13 +1,7 @@
 import type { UserCredential } from "firebase/auth";
 import { DocumentSnapshot, QuerySnapshot } from "firebase/firestore";
 
-import {
-    sampleCode,
-    sampleFiles,
-    sampleFolders,
-    sampleProjects,
-    sampleUser,
-} from "@/data";
+import { sampleFiles, sampleFolders, sampleProjects, sampleUser } from "@/data";
 import type { FileModel, FolderModel, ProjectModel } from "@/lib/storage";
 import type { File, Folder, Project } from "@/types";
 
@@ -136,6 +130,6 @@ export const $folders: MockData<Folder, FolderModel> = {
 };
 
 export const $bundledFiles = {
-    "/components/App.tsx": sampleCode,
-    "/components/Routes.tsx": "",
+    "/components/App.tsx": sampleFiles[0].content,
+    "/components/Routes.tsx": sampleFiles[1].content,
 };
