@@ -1,4 +1,4 @@
-import { sampleFiles } from "@/data";
+import { sampleBundledFiles } from "@/data";
 import { Sandpack, SandpackPreview } from "@codesandbox/sandpack-react";
 
 export default function Playground() {
@@ -12,7 +12,7 @@ export default function Playground() {
                         "react-markdown": "latest",
                     },
                 }}
-                files={sampleFiles}
+                files={sampleBundledFiles}
                 options={{
                     autorun: false,
                     autoReload: false,
