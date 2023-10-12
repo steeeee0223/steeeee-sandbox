@@ -27,7 +27,7 @@ const getSnapshot = <T = unknown, Snapshot = unknown>(id: string, payload: T) =>
     ({
         id,
         data: vi.fn().mockReturnValue(payload),
-    } as unknown as Snapshot);
+    }) as unknown as Snapshot;
 
 export const $projects: MockData<Project, ProjectModel> = {
     state: sampleProjects,

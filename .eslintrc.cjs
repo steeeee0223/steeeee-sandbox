@@ -5,11 +5,17 @@ module.exports = {
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:react-hooks/recommended",
+    "plugin:prettier/recommended",
+    // "plugin:vitest/recommended"
   ],
-
   ignorePatterns: ["node_modules", "dist", ".eslintrc.cjs"],
   parser: "@typescript-eslint/parser",
-  plugins: ["react-refresh"],
+  plugins: [
+    "react-refresh",
+    "@typescript-eslint",
+    "prettier",
+    // "vitest"
+  ],
   rules: {
     "@typescript-eslint/ban-ts-comment": "warn",
     "@typescript-eslint/no-empty-function": "off",

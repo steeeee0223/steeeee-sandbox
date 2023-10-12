@@ -18,12 +18,11 @@ interface ListItemLinkProps {
     href: string;
 }
 
-const Link = forwardRef<HTMLAnchorElement, RouterLinkProps>(function Link(
-    props,
-    ref
-) {
-    return <RouterLink ref={ref} {...props} role={undefined} />;
-});
+const Link = forwardRef<HTMLAnchorElement, RouterLinkProps>(
+    function Link(props, ref) {
+        return <RouterLink ref={ref} {...props} role={undefined} />;
+    }
+);
 
 export default function ListItemLink({ icon, name, href }: ListItemLinkProps) {
     const { sidebarOpen } = useAppContext();

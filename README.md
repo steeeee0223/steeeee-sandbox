@@ -9,4 +9,9 @@
 -   Sandbox: `@codesandbox/sandpack-react`
 -   Email Subscription: `react-mailchimp-subscribe`
 -   Icons & Images: `@mui/icons-material`, [LOGO](https://logo.com), [lottie-react](https://lottiefiles.com)
+
+### Workflows
+
 -   Tests: `@testing-library/react`, `vitest`
+-   Linting & Formatting: `eslint`, `prettier`
+-   Precommit: `husky`
