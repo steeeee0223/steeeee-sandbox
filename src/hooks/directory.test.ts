@@ -30,9 +30,8 @@ describe(useDirectory, () => {
     beforeEach(() => {
         vi.clearAllMocks();
         vi.mock("firebase/storage", async () => {
-            const actual = await vi.importActual<typeof storage>(
-                "firebase/storage"
-            );
+            const actual =
+                await vi.importActual<typeof storage>("firebase/storage");
             return {
                 ...actual,
                 getDownloadURL: vi.fn().mockResolvedValue("FAKE-URL"),

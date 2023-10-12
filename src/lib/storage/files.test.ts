@@ -14,9 +14,8 @@ describe("Files Storage", () => {
     beforeEach(() => {
         vi.clearAllMocks();
         vi.mock("firebase/firestore", async () => {
-            const actual = await vi.importActual<typeof firestore>(
-                "firebase/firestore"
-            );
+            const actual =
+                await vi.importActual<typeof firestore>("firebase/firestore");
             return {
                 ...actual,
                 getFirestore: vi.fn(),

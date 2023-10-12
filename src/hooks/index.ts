@@ -1,5 +1,4 @@
 export * from "./auth";
-export * from "./context";
 export * from "./directory";
 export * from "./editors";
 export * from "./keyboard";
