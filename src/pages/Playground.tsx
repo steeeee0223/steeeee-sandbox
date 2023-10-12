@@ -1,5 +1,6 @@
+import { Sandpack } from "@codesandbox/sandpack-react";
+
 import { sampleBundledFiles } from "@/data";
-import { Sandpack, SandpackPreview } from "@codesandbox/sandpack-react";
 
 export default function Playground() {
     return (
@@ -26,7 +27,6 @@ export default function Playground() {
                     showNavigator: true,
                 }}
             />
-            {/* <SandpackPreview /> */}
         </>
     );
 }

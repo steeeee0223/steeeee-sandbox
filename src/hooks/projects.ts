@@ -31,9 +31,9 @@ interface ProjectsInfo {
 interface ProjectsOperations {
     getAll: () => void;
     getById: (projectId: string) => Project | undefined;
-    create: (name: string, template: string, onSuccess?: Function) => void;
+    create: (name: string, template: string, onSuccess?: VoidFunction) => void;
     rename: (projectId: string, name: string) => void;
-    deleteMany: (projectIds: string[], onSuccess?: Function) => void;
+    deleteMany: (projectIds: string[], onSuccess?: VoidFunction) => void;
     select: (id: string, action: ProjectAction) => void;
     reset: () => void;
     download: (projectId: string) => void;

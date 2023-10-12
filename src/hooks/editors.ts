@@ -113,7 +113,7 @@ export function useEditors(): EditorsInfo & EditorsOperations {
          * @summary Update sandpack files
          */
         updatePreview: (editorId, updateSandpackFile) => {
-            const [path, _] = getPath(editorId);
+            const [path] = getPath(editorId);
             const pathName = path.join("/").slice(4);
             updateSandpackFile(pathName, currentText, true);
         },

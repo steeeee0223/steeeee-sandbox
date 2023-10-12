@@ -3,7 +3,7 @@ import { SelectedItem, DirectoryItem, File, UpdatePath } from "@/types";
 export function getChildren(
     directory: DirectoryItem[],
     itemId: string,
-    sort: boolean = true
+    sort = true
 ): DirectoryItem[] {
     const items = directory.filter((item) => item.parent === itemId);
     if (sort) {

@@ -58,7 +58,7 @@ export const uploadFileAsync = createAsyncThunk(
 
 export const getDirectoryAsync = createAsyncThunk(
     "directory/getDirectoryAsync",
-    async ({ userId, projectId }: { userId: string; projectId: string }) => {
+    async ({ projectId }: { userId: string; projectId: string }) => {
         const directoryItems: DirectoryItem[] = [];
         const folders = await foldersDB.getAll(projectId);
         const files = await filesDB.getAll(projectId);
@@ -93,7 +93,7 @@ export const renameDirectoryItemAsync = createAsyncThunk<
 >(
     "directory/renameDirectoryItemAsync",
     async ({ project, item, name }, { getState }) => {
-        let updates = new Array<Update<DirectoryItem>>();
+        const updates = new Array<Update<DirectoryItem>>();
         let newItem = {} as DirectoryItem;
         if (item.isFolder) {
             newItem = await foldersDB.update(item.itemId, { name });

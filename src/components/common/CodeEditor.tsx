@@ -1,5 +1,4 @@
 import { useCallback, useRef } from "react";
-import { ViewUpdate } from "@codemirror/view";
 import CodeMirror from "@uiw/react-codemirror";
 import { createTheme } from "@uiw/codemirror-themes";
 
@@ -22,7 +21,7 @@ export default function CodeEditor(props: CodeEditorProps) {
     const extensions = loadExtensions(language);
     const ref = useRef<string>(value);
     const handleChange = useCallback(
-        (value: string, _viewUpdate: ViewUpdate) => {
+        (value: string) => {
             ref.current = value;
         },
         [ref]

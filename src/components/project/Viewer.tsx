@@ -1,14 +1,14 @@
 import { SyntheticEvent, useState } from "react";
 import { Box, Tab as MuiTab } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
-import { useSandpack } from "@codesandbox/sandpack-react";
+// import { useSandpack } from "@codesandbox/sandpack-react";
 
 import { Preview } from "../common";
 import { previewHeight, tabStyle } from "./styles";
 
 export default function Viewer() {
     const [activeTab, setActiveTab] = useState("0");
-    const { dispatch } = useSandpack();
+    // const { dispatch } = useSandpack();
 
     const handleChange = (event: SyntheticEvent, newValue: string) => {
         setActiveTab(newValue);

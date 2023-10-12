@@ -4,7 +4,7 @@ import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { tabStyle } from "./styles";
 
 export default function Viewer() {
-    const [activeTab, setActiveTab] = useState("0");
+    const [activeTab] = useState("0");
 
     const handleChange = () => console.log(`[Tab] Viewer2 tab clicked!`);
 

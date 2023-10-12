@@ -15,7 +15,7 @@ import { useDirectory } from "@/hooks";
 import { FormError } from "../common";
 
 const formStyle = {
-    position: "absolute" as "absolute",
+    position: "absolute",
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
@@ -32,7 +32,7 @@ type RenameFormValues = { name: string };
 
 const RenameForm = forwardRef(({}: RenameFormProps, ref) => {
     const { action, rename, getItem, isItemPresent } = useDirectory();
-    const { name, isFolder, itemId, parent } = getItem(action.rename?.itemId!);
+    const { name, isFolder, itemId, parent } = getItem(action.rename!.itemId);
     const type = isFolder ? "folder" : "file";
     const title = capitalize(type);
 

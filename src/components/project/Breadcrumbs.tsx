@@ -1,6 +1,5 @@
 import * as React from "react";
-import { Breadcrumbs as MuiBreadcrumbs, Chip } from "@mui/material";
-import { styled, emphasize } from "@mui/material/styles";
+import { Breadcrumbs as MuiBreadcrumbs, Chip, styled } from "@mui/material";
 
 import { editorTabHeight } from "./styles";
 

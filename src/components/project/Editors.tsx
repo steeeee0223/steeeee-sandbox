@@ -2,7 +2,6 @@ import { MouseEvent, useCallback, useMemo } from "react";
 import { Box, IconButton, Stack, Tab } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import CloseIcon from "@mui/icons-material/Close";
-import { ViewUpdate } from "@codemirror/view";
 import CodeMirror from "@uiw/react-codemirror";
 import createTheme from "@uiw/codemirror-themes";
 import { useSandpack } from "@codesandbox/sandpack-react";
@@ -34,13 +33,10 @@ const EditorPanel = ({ editorId }: { editorId: string }) => {
     const theme = createTheme(myTheme);
     const extensions = useMemo(() => loadExtensions(extension), [extension]);
 
-    const handleEditorChange = useCallback(
-        (value: string, _viewUpdate: ViewUpdate) => {
-            updateText(value);
-            console.log(`[Panel] Changed value for [${editorId}]`);
-        },
-        []
-    );
+    const handleEditorChange = useCallback((value: string) => {
+        updateText(value);
+        console.log(`[Panel] Changed value for [${editorId}]`);
+    }, []);
 
     const handleSave = () => {
         console.log(`[Panel] saving text: [${editorId}] => ${currentText}`);

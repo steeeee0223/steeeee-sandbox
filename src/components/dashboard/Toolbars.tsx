@@ -11,8 +11,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 
 import { useAppDispatch, useAppSelector, useProjects } from "@/hooks";
-import { ProjectAction } from "@/stores/project";
 import { setDashboardAction } from "@/stores/cursor";
+import { ProjectAction } from "@/types";
 
 import { ButtonGroup } from "../common";
 import CreateForm from "./CreateForm";

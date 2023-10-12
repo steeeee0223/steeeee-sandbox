@@ -1,25 +1,37 @@
-import { Dispatch, SetStateAction, useState } from "react";
-
-import { createCtx } from "@/hooks";
+import {
+    Dispatch,
+    PropsWithChildren,
+    SetStateAction,
+    createContext,
+    useContext,
+    useState,
+} from "react";
 
 interface AppContextInterface {
     sidebarOpen: boolean;
     setSidebarOpen: Dispatch<SetStateAction<boolean>>;
 }
 
-export const [useAppContext, AppContextProvider] =
-    createCtx<AppContextInterface>();
+const AppContext = createContext<AppContextInterface | null>(null);
 
-export function AppProvider({ children }: { children: JSX.Element }) {
+export const useAppContext = () => {
+    const object = useContext(AppContext);
+    if (!object) {
+        throw new Error("useGetComplexObject must be used within a Provider");
+    }
+    return object;
+};
+
+export function AppProvider({ children }: PropsWithChildren) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     return (
-        <AppContextProvider
+        <AppContext.Provider
             value={{
                 sidebarOpen,
                 setSidebarOpen,
             }}
         >
             {children}
-        </AppContextProvider>
+        </AppContext.Provider>
     );
 }

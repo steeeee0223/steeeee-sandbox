@@ -1,7 +1,7 @@
 import { User } from "firebase/auth";
-import { SandpackPredefinedTemplate } from "@codesandbox/sandpack-react";
 
-export type PredefinedTemplate = SandpackPredefinedTemplate;
+import { PredefinedTemplate } from ".";
+
 export type CreatedBy = Pick<User, "uid" | "displayName" | "email">;
 
 export type Project = {

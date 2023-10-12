@@ -93,7 +93,7 @@ describe(useDirectory, () => {
         item: DirectoryItem,
         newName: string
     ): DirectoryItem => {
-        let newItem = { ...item, name: newName };
+        const newItem = { ...item, name: newName };
         switch (type) {
             case "folder":
                 vi.mocked(foldersDB.update).mockResolvedValue(

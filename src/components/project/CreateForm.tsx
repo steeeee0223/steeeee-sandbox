@@ -10,7 +10,7 @@ import {
 import AddBoxIcon from "@mui/icons-material/AddBox";
 
 import { useDirectory } from "@/hooks";
-import { CreationType } from "@/stores/cursor";
+import { CreationType } from "@/types";
 import { FormError } from "../common";
 
 interface CreateFormProps {

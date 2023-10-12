@@ -12,7 +12,7 @@ export default function FormError<T extends FieldValues>({
     sx,
 }: FormErrorProps<T>) {
     let message = "";
-    Object.entries(errors).forEach(([name, desc]) => {
+    Object.entries(errors).forEach(([, desc]) => {
         if (message === "" && desc?.message) {
             message = desc?.message.toString();
         }

@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import { shallowEqual } from "react-redux";
-import { SandpackFiles } from "@codesandbox/sandpack-react/types";
 
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import {
@@ -22,6 +21,7 @@ import { getContent, getExtension, normalizePath } from "@/lib/file";
 import { projectSelector } from "@/stores/project";
 import { setCreation } from "@/stores/cursor";
 import {
+    BundledFiles,
     CreationType,
     DirectoryAction,
     DirectoryItem,
@@ -40,7 +40,7 @@ interface DirectoryInfo {
     directory: DirectoryItem[];
     action: DirectoryAction;
     currentItem: SelectedItem;
-    bundledFiles: SandpackFiles;
+    bundledFiles: BundledFiles;
     isCurrentItem: (itemId: string) => boolean;
     isFolderPresent: (itemId: string, folderName: string) => boolean;
     isFilePresent: (itemId: string, fileName: string) => boolean;
@@ -72,7 +72,7 @@ interface DirectoryOperations {
     remove: (itemId: string) => void;
     copy: (itemId: string) => void;
     updateAction: (action: DirectoryAction) => void;
-    bundleFiles: () => SandpackFiles;
+    bundleFiles: () => BundledFiles;
 }
 
 export function useDirectory(): DirectoryInfo & DirectoryOperations {
@@ -94,7 +94,7 @@ export function useDirectory(): DirectoryInfo & DirectoryOperations {
         shallowEqual
     );
 
-    const [bundledFiles, setBundledFiles] = useState<SandpackFiles>({});
+    const [bundledFiles, setBundledFiles] = useState<BundledFiles>({});
     const project = useMemo(
         () =>
             currentProject
@@ -189,14 +189,15 @@ export function useDirectory(): DirectoryInfo & DirectoryOperations {
                     dispatch(createFileAsync({ project, data }));
                     break;
                 case "upload":
-                    const uploadFile = file!;
                     data = {
                         ...data,
-                        content: await getContent(uploadFile),
-                        name: setDuplicateFilename(uploadFile.name),
-                        extension: getExtension(uploadFile.name),
+                        content: await getContent(file!),
+                        name: setDuplicateFilename(file!.name),
+                        extension: getExtension(file!.name),
                     };
-                    dispatch(uploadFileAsync({ project, uploadFile, data }));
+                    dispatch(
+                        uploadFileAsync({ project, uploadFile: file!, data })
+                    );
                     break;
             }
         },
@@ -218,9 +219,9 @@ export function useDirectory(): DirectoryInfo & DirectoryOperations {
             }),
 
         bundleFiles: () => {
-            const bundledFiles: SandpackFiles = {};
+            const bundledFiles: BundledFiles = {};
             getFiles().forEach(({ itemId, content }) => {
-                const [pathName, _] = getPath(itemId);
+                const [pathName] = getPath(itemId);
                 const path = normalizePath(pathName);
                 bundledFiles[path] = content;
             });
