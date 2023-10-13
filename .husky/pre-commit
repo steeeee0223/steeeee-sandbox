@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-yarn test --run
+pnpm run test --run
 echo "🧪 All tests are passed!"
-yarn lint && yarn format
+pnpm run lint && pnpm run format
 echo "💅 All files are linted and formatted"

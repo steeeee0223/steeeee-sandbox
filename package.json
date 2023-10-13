@@ -13,14 +13,18 @@
     "prepare": "husky install"
   },
   "dependencies": {
+    "@codemirror/state": "^6.3.0",
+    "@codemirror/view": "^6.21.3",
     "@codesandbox/nodebox": "^0.1.8",
     "@codesandbox/sandpack-client": "^2.6.9",
     "@codesandbox/sandpack-react": "^2.6.9",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
+    "@lezer/highlight": "^1.1.6",
     "@mui/icons-material": "^5.14.8",
     "@mui/lab": "^5.0.0-alpha.143",
     "@mui/material": "^5.14.8",
+    "@mui/utils": "^5.14.13",
     "@reduxjs/toolkit": "^1.9.5",
     "@uiw/codemirror-extensions-langs": "^4.21.13",
     "@uiw/codemirror-themes": "^4.21.13",
