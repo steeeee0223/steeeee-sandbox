@@ -1,14 +1,12 @@
-import { MouseEvent, useCallback, useMemo } from "react";
+import { MouseEvent, useCallback } from "react";
 import { Box, IconButton, Stack, Tab } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import CloseIcon from "@mui/icons-material/Close";
-import CodeMirror from "@uiw/react-codemirror";
-import createTheme from "@uiw/codemirror-themes";
 import { useSandpack } from "@codesandbox/sandpack-react";
 import SaveIcon from "@mui/icons-material/Save";
 
+import { Breadcrumbs, CodeBlock } from "@/components/common";
 import { useDirectory, useEditors, useKeyPress } from "@/hooks";
-import { loadExtensions } from "@/lib/editor";
 import { containerHeight, theme } from "@/theme";
 import {
     editorBoxHeight,
@@ -16,8 +14,6 @@ import {
     editorTabHeight,
     tabStyle,
 } from "./styles";
-import { myTheme } from "../common/theme";
-import Breadcrumbs from "./Breadcrumbs";
 
 const EditorPanel = ({ editorId }: { editorId: string }) => {
     const {
@@ -29,9 +25,6 @@ const EditorPanel = ({ editorId }: { editorId: string }) => {
     const { extension } = getInfo(editorId);
     const { getPath } = useDirectory();
     const [name] = getPath(editorId);
-
-    const theme = createTheme(myTheme);
-    const extensions = useMemo(() => loadExtensions(extension), [extension]);
 
     const handleEditorChange = useCallback((value: string) => {
         updateText(value);
@@ -58,11 +51,10 @@ const EditorPanel = ({ editorId }: { editorId: string }) => {
                     <SaveIcon fontSize="small" />
                 </IconButton>
             </Stack>
-            <CodeMirror
-                value={currentText}
-                extensions={extensions}
-                autoFocus
-                theme={theme}
+            <CodeBlock
+                content={currentText}
+                language={extension}
+                readOnly={false}
                 onChange={handleEditorChange}
                 height={editorPanelHeight}
             />

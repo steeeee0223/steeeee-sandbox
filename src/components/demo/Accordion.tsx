@@ -11,7 +11,7 @@ import FolderIcon from "@mui/icons-material/Folder";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 
 import { useDirectory } from "@/hooks";
-import CodeBlock from "./Codeblock";
+import { CodeBlock } from "@/components/common";
 
 export default function ControlledAccordion({ parent }: { parent: string }) {
     const [toggle, setToggle] = React.useState<Record<string, boolean>>({});
@@ -72,12 +72,15 @@ export default function ControlledAccordion({ parent }: { parent: string }) {
                             {isFolder ? (
                                 <ControlledAccordion parent={itemId} />
                             ) : (
+                                // <div className="editor-container">
+                                // <div className="editor-title">{name}</div>
                                 <CodeBlock
-                                    name={name}
+                                    title={name}
+                                    content={child.content}
                                     language={child.extension}
-                                    value={child.content}
                                     readOnly
                                 />
+                                //  </div>
                             )}
                         </AccordionDetails>
                     </Accordion>

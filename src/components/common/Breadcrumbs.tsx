@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Breadcrumbs as MuiBreadcrumbs, Chip, styled } from "@mui/material";
 
-import { editorTabHeight } from "./styles";
+import { editorTabHeight } from "../project/styles";
 
 const StyledBreadcrumb = styled(Chip)(({ theme }) => {
     return {
